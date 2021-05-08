@@ -163,6 +163,7 @@ The problem in this work is addressed as a two-stage stochastic programming
 
 \begin_layout Standard
 \begin_inset Float figure
+placement H
 wide false
 sideways false
 status open
@@ -171,6 +172,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename images/intro_growing_time.png
+	height 5cm
 
 \end_inset
 

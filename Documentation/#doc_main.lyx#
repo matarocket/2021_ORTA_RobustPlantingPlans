@@ -161,6 +161,45 @@ The problem in this work is addressed as a two-stage stochastic programming
  experience).
 \end_layout
 
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename images/intro_growing_time.png
+	height 5cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Example of the growing profile for a specific variant of sprout.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection
 Mathematical model
 \end_layout
@@ -177,7 +216,7 @@ A crop in this problem is defined as a particular variety of Brussels sprouts
 placement H
 wide false
 sideways false
-status open
+status collapsed
 
 \begin_layout Plain Layout
 \align center
@@ -1453,7 +1492,7 @@ The weight of sprouts sold to customers is obtained by the harvested weight
 \begin_inset Formula 
 \begin{equation}
 \begin{array}{ccc}
-\sum_{i}y_{sijk}\cdot H_{sij}-S_{sjk}-\sum_{m}F_{sjkm}=0 & , & \ensuremath{\forall s,j,k}\end{array}
+\sum_{i}y_{sijk}\cdot H_{sij}=S_{sjk}+\sum_{m}F_{sjkm} & , & \ensuremath{\forall s,j,k}\end{array}
 \end{equation}
 
 \end_inset
@@ -1466,19 +1505,40 @@ Demand constrain
 \end_layout
 
 \begin_layout Standard
-The total weight sold to a client is the actual demand of the client 
+The weekly shortfall is the difference between the demand and the ammount
+ supplied.
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \begin{equation}
 \begin{array}{ccc}
-\sum_{k}F_{sjkm}=P_{smj}+d_{mj} & , & \ensuremath{\forall s,j,m}\end{array}
+P_{smj}=d_{mj}-\sum_{k}F_{sjkm} & , & \ensuremath{\forall s,j,m}\end{array}
 \end{equation}
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Subsubsection*
+Sell on open market
+\end_layout
+
+\begin_layout Subsubsection*
+Land use Constraints
+\end_layout
+
+\begin_layout Subsubsection*
+Disease Constraint
+\end_layout
+
+\begin_layout Subsubsection*
+Individual Variety Limit
+\end_layout
+
+\begin_layout Subsubsection*
+Individual Crop Limit
 \end_layout
 
 \begin_layout Section
