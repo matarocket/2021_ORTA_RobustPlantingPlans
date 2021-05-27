@@ -13,7 +13,7 @@ class SimpleKnapsack():
         self, dict_data, reward, n_scenarios, time_limit=None,
         gap=None, verbose=False
     ):
-        items = range(dict_data['crops'])
+        items = range(dict_data['scenarios'])
         scenarios = range(n_scenarios)
 
         problem_name = "RobustPlantingPlan"
@@ -21,25 +21,67 @@ class SimpleKnapsack():
         # logging.info(f"{problem_name}")
 
         model = gp.Model(problem_name)
-        X = model.addVars(
+        Fsjmk = model.addVars(
+            dict_data["scenarios"],dict_data["weeks"],dict_data["customers"],dict_data["bands"],
+            lb=0,
+            ub=1,
+            vtype=GRB.INTEGER,
+            name='Fsjmk'
+        )
+        Hsij = model.addVars(
+            dict_data["scenarios"],dict_data['crops'],dict_data["weeks"],
+            lb=0,
+            ub=1,
+            vtype=GRB.INTEGER,
+            name='Hsij'
+        )
+        Ssjk = model.addVars(
+                    dict_data["scenarios"],dict_data["weeks"],dict_data["bands"],
+                    lb=0,
+                    ub=1,
+                    vtype=GRB.INTEGER,
+                    name='Ssjk'
+                )
+        Lminus = model.addVars(
+                    1,
+                    lb=0,
+                    ub=1,
+                    vtype=GRB.CONTINUOUS,
+                    name='Lminus'
+                )
+
+        Lplus = model.addVars(
+                    1,
+                    lb=0,
+                    ub=1,
+                    vtype=GRB.CONTINUOUS,
+                    name='Lplus'
+                )
+        Psmj = model.addVars(
+            dict_data["scenarios"],dict_data["customers"],dict_data["weeks"],
+            lb=0,
+            ub=1,
+            vtype=GRB.INTEGER,
+            name='Psmj'
+        )
+        Ai = model.addVars(
             dict_data['crops'],
             lb=0,
             ub=1,
-            vtype=GRB.INTEGER,
-            name='X'
+            vtype=GRB.CONTINUOUS,
+            name='Ai'
         )
-        Y = model.addVars(
-            dict_data['crops'], n_scenarios,
-            lb=0,
-            ub=1,
-            vtype=GRB.INTEGER,
-            name='Y'
-        )
-
+   
         w=0.5
         
-        
-        obj_funct = gp.quicksum((1-w)*dict_data["prob_s"][i] * X[i] for i in items)
+        #sum_s = gp.quicksum( gp.quicksum(dict_data["s_sj"][s][j] * Ssjk[s][j][k] for k in dict_data["bands"] )for j in dict_data["weeks"])
+        #sum_f = gp.quicksum(gp.quicksum( gp.quicksum(dict_data["f_mj"][m][j]*Fsjmk[s][j][m][k] for m in dict_data["customers"])for j in dict_data["weeks"] )for k in dict_data["bands"])
+        #sum_cH = gp.quicksum( gp.quicksum(dict_data["c_sij"][s][i][j]*Hsij[s][i][j] for i in dict_data["crops"] )for j in dict_data["weeks"])
+        #sum_cPrimeAi = gp.quicksum(dict_data["c_prime"]*Ai[i] for i in dict_data["crops"])
+        #sum_p = gp.quicksum( gp.quicksum(dict_data["p_smj"][s][m][j]*Psmj[s][m][j] for m in dict_data["customers"] )for j in dict_data["weeks"])
+
+
+        obj_funct = gp.quicksum((1-w)*dict_data["prob_s"][s] * (gp.quicksum( gp.quicksum(dict_data["s_sj"][s][j] * Ssjk[s][j][k] for k in dict_data["bands"] )for j in dict_data["weeks"])) for s in dict_data["scenarios"]+gp.quicksum(gp.quicksum( gp.quicksum(dict_data["f_mj"][m][j]*Fsjmk[s][j][m][k] for m in dict_data["customers"])for j in dict_data["weeks"] )for k in dict_data["bands"])-gp.quicksum( gp.quicksum(dict_data["c_sij"][s][i][j]*Hsij[s][i][j] for i in dict_data["crops"] )for j in dict_data["weeks"])+dict_data["c_plus"]*Lplus-dict_data["C_minus"]*Lminus-gp.quicksum(dict_data["c_prime"]*Ai[i] for i in dict_data["crops"])-gp.quicksum( gp.quicksum(dict_data["p_smj"][s][m][j]*Psmj[s][m][j] for m in dict_data["customers"] )for j in dict_data["weeks"]))
         # for s in scenarios:
         #     obj_funct += gp.quicksum(reward[i, s] * Y[i, s] for i in items)/(n_scenarios + 0.0)
         obj_funct += gp.quicksum(reward[i, s] * Y[i, s] for i in items for s in scenarios)/(n_scenarios + 0.0)
