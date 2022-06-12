@@ -2,8 +2,14 @@
 import logging
 import numpy as np
 
+def randGeneratorCostumer(K, M):
+        np.random.seed(1)
+        vet=np.random.randint(1, K, M)
+        return vet
 
 class Instance():
+     
+        
     def __init__(self, sim_setting):
         logging.info("starting simulation...")
         self.crops = sim_setting['crop_max_index']
@@ -13,6 +19,9 @@ class Instance():
         self.customers = sim_setting['customer_max_index']
         self.diseases = sim_setting['disease_max_index']
         self.scenarios = sim_setting['scenarios_max_index']
+
+        self.Km = randGeneratorCostumer(self.bands, self.customers)
+        #self.Iv = 
 
         self.prob_s = np.around(np.random.uniform(0,1,sim_setting['scenarios_max_index']), 2)
         self.prob_s = self.prob_s/np.sum(self.prob_s)
