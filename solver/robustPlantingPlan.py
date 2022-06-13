@@ -81,7 +81,7 @@ class SimpleKnapsack():
             name='Ai'
         )
    
-        w=0.5
+        w=0
 
         # z = model.addVars(
         #     dict_data["scenarios"],
@@ -127,7 +127,7 @@ class SimpleKnapsack():
                     )
 
 
-        #>>> Demand Constraint --- to be checked 
+        #>>> Demand Constraint 
         for s in scenarios:
             for j in weeks:
                 for m in customers:
@@ -162,30 +162,38 @@ class SimpleKnapsack():
                 )
 
 
-        # #>>> Disease Constraint 
-        # for j in weeks:
-        #     for q in diseases:
-        #         for s in scenarios:
-        #             model.addConstr(
-        #                gp.quicksum(dict_data["r_iq"][i][q]*gp.quicksum(dict_data['y_sijk'][s][i][j][k]*Hsij[s][i][j] for k in bands) for i in crops) <= dict_data['u_q'][q]*gp.quicksum(dict_data['d_mj'][m][j] for m in customers),
-        #                f"Disease Constraint - s: {s}, j: {j}, q: {q}"
-        #             )
+        #>>> Disease Constraint 
+        for j in weeks:
+            for q in diseases:
+                for s in scenarios:
+                    model.addConstr(
+                       gp.quicksum(dict_data["r_iq"][i][q]*gp.quicksum(dict_data['y_sijk'][s][i][j][k]*Hsij[s][i][j] for k in bands) for i in crops) <= dict_data['u_q'][q]*gp.quicksum(dict_data['d_mj'][m][j] for m in customers),
+                       f"Disease Constraint - s: {s}, j: {j}, q: {q}"
+                    )
 
 
-        # #>>> Individual Variety Limit --- to be checked 
-        # for v in varieties:
-        #             model.addConstr(
-        #                gp.quicksum(Ai[i][v] for i in crops) <= 0.4*gp.quicksum(Ai[i] for i in crops),
-        #                f"Disease Constraint - s: {s}, j: {j}, q: {q}"
-        #             )
+        #>>> Individual Variety Limit 
+        
+        for v in varieties:
+            ind=0
+            aux=[]
+            for ind in range(len(crops)):
+                if (int(ind / (dict_data["sowingWeeks"]*dict_data["spacings"])) == v):
+                    aux.append(crops[ind])
+            model.addConstr(
+                gp.quicksum(Ai[index] for index in aux) <= 0.4*gp.quicksum(Ai[i] for i in crops),
+                f"Individual Variety Limit - v: {v}"
+            )
+
+        
 
 
-        # #>>> Individual Crop Limit 
-        # for i in crops:
-        #             model.addConstr(
-        #                Ai[i]<= 0.2*gp.quicksum(Ai[i] for i in crops),
-        #                f"Individual Crop Limit - i: {i}"
-        #             )
+        #>>> Individual Crop Limit 
+        for i in crops:
+                    model.addConstr(
+                       Ai[i]<= 0.2*gp.quicksum(Ai[i] for i in crops),
+                       f"Individual Crop Limit - i: {i}"
+                    )
         
 
         
@@ -207,13 +215,15 @@ class SimpleKnapsack():
         end = time.time()
         comp_time = end - start
         
-        sol = [0] * dict_data['n_items']
-        of = -1
-        if model.status == GRB.Status.OPTIMAL:
-            for i in items:
-                grb_var = model.getVarByName(
-                    f"X[{i}]"
-                )
-                sol[i] = grb_var.X
-            of = model.getObjective().getValue()
-        return of, sol, comp_time
+        return
+        
+        # sol = [0] * dict_data['n_items']
+        # of = -1
+        # if model.status == GRB.Status.OPTIMAL:
+        #     for i in items:
+        #         grb_var = model.getVarByName(
+        #             f"X[{i}]"
+        #         )
+        #         sol[i] = grb_var.X
+        #     of = model.getObjective().getValue()
+        # return of, sol, comp_time

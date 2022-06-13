@@ -12,7 +12,10 @@ class Instance():
         
     def __init__(self, sim_setting):
         logging.info("starting simulation...")
-        self.crops = sim_setting['crop_max_index']
+
+        self.sowingWeeks=sim_setting['sowingWeeks_max_index']
+        self.spacings= sim_setting['spacings_max_index']
+        self.crops = sim_setting['variety_max_index']*sim_setting['sowingWeeks_max_index']*sim_setting['spacings_max_index']
         self.varieties = sim_setting['variety_max_index']
         self.weeks = sim_setting['week_max_index']
         self.bands = sim_setting['size_band_max_index']
@@ -21,7 +24,6 @@ class Instance():
         self.scenarios = sim_setting['scenarios_max_index']
 
         self.Km = randGeneratorCostumer(self.bands, self.customers)
-        #self.Iv = 
 
         self.prob_s = np.around(np.random.uniform(0,1,sim_setting['scenarios_max_index']), 2)
         self.prob_s = self.prob_s/np.sum(self.prob_s)
@@ -38,7 +40,6 @@ class Instance():
         self.r_iq = np.around(np.random.rand(sim_setting['crop_max_index'],sim_setting['disease_max_index']), 0)
         self.u_q=np.random.rand(sim_setting['disease_max_index'])*3
 
-        self.crops_ss = sim_setting['crop_max_index']
 
         logging.info(f"crops: {self.crops}")
         logging.info(f"varieties: {self.varieties}")
@@ -60,6 +61,9 @@ class Instance():
         logging.info(f"p_smj: {self.p_smj}")
         logging.info(f"r_iq: {self.r_iq}")
         logging.info(f"u_q: {self.u_q}")
+        logging.info(f"Km: {self.Km}")
+        logging.info(f"sowingWeeks: {self.sowingWeeks}")
+        logging.info(f"spacings: {self.spacings}")
         logging.info("simulation end")
 
     def get_data(self):
@@ -85,4 +89,7 @@ class Instance():
             "p_smj": self.p_smj,
             "r_iq": self.r_iq,
             "u_q": self.u_q,
+            "Km": self.Km,
+            "sowingWeeks": self.sowingWeeks,
+            "spacings": self.spacings,
         }
