@@ -1,8 +1,11 @@
 {
-	"knapsack_size": 50,
-	"low_size": 1,
-	"high_size": 10,
-	"n_items": 10,
-	"low_profit": 5,
-	"high_profit": 10
+    "n_diseases": 5,
+    "n_variaties": 4,
+    "n_spacings" : 8,
+    "n_size_bands": 5,
+    "n_customers": 6,
+    "n_scenarios": 10,
+    "n_sowing_dates": 9,
+    "n_harvesting_dates": 10
 }
+

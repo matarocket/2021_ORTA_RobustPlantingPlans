@@ -11,9 +11,9 @@ class SimpleKnapsack():
         pass
 
     def solve(
-        self, dict_data, reward,time_limit=None, 
-        gap=None, verbose=False
-    ):
+            self, dict_data, reward,time_limit=None, 
+            gap=None, verbose=False
+            ):
         
         scenarios = range(dict_data['scenarios'])
         weeks = range(dict_data['weeks'])

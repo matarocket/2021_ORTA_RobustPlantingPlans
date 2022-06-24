@@ -1,13 +1,10 @@
 {
-    "crop_max_index": 88, 
-    "variety_max_index": 11,
-    "week_max_index": 13,
-    "size_band_max_index": 4,
-    "customer_max_index": 2,
-    "disease_max_index": 16,
-    "scenarios_max_index": 31,
-    "sowingWeeks_max_index":4,
-    "spacings_max_index":2
-   
+    "n_diseases": 5,
+    "n_variaties": 4,
+    "n_spacings" : 8,
+    "n_size_bands": 5,
+    "n_customers": 6,
+    "n_scenarios": 10,
+    "n_sowing_dates": 9,
+    "n_harvesting_dates": 10
 }
-
