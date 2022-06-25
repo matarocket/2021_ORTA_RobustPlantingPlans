@@ -17,7 +17,7 @@ class Instance():
 
         #Problem parameters
         self.n_diseases = sim_setting['n_diseases']
-        self.n_variaties = sim_setting['n_variaties']
+        self.n_varieties = sim_setting['n_varieties']
         self.n_spacings = sim_setting['n_spacings']
         self.n_size_bands = sim_setting['n_size_bands']
         self.n_customers = sim_setting['n_customers']
@@ -26,17 +26,17 @@ class Instance():
         self.n_harvesting_dates = sim_setting['n_harvesting_dates']
 
         #Number of crops
-        self.n_crops = self.n_variaties*self.n_sowing_dates*self.n_spacings
+        self.n_crops = self.n_varieties*self.n_sowing_dates*self.n_spacings
         
         #Dictonary for identifying Crop characteristics
         self.Ai_dict = []
-        for v in range(self.n_variaties):
+        for v in range(self.n_varieties):
             for w in range(self.n_sowing_dates):
                 for s in range(self.n_spacings):
                     self.Ai_dict.append({"Variety" : v, "SowingDate": w, "Spacing": s})
                     
         #Variety growing rate
-        self.variety_rate = np.random.uniform(1, 5, self.n_variaties)
+        self.variety_rate = np.random.uniform(1, 5, self.n_varieties)
         
         #Vector of size bands preferences of customers
         self.Km = np.random.randint(0, self.n_size_bands, self.n_customers)
@@ -65,6 +65,7 @@ class Instance():
         
         #Yield crop {scenario, crop, harvesting_date, size_band}
         self.y_sijk = np.random.rand(self.n_scenarios, self.n_crops, self.n_harvesting_dates, self.n_size_bands)
+        self.yield_instance_gen()
         
         #Area of grower's land
         self.a = np.random.randint(5,50)
@@ -84,9 +85,9 @@ class Instance():
         #Upper limit to harvested proportion of a field for a given disease
         self.u_q = np.random.rand(self.n_diseases)
 
-
+        #Log variables
         logging.info(f"crops: {self.n_crops}")
-        logging.info(f"varieties: {self.n_variaties}")
+        logging.info(f"varieties: {self.n_varieties}")
         logging.info(f"varieties_rates: {self.variety_rate}")
         logging.info(f"weeks: {self.n_harvesting_dates}")
         logging.info(f"spacings: {self.n_spacings}")
@@ -109,6 +110,7 @@ class Instance():
         logging.info(f"r_iq: {self.r_iq}")
         logging.info(f"u_q: {self.u_q}")
         logging.info(f"Km: {self.Km}")
+        logging.info(f"Ai_dict: {self.Ai_dict}")
         logging.info("simulation end")
         
         return
@@ -126,7 +128,7 @@ class Instance():
                         #print(self.y_sijk[s][i][j][k])
                         pass
         
-    #Get data
+    #Get data (instance as dictionary)
     def get_data(self):
         logging.info("getting data from instance...")
         return {
@@ -173,11 +175,11 @@ def grow_week_curve(grow_factor, week):
     return y
 
 #Plot crop evolution
-def plot_crop_evolution(crop_index):
+def plot_crop_evolution(crop_index=0, scene_idx=0):
     crop=crop_index
     print(ins.Ai_dict[crop])
     for k in range(ins.n_size_bands):
-        plt.plot(ins.y_sijk[0,crop,:,k])
+        plt.plot(ins.y_sijk[scene_idx,crop,:,k])
     plt.show()
 
 #Testing main
@@ -190,7 +192,7 @@ if __name__ == "__main__":
     
     #Generate an instance
     ins = Instance(sim_setting)
-    ins.yield_instance_gen()
+    #ins.yield_instance_gen()
     
     #Plot the evolution of a certain crop
     plot_crop_evolution(10)

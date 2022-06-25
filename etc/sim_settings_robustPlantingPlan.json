@@ -1,10 +1,10 @@
 {
-    "n_diseases": 5,
-    "n_variaties": 4,
-    "n_spacings" : 8,
-    "n_size_bands": 5,
-    "n_customers": 6,
-    "n_scenarios": 10,
-    "n_sowing_dates": 9,
-    "n_harvesting_dates": 10
+    "n_diseases": 1,
+    "n_varieties": 1,
+    "n_spacings" : 1,
+    "n_size_bands": 1,
+    "n_customers": 1,
+    "n_scenarios": 1,
+    "n_sowing_dates": 1,
+    "n_harvesting_dates": 1
 }
