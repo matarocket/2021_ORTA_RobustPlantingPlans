@@ -157,7 +157,10 @@ class SimpleHeu():
         start = time.time()
         
         #Pick most probable scenario
-        s = np.argmax(dict_data["prob_s"])
+        s_max = np.argmax(dict_data["prob_s"])
+        
+        #Maximize profit form clients demand
+        profit =  np.multiply(np.array(dict_data["d_mj"]), np.array(dict_data["f_mj"]))
         
         sol_x = [0] * dict_data['n_items']
         of = -1
