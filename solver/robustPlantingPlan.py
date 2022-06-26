@@ -273,4 +273,4 @@ class RobustPlantingPlanSolver():
                 )
                 sol[i] = grb_var.X
             of = model.getObjective().getValue()
-        return of, sol, comp_time
+        return of, sol, comp_time, model

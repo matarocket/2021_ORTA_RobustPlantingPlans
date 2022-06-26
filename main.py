@@ -55,7 +55,7 @@ if __name__ == '__main__':
 
     #prb = SimpleKnapsack()
     prb = RobustPlantingPlanSolver()
-    of_exact, sol_exact, comp_time_exact = prb.solve(
+    of_exact, sol_exact, comp_time_exact, model = prb.solve(
         dict_data,
         verbose=True
     )
