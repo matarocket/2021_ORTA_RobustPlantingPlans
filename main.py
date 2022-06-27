@@ -39,13 +39,7 @@ if __name__ == '__main__':
     #     n_scenarios=n_scenarios
     # )
 
-    # heu = SimpleHeu()
-    # of_heu, sol_heu, comp_time_heu = heu.solve(
-    #     dict_data,
-    #     reward,
-    #     n_scenarios,
-    # )
-    # print(of_heu, sol_heu, comp_time_heu)
+    
 
     # mean_reward = sam.sample_ev(
     #     inst,
@@ -53,13 +47,20 @@ if __name__ == '__main__':
     # )
     # print(mean_reward)
 
-    #prb = SimpleKnapsack()
     prb = RobustPlantingPlanSolver()
     of_exact, sol_exact, comp_time_exact, model = prb.solve(
         dict_data,
         verbose=True
     )
     print(of_exact, sol_exact, comp_time_exact)
+    
+    heu = SimpleHeu()
+    of_heu, sol_heu, comp_time_heu = heu.solve(
+        dict_data,
+        [],
+        [],
+    )
+    print(of_heu, sol_heu, comp_time_heu)
 
     # COMPARISON:
     # test = Tester()

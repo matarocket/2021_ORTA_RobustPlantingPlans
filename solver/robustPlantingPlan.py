@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
-from calendar import week
 import time
 import logging
 import gurobipy as gp
 from gurobipy import GRB
-
 
 class RobustPlantingPlanSolver():
     def __init__(self):
@@ -15,6 +13,7 @@ class RobustPlantingPlanSolver():
             gap=None, verbose=False
             ):
         
+        #Load data from configuration file
         scenarios = range(dict_data['scenarios'])
         weeks = range(dict_data['weeks'])
         bands = range(dict_data['bands'])
@@ -22,86 +21,90 @@ class RobustPlantingPlanSolver():
         crops = range(dict_data["crops"]) 
         diseases = range(dict_data["diseases"]) 
         varieties = range(dict_data["varieties"]) 
+        w = dict_data["w"]
 
+        #Problem name logging
         problem_name = "RobustPlantingPlan"
         logging.info("{}".format(problem_name))
         # logging.info(f"{problem_name}")
 
+        #Creation of model
         model = gp.Model(problem_name)
 
-        #model variable definition 
-        Fsjmk = model.addVars(
-            dict_data["scenarios"],dict_data["weeks"],dict_data["customers"],dict_data["bands"],
-            lb=0,
-            ub=10000,
-            vtype=GRB.CONTINUOUS,
-            name='Fsjmk'
-        )
-        Hsij = model.addVars(
-            dict_data["scenarios"],dict_data['crops'],dict_data["weeks"],
-            lb=0,
-            ub=10000,
-            vtype=GRB.CONTINUOUS,
-            name='Hsij'
-        )
-        Ssjk = model.addVars(
-                    dict_data["scenarios"],dict_data["weeks"],dict_data["bands"],
-                    lb=0,
-                    ub=10000,
-                    vtype=GRB.CONTINUOUS,
-                    name='Ssjk'
-                )
-        Lminus = model.addVars(
-                    1,
-                    lb=0,
-                    ub=10000,
-                    vtype=GRB.CONTINUOUS,
-                    name='Lminus'
-                )
-
-        Lplus = model.addVars(
-                    1,
-                    lb=0,
-                    ub=10000,
-                    vtype=GRB.CONTINUOUS,
-                    name='Lplus'
-                )
-        Psmj = model.addVars(
-            dict_data["scenarios"],dict_data["customers"],dict_data["weeks"],
-            lb=0,
-            ub=10000,
-            vtype=GRB.CONTINUOUS,
-            name='Psmj'
-        )
-        Ai = model.addVars(
-            dict_data['crops'],
-            lb=0,
-            ub=10000,
-            vtype=GRB.CONTINUOUS,
-            name='Ai'
-        )
-   
-        w=0.5
-
-        z = model.addVars(
-            dict_data["scenarios"],
-            lb=0,
-            ub=100,
-            vtype=GRB.CONTINUOUS,
-            name='z'
-        )
+        #%% Control variables definition
         
-        #sum_s = gp.quicksum( gp.quicksum(dict_data["s_sj"][s][j] * Ssjk[s][j][k] for k in dict_data["bands"] )for j in dict_data["weeks"])
-        #sum_f = gp.quicksum(gp.quicksum( gp.quicksum(dict_data["f_mj"][m][j]*Fsjmk[s][j][m][k] for m in dict_data["customers"])for j in dict_data["weeks"] )for k in dict_data["bands"])
-        #sum_cH = gp.quicksum( gp.quicksum(dict_data["c_sij"][s][i][j]*Hsij[s][i][j] for i in dict_data["crops"] )for j in dict_data["weeks"])
-        #sum_cPrimeAi = gp.quicksum(dict_data["c_prime"]*Ai[i] for i in dict_data["crops"])
-        #sum_p = gp.quicksum( gp.quicksum(dict_data["p_smj"][s][m][j]*Psmj[s][m][j] for m in dict_data["customers"] )for j in dict_data["weeks"])
+        #Weight of sprouts sold by {scenario, week, customer, band}
+        Fsjmk = model.addVars(
+                dict_data["scenarios"],dict_data["weeks"],dict_data["customers"],dict_data["bands"],
+                lb=0,
+                ub=10000,
+                vtype=GRB.CONTINUOUS,
+                name='Fsjmk'
+            )
+        
+        #Area of harvested crop by {scenario, crop, week}
+        Hsij = model.addVars(
+                dict_data["scenarios"],dict_data['crops'],dict_data["weeks"],
+                lb=0,
+                ub=10000,
+                vtype=GRB.CONTINUOUS,
+                name='Hsij'
+            )
+        
+        #Weight of surplus-to-demand sprouts by {scemario, week, band}
+        Ssjk = model.addVars(
+                dict_data["scenarios"],dict_data["weeks"],dict_data["bands"],
+                lb=0,
+                ub=10000,
+                vtype=GRB.CONTINUOUS,
+                name='Ssjk'
+            )
+        
+        #Area of extra land 
+        Lminus = model.addVars(
+                1,
+                lb=0,
+                ub=10000,
+                vtype=GRB.CONTINUOUS,
+                name='Lminus'
+            )
 
-        #objective function definition
-        #profit term
+        #Area of unused land
+        Lplus = model.addVars(
+                1,
+                lb=0,
+                ub=10000,
+                vtype=GRB.CONTINUOUS,
+                name='Lplus'
+            )
+        
+        #Shortage in demand by {scenario, customer, week}
+        Psmj = model.addVars(
+                dict_data["scenarios"],dict_data["customers"],dict_data["weeks"],
+                lb=0,
+                ub=10000,
+                vtype=GRB.CONTINUOUS,
+                name='Psmj'
+            )
+        
+        #Area of sowed land by {crop}
+        Ai = model.addVars(
+                dict_data['crops'],
+                lb=0,
+                ub=10000,
+                vtype=GRB.CONTINUOUS,
+                name='Ai'
+            )
 
-        #E_ProfitTerm = gp.quicksum((1-w)*dict_data["prob_s"][s] * (gp.quicksum( gp.quicksum(dict_data["s_sj"][s][j] * Ssjk[s][j][k] for k in dict_data["bands"] )for j in dict_data["weeks"])) for s in dict_data["scenarios"]+gp.quicksum(gp.quicksum( gp.quicksum(dict_data["f_mj"][m][j]*Fsjmk[s][j][m][k] for m in dict_data["customers"])for j in dict_data["weeks"] )for k in dict_data["bands"])-gp.quicksum( gp.quicksum(dict_data["c_sij"][s][i][j]*Hsij[s][i][j] for i in dict_data["crops"] )for j in dict_data["weeks"])+dict_data["c_plus"]*Lplus-dict_data["C_minus"]*Lminus-gp.quicksum(dict_data["c_prime"]*Ai[i] for i in dict_data["crops"])-gp.quicksum( gp.quicksum(dict_data["p_smj"][s][m][j]*Psmj[s][m][j] for m in dict_data["customers"] )for j in dict_data["weeks"]))
-        #obj_funct = gp.quicksum((1-w)*dict_data["prob_s"][s] * (gp.quicksum( gp.quicksum(dict_data["s_sj"][s][j] * Ssjk[s][j][k] for k in bands )for j in weeks)) for s in scenarios+gp.quicksum(gp.quicksum( gp.quicksum(dict_data["f_mj"][m][j]*Fsjmk[s][j][m][k] for m in customers)for j in weeks )for k in bands)-gp.quicksum( gp.quicksum(dict_data["c_sij"][s][i][j]*Hsij[s][i][j] for i in crops )for j in weeks)+dict_data["c_plus"]*Lplus-dict_data["C_minus"]*Lminus-gp.quicksum(dict_data["c_prime"]*Ai[i] for i in crops)-gp.quicksum( gp.quicksum(dict_data["p_smj"][s][m][j]*Psmj[s][m][j] for m in customers )for j in weeks))
+        #Auxiliar variable by {scenario}
+        z = model.addVars(
+                dict_data["scenarios"],
+                lb=0,
+                vtype=GRB.CONTINUOUS,
+                name='z'
+            )
+        
+        #%% Definition of the cost function
         
         #Profit for a given scenario
         def Profit(s):
@@ -120,38 +123,13 @@ class RobustPlantingPlanSolver():
             Expected = gp.quicksum(dict_data["prob_s"][s]*function_of_s(s) for s in scenarios)
             return Expected
         
-        
-        
-        
-            
-        
-        #E_ProfitTerm = gp.quicksum(dict_data["prob_s"][s] * (gp.quicksum( gp.quicksum(dict_data["s_sj"][s][j] * Ssjk[s][j][k] for k in bands )for j in weeks)) +gp.quicksum(gp.quicksum( gp.quicksum(dict_data["f_mj"][m][j]*Fsjmk[s][j][m][k] for m in customers)for j in weeks )for k in bands)-gp.quicksum( gp.quicksum(dict_data["c_sij"][s][i][j]*Hsij[s][i][j] for i in crops )for j in weeks)+dict_data["c_plus"]*Lplus-dict_data["C_minus"]*Lminus-gp.quicksum(dict_data["c_prime"]*Ai[i] for i in crops)-gp.quicksum( gp.quicksum(dict_data["p_smj"][s][m][j]*Psmj[s][m][j] for m in customers )for j in weeks)for s in scenarios)
-        
-        
-       #min z to max the obj funct
-        #aux = gp.quicksum(dict_data["prob_s"][s] * (ProfitTerm - E_ProfitTerm) for s in scenarios)
-        
-        #z>=aux
-        #z>=-aux
-
-
-        obj_funct=((1-w)*E_s(Profit) - w*gp.quicksum(dict_data["prob_s"][s]*z[s] for s in scenarios))
-        #obj_funct=E_s(Profit)
-        #missing risk term - to be added 
-        #riskTerm =
-        #obj_funct = gp.quicksum((1-w)*dict_data["prob_s"][s] * (gp.quicksum( gp.quicksum(dict_data["s_sj"][s][j] * Ssjk[s][j][k] for k in dict_data["bands"] )for j in dict_data["weeks"])) for s in dict_data["scenarios"]+gp.quicksum(gp.quicksum( gp.quicksum(dict_data["f_mj"][m][j]*Fsjmk[s][j][m][k] for m in dict_data["customers"])for j in dict_data["weeks"] )for k in dict_data["bands"])-gp.quicksum( gp.quicksum(dict_data["c_sij"][s][i][j]*Hsij[s][i][j] for i in dict_data["crops"] )for j in dict_data["weeks"])+dict_data["c_plus"]*Lplus-dict_data["C_minus"]*Lminus-gp.quicksum(dict_data["c_prime"]*Ai[i] for i in dict_data["crops"])-gp.quicksum( gp.quicksum(dict_data["p_smj"][s][m][j]*Psmj[s][m][j] for m in dict_data["customers"] )for j in dict_data["weeks"]))
-        
-        # for s in scenarios:
-        #     obj_funct += gp.quicksum(reward[i, s] * Y[i, s] for i in items)/(n_scenarios + 0.0)
-
-        #putting together risk and profit terms 
-        #obj_funct += gp.quicksum(reward[i, s] * Y[i, s] for i in items for s in scenarios)/(n_scenarios + 0.0)
+        #Objective function
+        obj_funct = (1-w)*E_s(Profit) - w*gp.quicksum(dict_data["prob_s"][s]*z[s] for s in scenarios)
         model.setObjective(obj_funct, GRB.MAXIMIZE)
 
-
-        #------------------- Constraints definition -------------------
+        #%% Definition of contraints
        
-        #>>> Absolute value Constraint
+        #Absolute value Constraint
         for s in scenarios:
             model.addConstr(
                         (z[s] - (Profit(s) - E_s(Profit))) >= 0,
@@ -162,28 +140,26 @@ class RobustPlantingPlanSolver():
                         f"Absolute value of z 2 - s: {s}"
                     )
         
-       
-        #>>> Marketing Constraint 
+        #Marketing Constraint 
         for s in scenarios:
             for j in weeks:
                 for k in bands:
                     model.addConstr(
-                        gp.quicksum(dict_data['y_sijk'][s][i][j][k]*Hsij[s,i,j] for i in crops)-Ssjk[s,j,k]-gp.quicksum(Fsjmk[s,j,m,k] for m in customers)==0,
+                        gp.quicksum(dict_data['y_sijk'][s][i][j][k]*Hsij[s,i,j] for i in crops) - Ssjk[s,j,k] - gp.quicksum(Fsjmk[s,j,m,k] for m in customers) == 0,
                         f"Marketing Constraint - s: {s}, j: {j}, k: {k}"
                     )
 
-
-        #>>> Demand Constraint 
+        #Demand Constraint 
         for s in scenarios:
             for j in weeks:
                 for m in customers:
                     model.addConstr(
-                        gp.quicksum(Fsjmk[s,j,m,k] for k in dict_data["Km"]) == Psmj[s,m,j] + dict_data['d_mj'][m][j],
+                        gp.quicksum(Fsjmk[s,j,m,k] for k in dict_data["Km"][m]) == Psmj[s,m,j] + dict_data['d_mj'][m][j],
+                        #Fsjmk[s,j,m,dict_data["Km"][m]] == Psmj[s,m,j] + dict_data['d_mj'][m][j],
                         f"Demand Constraint - s: {s}, j: {j}, m: {m}"
                     )
 
-
-        #>>> Sell on Open Market 
+        #Sell on Open Market 
         for s in scenarios:
             for j in weeks:
                     model.addConstr(
@@ -191,24 +167,21 @@ class RobustPlantingPlanSolver():
                         f" Sell on Open Market - s: {s}, j: {j}"
                     )
                 
-
-        #>>> Land Use Constraint - 1  
+        #Land Use Constraint - 1  
         model.addConstr(
-                    gp.quicksum(Ai[i] for i in crops) == dict_data["a"]+ Lminus[0]-Lplus[0] ,
-                    f"Land Use Constraint - 1"
+                    gp.quicksum(Ai[i] for i in crops) == dict_data["a"] + Lminus[0] - Lplus[0] ,
+                    "Land Use Constraint - 1"
                 )
 
-
-        #>>> Land Use Constraint - 2  
+        #Land Use Constraint - 2  
         for s in scenarios:
             for  i in crops:
                 model.addConstr(
-                    Ai[i]== gp.quicksum(Hsij[s,i,j] for j in weeks),
+                    Ai[i] == gp.quicksum(Hsij[s,i,j] for j in weeks),
                     f"Land Use Constraint - 2 - s: {s}, i: {i}"
                 )
 
-
-        #>>> Disease Constraint 
+        #Disease Constraint 
         for j in weeks:
             for q in diseases:
                 for s in scenarios:
@@ -217,34 +190,27 @@ class RobustPlantingPlanSolver():
                         f"Disease Constraint - s: {s}, j: {j}, q: {q}"
                     )
 
-
-        #>>> Individual Variety Limit 
-        
+        #Individual Variety Limit 
         for v in varieties:
             aux=[]
-            for ind in range(len(crops)):
-                if (int(ind / (dict_data["sowingWeeks"]*dict_data["spacings"])) == v):
-                    aux.append(crops[ind])
-                # if (dict_data["Ai_dict"][ind]["Variety"] == v):
-                #     aux.append(crops[ind])
+            for i in crops:
+                 if (dict_data["Ai_dict"][i]["Variety"] == v):
+                     aux.append(i)
             model.addConstr(
                 gp.quicksum(Ai[index] for index in aux) <= 0.4*gp.quicksum(Ai[i] for i in crops),
                 f"Individual Variety Limit - v: {v}"
             )
 
-        
-
-
-        # #>>> Individual Crop Limit 
+        #Individual Crop Limit 
         for i in crops:
                     model.addConstr(
-                        Ai[i]<= 0.2*gp.quicksum(Ai[i] for i in crops),
+                        Ai[i] <= 0.2*gp.quicksum(Ai[i_2] for i_2 in crops),
                         f"Individual Crop Limit - i: {i}"
                     )
         
-
+        #%% Optimization of the model
         
-
+        #Update model
         model.update()
         if gap:
             model.setParam('MIPgap', gap)
@@ -273,4 +239,6 @@ class RobustPlantingPlanSolver():
                 )
                 sol[i] = grb_var.X
             of = model.getObjective().getValue()
+        
+        #Return
         return of, sol, comp_time, model

@@ -3,6 +3,7 @@ import logging
 import numpy as np
 import json
 import matplotlib.pyplot as plt
+import random
 
 #%% INSTANCE GENERATION
 
@@ -24,6 +25,7 @@ class Instance():
         self.n_scenarios = sim_setting['n_scenarios']
         self.n_sowing_dates = sim_setting['n_sowing_dates']
         self.n_harvesting_dates = sim_setting['n_harvesting_dates']
+        self.w = sim_setting['w']
 
         #Number of crops
         self.n_crops = self.n_varieties*self.n_sowing_dates*self.n_spacings
@@ -39,7 +41,11 @@ class Instance():
         self.variety_rate = np.random.uniform(1, 5, self.n_varieties)
         
         #Vector of size bands preferences of customers
-        self.Km = np.random.randint(0, self.n_size_bands, self.n_customers)
+        self.Km_number = np.random.randint(1, self.n_size_bands, self.n_customers)
+        self.Km = []
+        for m in range(self.n_customers):
+            self.Km.append(random.sample(list(range(self.n_size_bands)),self.Km_number[m]))
+            
         
         #Probability of scenario s
         self.prob_s = np.random.uniform(0, 1, self.n_scenarios)
@@ -49,10 +55,10 @@ class Instance():
         self.scenario_impact = np.random.uniform(0, 1, self.n_scenarios)
         
         #Cost of land
-        self.c_prime = np.random.randint(0, 10)*0
+        self.c_prime = np.random.randint(0, 10)
         
         #Cost of harvesting {scenario, crop, harvesting_date}
-        self.c_sij = np.random.rand(self.n_scenarios, self.n_crops, self.n_harvesting_dates)*0
+        self.c_sij = np.random.rand(self.n_scenarios, self.n_crops, self.n_harvesting_dates)
         
         #Demand {costumer, harvesting_date}
         self.d_mj = np.random.rand(self.n_customers, self.n_harvesting_dates)*1000
@@ -66,19 +72,19 @@ class Instance():
         #Yield crop {scenario, crop, harvesting_date, size_band}
         self.y_sijk = np.random.rand(self.n_scenarios, self.n_crops, self.n_harvesting_dates, self.n_size_bands)
         self.yield_instance_gen()
-        self.y_sijk = self.y_sijk*10000
+        self.y_sijk = self.y_sijk*10
         
         #Area of grower's land
-        self.a = np.random.randint(5,50)*300
+        self.a = 10000 #np.random.randint(5,50)*300
         
         #Cost of extra land required
         self.c_minus = np.random.randint(27,83)*0
         
         #Cost of unused land
-        self.c_plus = np.random.randint(1,30)*10000
+        self.c_plus = np.random.randint(1,30)*1000000
         
         #Penalty of failiure in satisfying demand {scenario, costumer, harvesting_date}
-        self.p_smj = np.random.rand(self.n_scenarios, self.n_customers, self.n_harvesting_dates)*30000
+        self.p_smj = np.random.rand(self.n_scenarios, self.n_customers, self.n_harvesting_dates)*3000000 + 3000000
         
         #Susceptibility to diseases {crop, disease}
         self.r_iq = np.around(np.random.rand(self.n_crops,self.n_diseases), 0)*0
@@ -98,6 +104,7 @@ class Instance():
         logging.info(f"scenarios: {self.n_scenarios}")
         logging.info(f"scenarios_impact: {self.scenario_impact}")
         logging.info(f"prob s: {self.prob_s}")
+        logging.info(f"w: {self.w}")
         logging.info(f"c prime: {self.c_prime}")
         logging.info(f"c_sij: {self.c_sij}")
         logging.info(f"d_mj: {self.d_mj}")
@@ -140,6 +147,7 @@ class Instance():
             "customers": self.n_customers,
             "diseases": self.n_diseases,
             "scenarios": self.n_scenarios,
+            "w" : self.w,
             "prob_s": self.prob_s,
             "c_prime": self.c_prime,
             "c_sij": self.c_sij,
