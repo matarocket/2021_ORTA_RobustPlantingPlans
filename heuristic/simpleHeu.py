@@ -52,7 +52,7 @@ def compute_E_s(function_of_s, dict_data):
 def compute_of(F_sjmk, H_sij, S_sjk, L_minus, L_plus, P_smj, A_i, dict_data):
     of = 0
     
-    w = 0.5
+    w = dict_data["w"]
     
     
     E_Profit = 0
@@ -134,7 +134,15 @@ def Load_sol_from_gb(model, dict_data):
     of = compute_of(F_sjmk, H_sij, S_sjk, L_minus, L_plus, P_smj, A_i, dict_data)
     
     return of
-    
+
+#Function for computing expected value of an s-dependent matrix
+def collapse_prob(mat, prob_s):
+    dim = mat.shape
+    e_s = np.copy(mat)
+    for s in range(len(prob_s)):
+        e_s[s] = prob_s[s]*e_s[s]
+    e_s = np.sum(e_s, axis=0)
+    return e_s
 
 class SimpleHeu():
     def __init__(self):
@@ -153,17 +161,18 @@ class SimpleHeu():
         P_smj = np.zeros((dict_data["scenarios"],dict_data["customers"],dict_data["weeks"]))
         A_i = np.zeros((dict_data['crops']))
         
+        #w from data
         w = float(dict_data["w"])
         
         #Initialize time
         start = time.time()
         
-        #Mean values over scenarios
-        c_ij = np.mean(dict_data["c_sij"], axis=0)#(1 - w)*np.sum(dict_data["prob_s"]*dict_data["c_sij"], axis=0) #- w*np.sqrt(np.sum(dict_data["prob_s"]*np.power(dict_data["c_sij"],2), axis=0))
-        p_mj = np.mean(dict_data["p_smj"], axis=0)#(1 - w)*np.sum(dict_data["prob_s"]*dict_data["p_smj"], axis=0) #- w*np.sqrt(np.sum(dict_data["prob_s"]*np.power(dict_data["p_smj"],2), axis=0))
-        y_ijk = np.mean(dict_data["y_sijk"], axis=0)#(1 - w)*np.sum(np.matmul(dict_data["prob_s"].reshape(1,4),dict_data["y_sijk"]), axis=0) #- w*np.sqrt(np.sum(dict_data["prob_s"]*np.power(dict_data["y_sijk"],2), axis=0))
+        #Compute "cost" of scenario-dependent variables
+        c_ij = (1 - w)*collapse_prob(dict_data["c_sij"], dict_data["prob_s"]) - w*collapse_prob(np.abs(dict_data["c_sij"] - collapse_prob(dict_data["c_sij"], dict_data["prob_s"])), dict_data["prob_s"])
+        p_mj = (1 - w)*collapse_prob(dict_data["p_smj"], dict_data["prob_s"]) - w*collapse_prob(np.abs(dict_data["p_smj"] - collapse_prob(dict_data["p_smj"], dict_data["prob_s"])), dict_data["prob_s"])
+        y_ijk = (1 - w)*collapse_prob(dict_data["y_sijk"], dict_data["prob_s"]) - w*collapse_prob(np.abs(dict_data["y_sijk"] - collapse_prob(dict_data["y_sijk"], dict_data["prob_s"])), dict_data["prob_s"])
         
-        #Compute the convenience of each client
+        #Compute the profit from each client
         profit_mj = np.multiply(np.array(dict_data["d_mj"]), np.array(dict_data["f_mj"]))
         profit_ordered = np.flip(np.sort(profit_mj, axis=None))
         
@@ -181,11 +190,11 @@ class SimpleHeu():
             client, week = np.where(profit_mj == profit)
             client = client[0]
             week = week[0]
-            band = dict_data["Km"][client]
+            band = dict_data["Km"][client] #Array of prefered bands
             demand = dict_data["d_mj"][client][week]
             
             #Get harvesting costs ordered (most convenient band)
-            client_harv_cost = harv_cost_ijk[:, week, band]
+            client_harv_cost = harv_cost_ijk[:, week, band] #Week is an int, band is an array
             client_harv_cost_min = np.amin(client_harv_cost,1) #For each crop the cheapest band to use
             client_harv_cost_band = np.argmin(client_harv_cost, axis=1) #Best bands
             harv_cost_idx = np.argsort(client_harv_cost_min, axis=None)
@@ -201,13 +210,15 @@ class SimpleHeu():
                 #Land limit constraint
                 av_area = 10000 - A_i[idx] #Initial available area
                 
-                #Use available land
-                if (av_area >= needed_area):
-                    A_i[idx] = A_i[idx] + needed_area
-                    needed_area = 0
-                else:
-                    A_i[idx] = A_i[idx] + av_area
-                    needed_area = needed_area - av_area
+                #If harvesting this crop is benefitial, proceed to sow
+                if((y_aux*needed_area - dict_data["c_prime"]*needed_area) > (p_mj[client, week]*y_aux*needed_area)):
+                    #Use available land
+                    if (av_area >= needed_area):
+                        A_i[idx] = A_i[idx] + needed_area
+                        needed_area = 0
+                    else:
+                        A_i[idx] = A_i[idx] + av_area
+                        needed_area = needed_area - av_area
                 
                 #Update needed_demand
                 needed_dem = y_aux*needed_area
@@ -215,6 +226,9 @@ class SimpleHeu():
                 #Break for if the demand has been satisfy
                 if (needed_dem <= 0):
                     break
+            
+        #Try to set crops to sell surplus
+        
                 
         #%% SECOND STAGE VARIABLES
         
@@ -224,9 +238,10 @@ class SimpleHeu():
         #For each scenario
         for s in range(dict_data["scenarios"]):
             
+            #Pick costs for the actual scenario
             c_ij = dict_data["c_sij"][s,:,:]
             p_mj = dict_data["p_smj"][s,:,:]
-            y_ijk = dict_data["y_sijk"][s,:,:]
+            y_ijk = dict_data["y_sijk"][s,:,:,:]
             
             #Harvesting cost for each band and week
             c_ijk = np.zeros((dict_data['crops'],dict_data["weeks"], dict_data["bands"]))
@@ -295,25 +310,33 @@ class SimpleHeu():
         comp_time = end - start
         print("Heuristics time = ", comp_time)
         
-        print("OF Heuristics = ", compute_of(F_sjmk, H_sij, S_sjk, L_minus, L_plus, P_smj, A_i, dict_data))
+        #Compute cost function
+        of = compute_of(F_sjmk, H_sij, S_sjk, L_minus, L_plus, P_smj, A_i, dict_data)
+        print("OF Heuristics = ", of)
         
-        sol_x = [0] * dict_data['n_items']
-        of = -1
+        profit = 0
+        for s in range(dict_data["scenarios"]):
+            profit += dict_data["prob_s"][s]*Profit_s(F_sjmk, H_sij, S_sjk, L_minus, L_plus, P_smj, A_i, dict_data, s)
+        print("Expected profit = ", profit)
         
-        start = time.time()
-        ratio = [0] * dict_data['n_items']
-        for i in range(dict_data['n_items']):
-            ratio[i] = dict_data['profits'][i] / dict_data['sizes'][i]
-        sorted_pos = [ratio.index(x) for x in sorted(ratio)]
-        sorted_pos.reverse()
-        cap_tmp = 0
-        for i, item in enumerate(sorted_pos):
-            cap_tmp += dict_data['sizes'][item]
-            if cap_tmp > dict_data['max_size']:
-                break
-            sol_x[item] = 1
-        end = time.time()
-
-        comp_time = end - start
+        #Load solution
+        sol_x = A_i
+        
+        # sol_x = [0] * dict_data['n_items']
+        # of = -1
+        
+        # start = time.time()
+        # ratio = [0] * dict_data['n_items']
+        # for i in range(dict_data['n_items']):
+        #     ratio[i] = dict_data['profits'][i] / dict_data['sizes'][i]
+        # sorted_pos = [ratio.index(x) for x in sorted(ratio)]
+        # sorted_pos.reverse()
+        # cap_tmp = 0
+        # for i, item in enumerate(sorted_pos):
+        #     cap_tmp += dict_data['sizes'][item]
+        #     if cap_tmp > dict_data['max_size']:
+        #         break
+        #     sol_x[item] = 1
+        # end = time.time()
         
         return of, sol_x, comp_time
