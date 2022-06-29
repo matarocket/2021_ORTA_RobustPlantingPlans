@@ -4,9 +4,9 @@
     "n_spacings" : 4,
     "n_size_bands": 4,
     "n_customers": 10,
-    "n_scenarios": 31,
+    "n_scenarios": 4,
     "n_sowing_dates": 4,
-    "n_harvesting_dates": 13,
-    "w": 0.5
+    "n_harvesting_dates": 4,
+    "w": 0
 }
 

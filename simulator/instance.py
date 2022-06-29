@@ -38,7 +38,7 @@ class Instance():
                     self.Ai_dict.append({"Variety" : v, "SowingDate": w, "Spacing": s})
                     
         #Variety growing rate
-        self.variety_rate = np.random.noraml(1, 0.1, self.n_varieties)
+        self.variety_rate = np.random.normal(1, 0.1, self.n_varieties)
         
         #Vector of size bands preferences of customers
         self.Km_number = np.random.randint(1, self.n_size_bands, self.n_customers)
@@ -96,14 +96,18 @@ class Instance():
         self.c_plus = np.random.randint(2000,3500)
         
         #Penalty of failiure in satisfying demand {scenario, costumer, harvesting_date}
-        #TODO we are HERE
+        f_smj = np.zeros((self.n_scenarios, self.f_mj.shape[0], self.f_mj.shape[1]))
+        for s in range(self.n_scenarios):
+            f_smj[s,:,:] = np.copy(self.f_mj)
+        self.f_smj = f_smj*0.2
+            
         self.p_smj = np.random.rand(self.n_scenarios, self.n_customers, self.n_harvesting_dates)*3000000 + 3000000
         
         #Susceptibility to diseases {crop, disease}
-        self.r_iq = np.around(np.random.rand(self.n_crops,self.n_diseases), 0)*0
+        self.r_iq = np.around(np.random.rand(self.n_crops,self.n_diseases), 0)
         
         #Upper limit to harvested proportion of a field for a given disease
-        self.u_q = [1]*self.n_diseases #np.random.rand(self.n_diseases)*0
+        self.u_q = np.random.uniform(0,0.3,self.n_diseases)
 
         #Log variables
         logging.info(f"crops: {self.n_crops}")

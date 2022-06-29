@@ -8,6 +8,7 @@ from simulator.tester import Tester
 from solver.simpleKnapsack import SimpleKnapsack
 from solver.robustPlantingPlan import RobustPlantingPlanSolver
 from heuristic.simpleHeu import SimpleHeu
+import heuristic.simpleHeu
 from solver.sampler import Sampler
 from utility.plot_results import plot_comparison_hist
 
@@ -61,6 +62,7 @@ if __name__ == '__main__':
         [],
     )
     print(of_heu, sol_heu, comp_time_heu)
+    heuristic.simpleHeu.Load_sol_from_gb(model, dict_data)
 
     # COMPARISON:
     # test = Tester()
