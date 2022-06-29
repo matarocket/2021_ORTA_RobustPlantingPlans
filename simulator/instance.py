@@ -38,7 +38,7 @@ class Instance():
                     self.Ai_dict.append({"Variety" : v, "SowingDate": w, "Spacing": s})
                     
         #Variety growing rate
-        self.variety_rate = np.random.uniform(1, 5, self.n_varieties)
+        self.variety_rate = np.random.noraml(1, 0.1, self.n_varieties)
         
         #Vector of size bands preferences of customers
         self.Km_number = np.random.randint(1, self.n_size_bands, self.n_customers)
@@ -52,38 +52,51 @@ class Instance():
         self.prob_s = self.prob_s/np.sum(self.prob_s)
         
         #Impact of each scenario on yields
-        self.scenario_impact = np.random.uniform(0, 1, self.n_scenarios)
+        self.scenario_impact = np.random.normal(1, 0.1, self.n_scenarios)
         
-        #Cost of land
-        self.c_prime = np.random.randint(0, 10)
+        #Cost of land - €/ha - checked for Italy
+        #https://www.kpu.ca/sites/default/files/ISFS/Brussel%20Sprouts.pdf
+        self.c_prime = np.random.normal(15000, 0.05*15000)
         
         #Cost of harvesting {scenario, crop, harvesting_date}
-        self.c_sij = np.random.rand(self.n_scenarios, self.n_crops, self.n_harvesting_dates)
+        #https://www.farmersjournal.ie/my-farming-christmas-anthony-weldon-swords-north-co-dublin-196397
+        self.c_sij = np.random.normal(8700,0.1*8700,(self.n_scenarios, self.n_crops, self.n_harvesting_dates))
         
         #Demand {costumer, harvesting_date}
-        self.d_mj = np.random.rand(self.n_customers, self.n_harvesting_dates)*1000
+        #https://www.freshplaza.it/article/9397379/oltre-24mila-tonnellate-di-cavoletti-di-bruxelles-in-30-varieta-e-16-calibri-diversi/
+        #demand proportioned to 10 customers 
+        self.d_mj = np.random.normal(2400, 2400*0.35, (self.n_customers, self.n_harvesting_dates))
         
         #Profit {costumer, harvesting_date}
-        self.f_mj = np.random.rand(self.n_customers, self.n_harvesting_dates)*5000
+        #online supermarket 
+        self.f_mj = np.random.normal(1600, 1600*0.2,(self.n_customers, self.n_harvesting_dates))
         
         #Surplus selling to the market {scenario, harvesting_date}
-        self.s_sj = np.random.rand(self.n_scenarios, self.n_harvesting_dates)*250
+        #set to a half of the previous
+        self.s_sj = np.random.normal(800, 800*0.2,(self.n_scenarios, self.n_harvesting_dates))
         
         #Yield crop {scenario, crop, harvesting_date, size_band}
+        #https://www.agrifarming.in/brussels-sprout-cultivation-information
+        #TODO not done for the moment 
         self.y_sijk = np.random.rand(self.n_scenarios, self.n_crops, self.n_harvesting_dates, self.n_size_bands)
         self.yield_instance_gen()
         self.y_sijk = self.y_sijk*10
         
         #Area of grower's land
-        self.a = 10000 #np.random.randint(5,50)*300
+        self.a = 1000 
         
-        #Cost of extra land required
-        self.c_minus = np.random.randint(27,83)*0
+        #Cost of extra land required 
+        #https://www.affittoterreno.com/prezzo-affitto-terreno-agricolo
+        self.c_minus = np.random.randint(2000,3500) + self.c_prime
         
         #Cost of unused land
-        self.c_plus = np.random.randint(1,30)*1000000
+        #https://www.affittoterreno.com/prezzo-affitto-terreno-agricolo
+        #since it is unused, you lost the price for the rental
+        #the alternative could be to set 0 -> no use, nothing is lost 
+        self.c_plus = np.random.randint(2000,3500)
         
         #Penalty of failiure in satisfying demand {scenario, costumer, harvesting_date}
+        #TODO we are HERE
         self.p_smj = np.random.rand(self.n_scenarios, self.n_customers, self.n_harvesting_dates)*3000000 + 3000000
         
         #Susceptibility to diseases {crop, disease}
@@ -132,6 +145,7 @@ class Instance():
                         #print(s, " , ",i, " , ",j, " , ",k)
                         #self.y_sijk[s][i][j][k] = self.scenario_impact[s]*grow_week_curve(self.Ai_dict[i]["Variety"], j + (self.Ai_dict[i]["SowingDate"] - (self.n_sowing_dates-1)))
                         aux_rate = self.variety_rate[self.Ai_dict[i]["Variety"]]
+                        #TODO fix grow_week_curve -> it should became Gaussian
                         self.y_sijk[s][i][j][k] = (k+1)*self.scenario_impact[s]*grow_week_curve(aux_rate*(k+1), j + ((self.n_sowing_dates-1) - self.Ai_dict[i]["SowingDate"])) 
                         #print(self.y_sijk[s][i][j][k])
                         pass

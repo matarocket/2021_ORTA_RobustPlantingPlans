@@ -124,6 +124,7 @@ class Instance():
                         #print(s, " , ",i, " , ",j, " , ",k)
                         #self.y_sijk[s][i][j][k] = self.scenario_impact[s]*grow_week_curve(self.Ai_dict[i]["Variety"], j + (self.Ai_dict[i]["SowingDate"] - (self.n_sowing_dates-1)))
                         aux_rate = self.variety_rate[self.Ai_dict[i]["Variety"]]
+                        #TODO to be changed -> grow_week_curve
                         self.y_sijk[s][i][j][k] = (k+1)*self.scenario_impact[s]*grow_week_curve(aux_rate*(k+1), j + ((self.n_sowing_dates-1) - self.Ai_dict[i]["SowingDate"])) 
                         #print(self.y_sijk[s][i][j][k])
                         pass
