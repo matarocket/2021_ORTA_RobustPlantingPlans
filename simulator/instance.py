@@ -13,6 +13,8 @@ class Instance():
     #Constructor
     def __init__(self, sim_setting):
         
+        np.random.seed(0)
+        
         #Log
         logging.info("starting simulation...")
 
@@ -69,7 +71,7 @@ class Instance():
         
         #Profit {costumer, harvesting_date}
         #online supermarket 
-        self.f_mj = np.random.normal(1600, 1600*0.2,(self.n_customers, self.n_harvesting_dates))
+        self.f_mj = np.random.normal(2000, 2000*0.1,(self.n_customers, self.n_harvesting_dates))
         
         #Surplus selling to the market {scenario, harvesting_date}
         #set to a half of the previous
@@ -77,13 +79,12 @@ class Instance():
         
         #Yield crop {scenario, crop, harvesting_date, size_band}
         #https://www.agrifarming.in/brussels-sprout-cultivation-information
-        #TODO not done for the moment 
         self.y_sijk = np.random.rand(self.n_scenarios, self.n_crops, self.n_harvesting_dates, self.n_size_bands)
         self.yield_instance_gen()
         self.y_sijk = self.y_sijk*10
         
         #Area of grower's land
-        self.a = 1000 
+        self.a = 10000 
         
         #Cost of extra land required 
         #https://www.affittoterreno.com/prezzo-affitto-terreno-agricolo
@@ -101,7 +102,10 @@ class Instance():
             f_smj[s,:,:] = np.copy(self.f_mj)
         self.f_smj = f_smj*0.2
             
-        self.p_smj = np.random.rand(self.n_scenarios, self.n_customers, self.n_harvesting_dates)*3000000 + 3000000
+        psmj = np.zeros((self.n_scenarios, self.n_customers, self.n_harvesting_dates))
+        for s in range(self.n_scenarios):
+            psmj[s] = self.f_mj*1.2
+        self.p_smj = psmj
         
         #Susceptibility to diseases {crop, disease}
         self.r_iq = np.around(np.random.rand(self.n_crops,self.n_diseases), 0)

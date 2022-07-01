@@ -211,7 +211,8 @@ class SimpleHeu():
                 av_area = 10000 - A_i[idx] #Initial available area
                 
                 #If harvesting this crop is benefitial, proceed to sow
-                if((y_aux*needed_area - dict_data["c_prime"]*needed_area) > (p_mj[client, week]*y_aux*needed_area)):
+                if((y_aux*needed_area - dict_data["c_prime"]*needed_area) > (p_mj[client, week]*y_aux*needed_area) and
+                   (profit > needed_area*c_ijk[idx, week, client_harv_cost_band[idx]])):
                     #Use available land
                     if (av_area >= needed_area):
                         A_i[idx] = A_i[idx] + needed_area
@@ -303,8 +304,9 @@ class SimpleHeu():
             #Sell surplus (Marketing contraint)
             for j in range(dict_data["weeks"]):
                 for k in range(dict_data["bands"]):
-                    S_sjk[s,j,k] = np.sum(F_sjmk[s,j,:,k]) - np.sum(np.multiply(dict_data["y_sijk"][s,:,j,k], H_sij[s,:,j]))
-                    
+                    #S_sjk[s,j,k] = np.sum(F_sjmk[s,j,:,k]) - np.sum(np.multiply(dict_data["y_sijk"][s,:,j,k], H_sij[s,:,j]))
+                    pass
+                
         #Measure execution time
         end = time.time()
         comp_time = end - start

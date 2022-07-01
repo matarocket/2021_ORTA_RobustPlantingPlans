@@ -54,6 +54,7 @@ if __name__ == '__main__':
         verbose=True
     )
     print(of_exact, sol_exact, comp_time_exact)
+    #heuristic.simpleHeu.Load_sol_from_gb(model, dict_data)
     
     heu = SimpleHeu()
     of_heu, sol_heu, comp_time_heu = heu.solve(
@@ -62,7 +63,6 @@ if __name__ == '__main__':
         [],
     )
     print(of_heu, sol_heu, comp_time_heu)
-    heuristic.simpleHeu.Load_sol_from_gb(model, dict_data)
 
     # COMPARISON:
     # test = Tester()

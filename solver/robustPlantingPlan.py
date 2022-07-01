@@ -37,7 +37,7 @@ class RobustPlantingPlanSolver():
         Fsjmk = model.addVars(
                 dict_data["scenarios"],dict_data["weeks"],dict_data["customers"],dict_data["bands"],
                 lb=0,
-                ub=10000,
+                #ub=10000,
                 vtype=GRB.CONTINUOUS,
                 name='Fsjmk'
             )
@@ -46,7 +46,7 @@ class RobustPlantingPlanSolver():
         Hsij = model.addVars(
                 dict_data["scenarios"],dict_data['crops'],dict_data["weeks"],
                 lb=0,
-                ub=10000,
+                #ub=10000,
                 vtype=GRB.CONTINUOUS,
                 name='Hsij'
             )
@@ -55,7 +55,7 @@ class RobustPlantingPlanSolver():
         Ssjk = model.addVars(
                 dict_data["scenarios"],dict_data["weeks"],dict_data["bands"],
                 lb=0,
-                ub=10000,
+                #ub=10000,
                 vtype=GRB.CONTINUOUS,
                 name='Ssjk'
             )
@@ -64,7 +64,7 @@ class RobustPlantingPlanSolver():
         Lminus = model.addVars(
                 1,
                 lb=0,
-                ub=10000,
+                ub=100,
                 vtype=GRB.CONTINUOUS,
                 name='Lminus'
             )
@@ -73,7 +73,7 @@ class RobustPlantingPlanSolver():
         Lplus = model.addVars(
                 1,
                 lb=0,
-                ub=10000,
+                ub=100,
                 vtype=GRB.CONTINUOUS,
                 name='Lplus'
             )
@@ -82,7 +82,7 @@ class RobustPlantingPlanSolver():
         Psmj = model.addVars(
                 dict_data["scenarios"],dict_data["customers"],dict_data["weeks"],
                 lb=0,
-                ub=10000,
+                #ub=10000,
                 vtype=GRB.CONTINUOUS,
                 name='Psmj'
             )
@@ -91,7 +91,7 @@ class RobustPlantingPlanSolver():
         Ai = model.addVars(
                 dict_data['crops'],
                 lb=0,
-                ub=10000,
+                #ub=10000,
                 vtype=GRB.CONTINUOUS,
                 name='Ai'
             )
@@ -99,7 +99,7 @@ class RobustPlantingPlanSolver():
         #Auxiliar variable by {scenario}
         z = model.addVars(
                 dict_data["scenarios"],
-                lb=0,
+                #lb=0,
                 vtype=GRB.CONTINUOUS,
                 name='z'
             )
