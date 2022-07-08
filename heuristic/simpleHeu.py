@@ -29,7 +29,7 @@ def Profit_s(F_sjmk, H_sij, S_sjk, L_minus, L_plus, P_smj, A_i, dict_data, s):
     
     term6 = 0
     for i in range(dict_data["crops"]):
-        term6 = dict_data["c_prime"]*A_i[i]
+        term6 += dict_data["c_prime"]*A_i[i]
     
     term7 = 0
     for m in range(dict_data["customers"]):
@@ -54,23 +54,21 @@ def compute_of(F_sjmk, H_sij, S_sjk, L_minus, L_plus, P_smj, A_i, dict_data):
     
     w = dict_data["w"]
     
-    
     E_Profit = 0
     Risk = 0
     
     for s in range(dict_data["scenarios"]):
         E_Profit += dict_data["prob_s"][s]*Profit_s(F_sjmk, H_sij, S_sjk, L_minus, L_plus, P_smj, A_i, dict_data, s)
     
-    z=[]
     for s in range(dict_data["scenarios"]):
         profit = Profit_s(F_sjmk, H_sij, S_sjk, L_minus, L_plus, P_smj, A_i, dict_data, s)
-        z.append(np.abs(profit - E_Profit))
-    for s in range(dict_data["scenarios"]):
-        Risk += z[s]*dict_data["prob_s"][s]
+        z = (np.abs(profit - E_Profit))
+        Risk += z*dict_data["prob_s"][s]
     
     of = ((1-w)*E_Profit) - w*Risk
     return of
 
+#Load model from Gurobi to manually compute OF and verify constraints
 def Load_sol_from_gb(model, dict_data):
     
     scenarios = range(dict_data['scenarios'])
@@ -131,13 +129,87 @@ def Load_sol_from_gb(model, dict_data):
         )
         A_i[i] = grb_var.X
     
+    #Verify constriants
+    verify_cons(F_sjmk, H_sij, S_sjk, L_minus, L_plus, P_smj, A_i, dict_data)
+    
+    #Compute cost function
     of = compute_of(F_sjmk, H_sij, S_sjk, L_minus, L_plus, P_smj, A_i, dict_data)
     
     return of
 
+#Verify constraints
+def verify_cons(F_sjmk, H_sij, S_sjk, L_minus, L_plus, P_smj, A_i, dict_data):
+    
+    print("Verifying constraints ...")
+    
+    #Auxiliar flag
+    cons_flag = True
+    
+    #Marketing Constraint
+    for s in range(dict_data["scenarios"]):
+        for j in range(dict_data["weeks"]):
+            for k in range(dict_data["bands"]):
+                if(S_sjk[s,j,k] != np.sum(np.multiply(dict_data["y_sijk"][s,:,j,k], H_sij[s,:,j])) - np.sum(F_sjmk[s,j,:,k])):
+                    cons_flag = False
+                    print("Problems in Marketing constraint!")
+                    print("Delta = ", S_sjk[s,j,k] - np.sum(np.multiply(dict_data["y_sijk"][s,:,j,k], H_sij[s,:,j])) - np.sum(F_sjmk[s,j,:,k]))
+    
+    #Demand constraint
+    for s in range(dict_data["scenarios"]):
+        for j in range(dict_data["weeks"]):
+            for m in range(dict_data["customers"]):
+                if(np.sum(F_sjmk[s,j,m,dict_data["Km"][m]]) != P_smj[s,m,j] + dict_data["d_mj"][m,j]):
+                    cons_flag = False
+                    print("Problems in Demand constraint!")
+                    print("Delta = ", np.sum(F_sjmk[s,j,m,dict_data["Km"][m]]) - P_smj[s,m,j] + dict_data["d_mj"][m,j])
+    
+    #Open market constraint
+    for s in range(dict_data["scenarios"]):
+        for j in range(dict_data["weeks"]):
+            if(np.sum(S_sjk[s,j,:]) > 0.25*np.sum(dict_data["d_mj"][:,j])):
+                    cons_flag = False
+                    print("Problems in open market constraint!")
+                    
+    #Land use contraints 1
+    if(np.sum(A_i) != dict_data["a"] - L_minus + L_minus):
+        cons_flag = False
+        print("Problems in land use constraint 1!")
+ 
+    #Land use contraints 2
+    for s in range(dict_data["scenarios"]):
+        for i in range(dict_data["crops"]):
+            if(A_i[i] != np.sum(H_sij[s,i,:])):
+                cons_flag = False
+                print("Problems in land use constraint 2!")
+    
+    #Disease constraint
+    for j in range(dict_data["scenarios"]):
+        for q in range(dict_data["weeks"]):
+            for s in range(dict_data["customers"]):
+                pass
+    
+    #Individual Variety Limit
+    for v in range(dict_data["varieties"]):
+        aux=[]
+        for i in range(dict_data["crops"]):
+             if (dict_data["Ai_dict"][i]["Variety"] == v):
+                 aux.append(i)
+        if(np.sum(A_i[aux]) > 0.4*np.sum(A_i)):
+            cons_flag = False
+            print("Problems in Individual Variety Limit!")
+    
+    #Individual crop limit
+    for i in range(dict_data["crops"]):
+        if(A_i[i] > 0.2*np.sum(A_i)):
+            cons_flag = False
+            print("Problems in Individual crop limit!")
+        
+    return cons_flag
+    
+                
+
 #Function for computing expected value of an s-dependent matrix
 def collapse_prob(mat, prob_s):
-    dim = mat.shape
     e_s = np.copy(mat)
     for s in range(len(prob_s)):
         e_s[s] = prob_s[s]*e_s[s]
@@ -164,9 +236,6 @@ class SimpleHeu():
         #w from data
         w = float(dict_data["w"])
         
-        #Initialize time
-        start = time.time()
-        
         #Compute "cost" of scenario-dependent variables
         c_ij = (1 - w)*collapse_prob(dict_data["c_sij"], dict_data["prob_s"]) - w*collapse_prob(np.abs(dict_data["c_sij"] - collapse_prob(dict_data["c_sij"], dict_data["prob_s"])), dict_data["prob_s"])
         p_mj = (1 - w)*collapse_prob(dict_data["p_smj"], dict_data["prob_s"]) - w*collapse_prob(np.abs(dict_data["p_smj"] - collapse_prob(dict_data["p_smj"], dict_data["prob_s"])), dict_data["prob_s"])
@@ -181,6 +250,10 @@ class SimpleHeu():
         for k in range(dict_data["bands"]):
             c_ijk[:,:,k] = c_ij
         harv_cost_ijk = np.divide(c_ijk, y_ijk)
+        
+        #Initialize time
+        start = time.time()
+        aux_time = start
         
         #%% FIRST STAGE VARIABLES
         
@@ -197,7 +270,8 @@ class SimpleHeu():
             client_harv_cost = harv_cost_ijk[:, week, band] #Week is an int, band is an array
             client_harv_cost_min = np.amin(client_harv_cost,1) #For each crop the cheapest band to use
             client_harv_cost_band = np.argmin(client_harv_cost, axis=1) #Best bands
-            harv_cost_idx = np.argsort(client_harv_cost_min, axis=None)
+            #harv_cost_idx = np.argsort(client_harv_cost_min, axis=None)
+            harv_cost_idx = list(range(len(client_harv_cost_min)))
             
             #Try to satisfy demand on each crop
             needed_dem = demand
@@ -208,18 +282,29 @@ class SimpleHeu():
                 needed_area = needed_dem/y_aux
                 
                 #Land limit constraint
-                av_area = 10000 - A_i[idx] #Initial available area
+                av_area = dict_data["a"] - np.sum(A_i) #- A_i[idx] #Initial available area
                 
-                #If harvesting this crop is benefitial, proceed to sow
-                if((y_aux*needed_area - dict_data["c_prime"]*needed_area) > (p_mj[client, week]*y_aux*needed_area) and
-                   (profit > needed_area*c_ijk[idx, week, client_harv_cost_band[idx]])):
+                #Limit crop to variety constraint
+                aux=[]
+                for i in range(dict_data["crops"]):
+                     if (dict_data["Ai_dict"][i]["Variety"] == dict_data["Ai_dict"][idx]["Variety"]):
+                         aux.append(i)
+                v_land = np.sum(A_i[aux])
+                av_area = np.min([av_area, 0.4*dict_data["a"] - v_land])
+                
+                #Saturate available land
+                av_area = np.min ([av_area, 0.2*dict_data["a"]])
+                
+                area_to_seed = np.min([av_area, needed_area])
+                
+                #Check if sowing brings a benefit
+                if((dict_data["f_mj"][client, week]*y_aux*needed_area - dict_data["c_prime"]*needed_area) > (p_mj[client, week]*y_aux*needed_area) and
+                    (profit > needed_area*c_ijk[idx, week, client_harv_cost_band[idx]])):
+                
                     #Use available land
-                    if (av_area >= needed_area):
-                        A_i[idx] = A_i[idx] + needed_area
-                        needed_area = 0
-                    else:
-                        A_i[idx] = A_i[idx] + av_area
-                        needed_area = needed_area - av_area
+                    seeded_ha = area_to_seed
+                    A_i[idx] = A_i[idx] + seeded_ha
+                    needed_area = needed_area - seeded_ha
                 
                 #Update needed_demand
                 needed_dem = y_aux*needed_area
@@ -229,15 +314,21 @@ class SimpleHeu():
                     break
             
         #Try to set crops to sell surplus
+        # --> This is not done to avoid not respecting the open market constraint
         
+        #Compute rentable land
+        #L_plus = dict_data["a"] - np.sum(A_i)
+        print("First stage time = ", time.time() - aux_time)
+        aux_time = time.time()
                 
         #%% SECOND STAGE VARIABLES
         
-        #Auxiliar copy of A_i
-        aux_A_i = np.copy(A_i)
-        
         #For each scenario
         for s in range(dict_data["scenarios"]):
+            
+            #Auxiliar copy of A_i
+            aux_A_i = np.copy(A_i)
+            #aux_A_i = A_i
             
             #Pick costs for the actual scenario
             c_ij = dict_data["c_sij"][s,:,:]
@@ -250,6 +341,7 @@ class SimpleHeu():
                 c_ijk[:,:,k] = c_ij
             harv_cost_ijk = np.divide(c_ijk, y_ijk)
             
+            
             #Try to harvest for each client
             for profit in profit_ordered:
                 #Get client, week and associated band
@@ -258,12 +350,14 @@ class SimpleHeu():
                 week = week[0]
                 band = dict_data["Km"][client]
                 demand = dict_data["d_mj"][client][week]
-                
+                aux_time = time.time()
                 #Get harvesting costs ordered (most convenient band)
                 client_harv_cost = harv_cost_ijk[:, week, band]
                 client_harv_cost_min = np.amin(client_harv_cost,1) #For each crop the cheapest band to use
                 client_harv_cost_band = np.argmin(client_harv_cost, axis=1) #Best bands
-                harv_cost_idx = np.argsort(client_harv_cost_min, axis=None)
+                #harv_cost_idx = np.argsort(client_harv_cost_min, axis=None)
+                harv_cost_idx = list(range(len(client_harv_cost_min)))
+                print("Harvesting cost times = ", time.time() - aux_time, " (harvest) - s =", s)
                 
                 #Try to satisfy demand on each crop
                 needed_dem = demand
@@ -273,18 +367,18 @@ class SimpleHeu():
                     y_aux = y_ijk[idx, week, client_harv_cost_band[idx]]
                     needed_area = needed_dem/y_aux
                     
+                    #Sold weight
+                    weight = 0
+                    
+                    # #If harvesting this crop is benefitial, proceed to sow
+                    # if((dict_data["f_mj"][client, week]*y_aux*needed_area - dict_data["c_prime"]*needed_area) > (p_mj[client, week]*y_aux*needed_area) and
+                    #     (profit > needed_area*c_ijk[idx, week, client_harv_cost_band[idx]])):
+                    
                     #Harvest
-                    harvested_ha = 0
-                    if (aux_A_i[idx] >= needed_area):
-                        harvested_ha = needed_area
-                        aux_A_i[idx] = aux_A_i[idx] - needed_area
-                        H_sij[s,idx,week] = H_sij[s,idx,week] + needed_area #H_sij may be used by more than one customer
-                        needed_area = 0
-                    else:
-                        harvested_ha = needed_area - aux_A_i[idx]
-                        H_sij[s,idx,week] = H_sij[s,idx,week] + needed_area - aux_A_i[idx]
-                        needed_area = needed_area - aux_A_i[idx]
-                        aux_A_i[idx] = 0
+                    harvested_ha = np.min([aux_A_i[idx], needed_area])
+                    aux_A_i[idx] = aux_A_i[idx] - harvested_ha
+                    H_sij[s,idx,week] = H_sij[s,idx,week] + harvested_ha
+                    needed_area = needed_area - harvested_ha
                     
                     #Sell
                     weight = harvested_ha*y_aux
@@ -296,16 +390,21 @@ class SimpleHeu():
                     #Break for if the demand has been satisfy
                     if (needed_dem <= 0):
                         needed_dem = 0
-                        break
-                
+                        
                 #Pay unsatisfied customer demand
-                P_smj[s, client, week] = needed_dem
+                #P_smj[s, client, week] = needed_dem
+                P_smj[s, client, week] = np.sum(F_sjmk[s, week, client, dict_data["Km"][client]]) - dict_data["d_mj"][client,week]
+                
             
             #Sell surplus (Marketing contraint)
             for j in range(dict_data["weeks"]):
                 for k in range(dict_data["bands"]):
-                    #S_sjk[s,j,k] = np.sum(F_sjmk[s,j,:,k]) - np.sum(np.multiply(dict_data["y_sijk"][s,:,j,k], H_sij[s,:,j]))
+                    S_sjk[s,j,k] = np.sum(np.multiply(dict_data["y_sijk"][s,:,j,k], H_sij[s,:,j])) - np.sum(F_sjmk[s,j,:,k])
                     pass
+            
+            print("Second stage time = ", time.time() - aux_time, " - s =", s)
+            aux_time = time.time()
+        
                 
         #Measure execution time
         end = time.time()
@@ -320,6 +419,8 @@ class SimpleHeu():
         for s in range(dict_data["scenarios"]):
             profit += dict_data["prob_s"][s]*Profit_s(F_sjmk, H_sij, S_sjk, L_minus, L_plus, P_smj, A_i, dict_data, s)
         print("Expected profit = ", profit)
+        
+        verify_cons(F_sjmk, H_sij, S_sjk, L_minus, L_plus, P_smj, A_i, dict_data)
         
         #Load solution
         sol_x = A_i

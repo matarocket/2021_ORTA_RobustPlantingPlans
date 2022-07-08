@@ -64,7 +64,7 @@ class RobustPlantingPlanSolver():
         Lminus = model.addVars(
                 1,
                 lb=0,
-                ub=100,
+                ub=dict_data["a"]/10,
                 vtype=GRB.CONTINUOUS,
                 name='Lminus'
             )
@@ -73,7 +73,7 @@ class RobustPlantingPlanSolver():
         Lplus = model.addVars(
                 1,
                 lb=0,
-                ub=100,
+                ub=dict_data["a"]/10,
                 vtype=GRB.CONTINUOUS,
                 name='Lplus'
             )
@@ -91,7 +91,7 @@ class RobustPlantingPlanSolver():
         Ai = model.addVars(
                 dict_data['crops'],
                 lb=0,
-                #ub=10000,
+                ub=dict_data["a"],
                 vtype=GRB.CONTINUOUS,
                 name='Ai'
             )
