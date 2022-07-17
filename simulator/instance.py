@@ -58,11 +58,11 @@ class Instance():
         
         #Cost of land - €/ha - checked for Italy
         #https://www.kpu.ca/sites/default/files/ISFS/Brussel%20Sprouts.pdf
-        self.c_prime = np.random.normal(15000, 0.05*15000)*0.2
+        self.c_prime = np.random.normal(15000, 0.05*15000)*0.01
         
         #Cost of harvesting {scenario, crop, harvesting_date}
         #https://www.farmersjournal.ie/my-farming-christmas-anthony-weldon-swords-north-co-dublin-196397
-        self.c_sij = np.random.normal(8700,0.1*8700,(self.n_scenarios, self.n_crops, self.n_harvesting_dates))
+        self.c_sij = np.random.normal(8700,0.01*8700,(self.n_scenarios, self.n_crops, self.n_harvesting_dates))
         
         #Demand {costumer, harvesting_date}
         #https://www.freshplaza.it/article/9397379/oltre-24mila-tonnellate-di-cavoletti-di-bruxelles-in-30-varieta-e-16-calibri-diversi/
@@ -81,7 +81,7 @@ class Instance():
         #https://www.agrifarming.in/brussels-sprout-cultivation-information
         self.y_sijk = np.random.rand(self.n_scenarios, self.n_crops, self.n_harvesting_dates, self.n_size_bands)
         self.yield_instance_gen()
-        self.y_sijk = self.y_sijk*10
+        self.y_sijk = self.y_sijk*40
         
         #Area of grower's land
         self.a = 10000 
