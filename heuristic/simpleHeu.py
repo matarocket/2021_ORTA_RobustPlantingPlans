@@ -3,6 +3,7 @@ import time
 import math
 import logging
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 #Profit for a given scenario
@@ -460,7 +461,7 @@ class SimpleHeu_old():
         
         return of, sol_x, comp_time
 
-class SimpleHeu():
+class SimpleHeu_PROVA():
     def __init__(self):
         pass
 
@@ -706,4 +707,291 @@ class SimpleHeu():
         #     sol_x[item] = 1
         # end = time.time()
         
+        return of, sol_x, comp_time
+
+class SimpleHeu():
+    def __init__(self):
+        pass
+
+    def solve(
+        self, dict_data, reward, n_scenarios,
+    ):
+        
+        #Initialization of control variables
+        F_sjmk = np.zeros((dict_data["scenarios"],dict_data["weeks"],dict_data["customers"],dict_data["bands"]))
+        H_sij = np.zeros((dict_data["scenarios"],dict_data['crops'],dict_data["weeks"]))
+        S_sjk = np.zeros((dict_data["scenarios"],dict_data["weeks"],dict_data["bands"]))
+        L_minus = 0
+        L_plus = 0
+        P_smj = np.zeros((dict_data["scenarios"],dict_data["customers"],dict_data["weeks"]))
+        A_i = np.zeros((dict_data['crops']))
+        
+        #w from data
+        w = float(dict_data["w"])
+        
+        OF_vector = []
+        
+        #Initialize time
+        start = time.time()
+        
+        #Algorithm parameters
+        Nit = 6000
+        lambda_rate = 1e-3
+        mu1 = 1e-1
+        mu2 = 1e-3
+        
+        #Iterate for steps
+        for it in range(Nit):
+            
+            #Compute cost function
+            of = compute_of(F_sjmk, H_sij, S_sjk, L_minus, L_plus, P_smj, A_i, dict_data)
+            of_total = 0
+            of_total += of
+            
+            
+            #%% PROFIT GRADIENT
+            
+            grad_F_sjmk = np.zeros((dict_data["scenarios"],dict_data["weeks"],dict_data["customers"],dict_data["bands"]))
+            grad_H_sij = np.zeros((dict_data["scenarios"],dict_data['crops'],dict_data["weeks"]))
+            grad_S_sjk = np.zeros((dict_data["scenarios"],dict_data["weeks"],dict_data["bands"]))
+            grad_L_minus = 0
+            grad_L_plus = 0
+            grad_P_smj = np.zeros((dict_data["scenarios"],dict_data["customers"],dict_data["weeks"]))
+            grad_A_i = np.zeros((dict_data['crops']))
+            
+            #Expected value of the profit
+            E_prof_s = 0
+            for s in range(dict_data["scenarios"]):
+                E_prof_s += dict_data["prob_s"][s]*Profit_s(F_sjmk, H_sij, S_sjk, L_minus, L_plus, P_smj, A_i, dict_data, s)
+            
+            for s in range(dict_data["scenarios"]):
+                
+                #Profit for this scenario
+                prof_s = Profit_s(F_sjmk, H_sij, S_sjk, L_minus, L_plus, P_smj, A_i, dict_data, s)
+                
+                #H_sij
+                for i in range(dict_data["crops"]):
+                    for j in range(dict_data["weeks"]):
+                        grad_H_sij[s,i,j] = (1-w)*dict_data["prob_s"][s]*(-dict_data["c_sij"][s,i,j])
+                        grad_H_sij[s,i,j] += -w*dict_data["prob_s"][s]*np.sign(prof_s - E_prof_s)*(-dict_data["c_sij"][s,i,j] + dict_data["prob_s"][s]*dict_data["c_sij"][s,i,j])
+            
+                #F_sjmk
+                for j in range(dict_data["weeks"]):
+                    for m in range(dict_data["customers"]):
+                        for k in range(dict_data["bands"]):
+                            grad_F_sjmk[s,j,m,k] = (1-w)*dict_data["prob_s"][s]*(dict_data["f_mj"][m,j])
+                            grad_F_sjmk[s,j,m,k] += -w*dict_data["prob_s"][s]*np.sign(prof_s - E_prof_s)*((dict_data["f_mj"][m,j]) - dict_data["prob_s"][s]*(dict_data["f_mj"][m,j]))
+                
+                #S_sjk
+                for j in range(dict_data["weeks"]):
+                    for k in range(dict_data["bands"]):
+                        grad_S_sjk[s,j,k] = (1-w)*dict_data["prob_s"][s]*(dict_data["s_sj"][s,j])
+                        grad_S_sjk[s,j,k] += -w*dict_data["prob_s"][s]*np.sign(prof_s - E_prof_s)*(dict_data["s_sj"][s,j] - dict_data["prob_s"][s]*dict_data["s_sj"][s,j])
+                            
+                #L_minus
+                grad_L_minus = (1-w)*dict_data["prob_s"][s]*(-dict_data["c_minus"])
+                grad_L_minus += -w*dict_data["prob_s"][s]*np.sign(prof_s - E_prof_s)*(-dict_data["c_minus"] + dict_data["prob_s"][s]*dict_data["c_minus"])  
+                
+                #L_plus
+                grad_L_plus = (1-w)*dict_data["prob_s"][s]*(dict_data["c_plus"])
+                grad_L_plus += -w*dict_data["prob_s"][s]*np.sign(prof_s - E_prof_s)*(dict_data["c_plus"] - dict_data["prob_s"][s]*dict_data["c_plus"])  
+            
+                #P_smj
+                for m in range(dict_data["customers"]):
+                    for j in range(dict_data["weeks"]):
+                        grad_P_smj[s,m,j] = (1-w)*dict_data["prob_s"][s]*(-dict_data["p_smj"][s,m,j])
+                        grad_P_smj[s,m,j] += -w*dict_data["prob_s"][s]*np.sign(prof_s - E_prof_s)*(-dict_data["p_smj"][s,m,j] + dict_data["prob_s"][s]*dict_data["p_smj"][s,m,j])
+                        
+                #A_i
+                for i in range(dict_data["crops"]):
+                    grad_A_i[i] = (1-w)*dict_data["prob_s"][s]*(-dict_data["c_prime"])
+                    grad_A_i[i] += -w*dict_data["prob_s"][s]*np.sign(prof_s - E_prof_s)*(-dict_data["c_prime"] + dict_data["prob_s"][s]*dict_data["c_prime"])
+        
+            #%% IMPOSE POSSITIVE VALUES
+            
+            grad_F_sjmk -= mu1*F_sjmk*(F_sjmk<0)
+            grad_H_sij -= mu1*H_sij*(H_sij<0)
+            grad_S_sjk -= mu1*S_sjk*(S_sjk<0)
+            grad_L_minus -= mu1*L_minus*(L_minus<0)
+            grad_L_plus -= mu1*L_plus*(L_plus<0)
+            grad_P_smj -= mu1*P_smj*(P_smj<0)
+            grad_A_i -= mu1*A_i*(A_i<0)
+            
+            of_total += np.sum(mu1*np.power(F_sjmk,2)*(F_sjmk<0)/2)
+            of_total += np.sum(mu1*np.power(H_sij,2)*(H_sij<0)/2)
+            of_total += np.sum(mu1*np.power(S_sjk,2)*(S_sjk<0)/2)
+            of_total += np.sum(mu1*np.power(L_minus,2)*(L_minus<0)/2)
+            of_total += np.sum(mu1*np.power(L_plus,2)*(L_plus<0)/2)
+            of_total += np.sum(mu1*np.power(P_smj,2)*(P_smj<0)/2)
+            of_total += np.sum(mu1*np.power(A_i,2)*(A_i<0)/2)
+            
+            #%% IMPOSE CONSTRAINTS
+            
+            #Marketing constraint
+            for s in range(dict_data["scenarios"]):
+                for j in range(dict_data["weeks"]):
+                    for k in range(dict_data["bands"]):
+                        
+                        #Computation of constrain cost
+                        cons_value = np.sum(np.multiply(dict_data["y_sijk"][s,:,j,k], H_sij[s,:,j])) - S_sjk[s,j,k] - np.sum(F_sjmk[s,j,:,k])
+                        of_total += (mu2/2)*cons_value**2
+                        
+                        #H_sij
+                        for i in range(dict_data["crops"]):
+                            grad_H_sij[s,i,j] -= mu2*cons_value*dict_data["y_sijk"][s,i,j,k]
+                        
+                        #S_sjk
+                        grad_S_sjk[s,j,k] -= mu2*cons_value*(-1)
+                        
+                        #F_sjmk
+                        for m in range(dict_data["customers"]):
+                            grad_F_sjmk[s,j,m,k] -= mu2*cons_value*(-1)
+            
+            #Demand constraints
+            for s in range(dict_data["scenarios"]):
+                for j in range(dict_data["weeks"]):
+                    for m in range(dict_data["customers"]):
+                        
+                        #Computation of contraint cost
+                        cons_value = np.sum(F_sjmk[s,j,m,dict_data["Km"][m]]) - P_smj[s,m,j] - dict_data["d_mj"][m,j]
+                        of_total += (mu2/2)*cons_value**2
+                        
+                        #F_sjmk
+                        for k in dict_data["Km"][m]:
+                            grad_F_sjmk[s,j,m,k] -= mu2*cons_value
+                        
+                        #P_smj
+                        grad_P_smj -= mu2*cons_value*(-1)
+            
+            #Sell on Open Market
+            for s in range(dict_data["scenarios"]):
+                for j in range(dict_data["weeks"]):
+                    
+                    #Computation of contraint cost
+                    cons_value = np.sum(S_sjk[s,j,:]) - 0.25*np.sum(dict_data["d_mj"][:,j])
+                    #cons_value = ramp_funciton(cons_value)
+                    of_total += (mu2/2)*cons_value**2
+                    
+                    #S_sjk
+                    for k in range(dict_data["bands"]):
+                        grad_S_sjk[s,j,k] -= mu2*cons_value
+            
+            #Land Use constraint 1
+            if True:
+                
+                #Computation of contraint cost
+                cons_value = np.sum(A_i) - dict_data["a"] - L_minus + L_plus
+                of_total += (mu2/2)*cons_value**2
+                
+                #A_i
+                for i in range(dict_data["crops"]):
+                    grad_A_i[i] -= mu2*cons_value
+                
+                #L_minus
+                grad_L_minus -= mu2*cons_value*(-1)
+                
+                #L_plus
+                grad_L_plus -= mu2*cons_value
+                
+            #Land Use constraint 2
+            for s in range(dict_data["scenarios"]):
+                for i in range(dict_data["crops"]):
+                
+                    #Computation of constraint cost
+                    cons_value = A_i[i] - np.sum(H_sij[s,i,:])
+                    of_total += (mu2/2)*cons_value**2
+                    
+                    #A_i
+                    grad_A_i[i] -= mu2*cons_value
+                    
+                    #H_sij
+                    for j in range(dict_data["weeks"]):
+                        grad_H_sij[s,i,j] -= mu2*cons_value*(-1)
+            
+            #Disease contraint
+            for j in range(dict_data["weeks"]):
+                for q in range(dict_data["diseases"]):
+                    for s in range(dict_data["scenarios"]):
+                        
+                        #Computation of constraint cost
+                        cons_value = 0
+                        for i in range(dict_data["crops"]):
+                            aux_sum = 0
+                            for k in range(dict_data["bands"]):
+                                aux_sum += dict_data["y_sijk"][s,i,j,k]*H_sij[s,i,j]
+                            cons_value += dict_data["r_iq"][i,q]*aux_sum
+                        cons_value -= dict_data["u_q"][q]*np.sum(dict_data["d_mj"][:,j])
+                        #cons_value = ramp_funciton(cons_value)    
+                        of_total += (mu2/2)*cons_value**2
+                        
+                        #H_sij
+                        grad_H_sij[s,i,j] -= mu2*cons_value*dict_data["r_iq"][i,q]*np.sum(dict_data["y_sijk"][s,i,j,:])
+                        
+            #Individual variety limit
+            for v in range(dict_data["varieties"]):
+                
+                #Pick crops for that variety
+                aux=[]
+                for i in range(dict_data["crops"]):
+                     if (dict_data["Ai_dict"][i]["Variety"] == v):
+                         aux.append(i)
+                
+                #Compute constraint cost
+                cons_value = np.sum(A_i[aux]) - 0.4*np.sum(A_i)
+                #cons_value = ramp_funciton(cons_value)
+                of_total += (mu2/2)*cons_value**2
+                
+                #A_i with variety
+                for i in aux:
+                    grad_A_i[i] -= mu2*cons_value
+                    
+                #A_i
+                for i in range(dict_data["crops"]):
+                    grad_A_i[i] -= mu2*cons_value*(-0.4)
+            
+            #Individual crop limit
+            for i in range(dict_data["crops"]):
+                
+                #Compute constraint cost
+                cons_value = A_i[i] - 0.2*np.sum(A_i)
+                #cons_value = ramp_funciton(cons_value)
+                of_total += (mu2/2)*cons_value**2
+                
+                #A_i
+                grad_A_i[i] -= mu2*cons_value*(0.8)
+                
+            #%% UPDATE VARIABLES 
+            
+            F_sjmk += lambda_rate*grad_F_sjmk
+            H_sij += lambda_rate*grad_H_sij
+            S_sjk += lambda_rate*grad_S_sjk
+            L_minus += lambda_rate*grad_L_minus
+            L_plus += lambda_rate*grad_L_plus
+            P_smj += lambda_rate*grad_P_smj
+            A_i += lambda_rate*grad_A_i
+            
+            OF_vector.append(of_total)
+            
+        #%% COMPUTE ALGORITHM PERFORMANCE    
+        
+        #Measure execution time
+        end = time.time()
+        comp_time = end - start
+        print("Heuristics time = ", comp_time)
+        
+        #Compute cost function
+        of = compute_of(F_sjmk, H_sij, S_sjk, L_minus, L_plus, P_smj, A_i, dict_data)
+        print("OF Heuristics = ", of)
+        
+        profit = 0
+        for s in range(dict_data["scenarios"]):
+            profit += dict_data["prob_s"][s]*Profit_s(F_sjmk, H_sij, S_sjk, L_minus, L_plus, P_smj, A_i, dict_data, s)
+        print("Expected profit = ", profit)
+        
+        #Load solution
+        sol_x = A_i
+        
+        plt.plot(OF_vector)
+        
+        #Return value
         return of, sol_x, comp_time

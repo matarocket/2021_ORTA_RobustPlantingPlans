@@ -13,6 +13,9 @@ class RobustPlantingPlanSolver():
             gap=None, verbose=False
             ):
         
+        #Measure of execution time
+        start = time.time()
+        
         #Load data from configuration file
         scenarios = range(dict_data['scenarios'])
         weeks = range(dict_data['weeks'])
@@ -123,9 +126,12 @@ class RobustPlantingPlanSolver():
             Expected = gp.quicksum(dict_data["prob_s"][s]*function_of_s(s) for s in scenarios)
             return Expected
         
+        print("Gurobi print1!")
         #Objective function
         obj_funct = (1-w)*E_s(Profit) - w*gp.quicksum(dict_data["prob_s"][s]*z[s] for s in scenarios)
         model.setObjective(obj_funct, GRB.MAXIMIZE)
+        
+        print("Gurobi print2!")
 
         #%% Definition of contraints
        
@@ -210,6 +216,7 @@ class RobustPlantingPlanSolver():
         
         #%% Optimization of the model
         
+        print("Gurobi model generation!")
         #Update model
         model.update()
         if gap:
@@ -223,11 +230,12 @@ class RobustPlantingPlanSolver():
         model.setParam('LogFile', './logs/gurobi.log')
         # model.write("./logs/model.lp")
 
-        #Measure of execution time
-        start = time.time()
+        
+        print("Gurobi start!")
         model.optimize()
         end = time.time()
         comp_time = end - start
+        print("Gurobi ended! = ", comp_time)
         
         #Preparation of results
         sol = [0] * dict_data['crops']
