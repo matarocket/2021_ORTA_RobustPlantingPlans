@@ -58,7 +58,7 @@ class Instance():
         
         #Cost of land - €/ha - checked for Italy
         #https://www.kpu.ca/sites/default/files/ISFS/Brussel%20Sprouts.pdf
-        self.c_prime = np.random.normal(15000, 0.05*15000)*0.01
+        self.c_prime = np.random.normal(15000, 0.05*15000)
         
         #Cost of harvesting {scenario, crop, harvesting_date}
         #https://www.farmersjournal.ie/my-farming-christmas-anthony-weldon-swords-north-co-dublin-196397
@@ -67,7 +67,7 @@ class Instance():
         #Demand {costumer, harvesting_date}
         #https://www.freshplaza.it/article/9397379/oltre-24mila-tonnellate-di-cavoletti-di-bruxelles-in-30-varieta-e-16-calibri-diversi/
         #demand proportioned to 10 customers 
-        self.d_mj = np.random.normal(2400, 0.35*2400, (self.n_customers, self.n_harvesting_dates))
+        self.d_mj = np.random.normal(100, 0.35*100, (self.n_customers, self.n_harvesting_dates))
         
         #Profit {costumer, harvesting_date}
         #online supermarket 
@@ -75,7 +75,7 @@ class Instance():
         
         #Surplus selling to the market {scenario, harvesting_date}
         #set to a half of the previous
-        self.s_sj = np.random.normal(800, 0.1*800,(self.n_scenarios, self.n_harvesting_dates))
+        self.s_sj = np.random.normal(2000, 0.1*2000,(self.n_scenarios, self.n_harvesting_dates))
         
         #Yield crop {scenario, crop, harvesting_date, size_band}
         #https://www.agrifarming.in/brussels-sprout-cultivation-information
@@ -104,7 +104,7 @@ class Instance():
             
         psmj = np.zeros((self.n_scenarios, self.n_customers, self.n_harvesting_dates))
         for s in range(self.n_scenarios):
-            psmj[s] = self.f_mj*1.2
+            psmj[s] = self.f_mj
         self.p_smj = psmj
         
         #Susceptibility to diseases {crop, disease}
