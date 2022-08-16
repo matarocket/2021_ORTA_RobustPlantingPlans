@@ -5,9 +5,10 @@ import logging
 import numpy as np
 from simulator.instance import Instance
 from simulator.tester import Tester
-from solver.simpleKnapsack import SimpleKnapsack
+#from solver.simpleKnapsack import SimpleKnapsack
 from solver.robustPlantingPlan import RobustPlantingPlanSolver
-from heuristic.simpleHeu import SimpleHeu
+#from solver.experiment import RobustPlantingPlanSolver
+from heuristic.heuristicTwoStage import SimpleHeu
 import heuristic.simpleHeu
 from solver.sampler import Sampler
 from utility.plot_results import plot_comparison_hist
@@ -54,18 +55,23 @@ if __name__ == '__main__':
         verbose=True
     )
     print(of_exact, sol_exact, comp_time_exact)
-    of = heuristic.simpleHeu.Load_sol_from_gb(model, dict_data)
-    print("Exact_value = ", of)
+   
+   
+    # of = heuristic.simpleHeu.Load_sol_from_gb(model, dict_data)
+    # print("Exact_value = ", of)
     
-    heu = SimpleHeu()
-    of_heu, sol_heu, comp_time_heu = heu.solve(
-        dict_data,
-        [],
-        [],
-    )
-    print(of_heu, sol_heu, comp_time_heu)
+    # heu = SimpleHeu()
+    # of_heu, sol_heu, comp_time_heu = heu.solve(
+    #     dict_data,
+    #     [],
+    #     [],
+    # )
+    # print(of_heu, sol_heu, comp_time_heu)
     
-    print("Percentual diference = ", 100*(of_exact - of_heu)/of_exact)
+    # print("Percentual diference = ", 100*(of_exact - of_heu)/of_exact)
+
+
+
 
     # COMPARISON:
     # test = Tester()

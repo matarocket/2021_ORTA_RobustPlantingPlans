@@ -111,7 +111,7 @@ class Instance():
         self.r_iq = np.around(np.random.rand(self.n_crops,self.n_diseases), 0)
         
         #Upper limit to harvested proportion of a field for a given disease
-        self.u_q = np.random.uniform(0,0.3,self.n_diseases)
+        self.u_q = np.random.uniform(0.7,1,self.n_diseases)
 
         #Log variables
         logging.info(f"crops: {self.n_crops}")

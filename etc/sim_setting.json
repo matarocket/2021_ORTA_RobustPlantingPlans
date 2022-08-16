@@ -1,12 +1,12 @@
 {
-    "n_diseases": 3,
-    "n_varieties": 8,
-    "n_spacings" : 4,
-    "n_size_bands": 4,
-    "n_customers": 6,
-    "n_scenarios": 4,
+    "n_diseases": 1,
+    "n_varieties": 3,
+    "n_spacings" : 2,
+    "n_size_bands": 2,
+    "n_customers": 5,
+    "n_scenarios": 1,
     "n_sowing_dates": 4,
     "n_harvesting_dates": 4,
-    "w": 0.9
+    "w": 0.5
 }
 

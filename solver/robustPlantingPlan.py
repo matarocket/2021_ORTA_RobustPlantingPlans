@@ -39,8 +39,6 @@ class RobustPlantingPlanSolver():
         #Weight of sprouts sold by {scenario, week, customer, band}
         Fsjmk = model.addVars(
                 dict_data["scenarios"],dict_data["weeks"],dict_data["customers"],dict_data["bands"],
-                lb=0,
-                #ub=10000,
                 vtype=GRB.CONTINUOUS,
                 name='Fsjmk'
             )
@@ -67,7 +65,7 @@ class RobustPlantingPlanSolver():
         Lminus = model.addVars(
                 1,
                 lb=0,
-                ub=dict_data["a"]/10,
+                ub=dict_data["a"],
                 vtype=GRB.CONTINUOUS,
                 name='Lminus'
             )
@@ -76,7 +74,7 @@ class RobustPlantingPlanSolver():
         Lplus = model.addVars(
                 1,
                 lb=0,
-                ub=dict_data["a"]/10,
+                ub=dict_data["a"],
                 vtype=GRB.CONTINUOUS,
                 name='Lplus'
             )
@@ -84,8 +82,8 @@ class RobustPlantingPlanSolver():
         #Shortage in demand by {scenario, customer, week}
         Psmj = model.addVars(
                 dict_data["scenarios"],dict_data["customers"],dict_data["weeks"],
-                lb=0,
-                #ub=10000,
+                #lb=0,
+                #ub=300,
                 vtype=GRB.CONTINUOUS,
                 name='Psmj'
             )
@@ -151,19 +149,36 @@ class RobustPlantingPlanSolver():
             for j in weeks:
                 for k in bands:
                     model.addConstr(
-                        gp.quicksum(dict_data['y_sijk'][s][i][j][k]*Hsij[s,i,j] for i in crops) - Ssjk[s,j,k] - gp.quicksum(Fsjmk[s,j,m,k] for m in customers) == 0,
+                        (gp.quicksum(dict_data['y_sijk'][s][i][j][k]*Hsij[s,i,j] for i in crops) - Ssjk[s,j,k] - gp.quicksum(Fsjmk[s,j,m,k] for m in customers) )== 0,
                         f"Marketing Constraint - s: {s}, j: {j}, k: {k}"
                     )
+
+
+
+        #Vu cumprà Constraint
+        for s in scenarios:
+            for j in weeks:
+                for m in customers:
+                    for k in bands:
+                        if(k not in dict_data["Km"][m]):
+                            model.addConstr(
+                            Fsjmk[s,j,m,k] == 0,
+                            f"Vu cumprà Constraint - s: {s}, j: {j}, m:{m}, k: {k}"
+                            )
+
 
         #Demand Constraint 
         for s in scenarios:
             for j in weeks:
                 for m in customers:
                     model.addConstr(
-                        gp.quicksum(Fsjmk[s,j,m,k] for k in dict_data["Km"][m]) == Psmj[s,m,j] + dict_data['d_mj'][m][j],
+                        #gp.quicksum(Fsjmk[s,j,m,k] for k in bands) == Psmj[s,m,j] + dict_data['d_mj'][m][j],
+                        (gp.quicksum(Fsjmk[s,j,m,k] for k in dict_data["Km"][m])) == (dict_data['d_mj'][m][j] - Psmj[s,m,j]),
                         #Fsjmk[s,j,m,dict_data["Km"][m]] == Psmj[s,m,j] + dict_data['d_mj'][m][j],
                         f"Demand Constraint - s: {s}, j: {j}, m: {m}"
                     )
+
+
 
         #Sell on Open Market 
         for s in scenarios:
@@ -233,20 +248,67 @@ class RobustPlantingPlanSolver():
         
         print("Gurobi start!")
         model.optimize()
+        #model.display()
+        model.write("log.lp")
         end = time.time()
         comp_time = end - start
         print("Gurobi ended! = ", comp_time)
         
         #Preparation of results
         sol = [0] * dict_data['crops']
+        surplus = [0] * dict_data["bands"]
         of = -1
         if model.status == GRB.Status.OPTIMAL:
-            for i in crops:
-                grb_var = model.getVarByName(
-                    f"Ai[{i}]"
+            for j in weeks:
+                harvested = [0] * dict_data["crops"]
+                for i in crops:
+                    grb_var = model.getVarByName(
+                        f"Ai[{i}]"
+                    )
+                    grb_var3 = model.getVarByName(
+                      f"Hsij[0,{i},{j}]"
+                    )
+                    harvested[i] = grb_var3.X
+                    sol[i] = grb_var.X
+                print(f"Harvested for week {j}: ",harvested)
+
+
+            for j in weeks:
+                for k in bands:
+                    tot=0
+                    for m in customers:
+                        grb_var4 = model.getVarByName(
+                      f"Fsjmk[0,{j},{m},{k}]"
+                    )
+                        tot= grb_var4.X
+                        if(k in dict_data["Km"][m]):
+                            print(f"Sold for week {j} in band {k} for customer {m}: ",tot," / ",dict_data["d_mj"][m][j])
+                        else:
+                            print(f"Sold for week {j} in band {k} for customer {m}: ",tot)
+            for j in weeks:
+                for m in customers:
+                    tot=0
+                    grb_var5 = model.getVarByName(
+                      f"Psmj[0,{m},{j}]"
+                    )
+                    tot= grb_var5.X
+                    print(f"Loss in week {j} for customer {m}: ",tot)
+        
+
+                    
+
+                    
+            for j in weeks:
+                for k in bands:
+                    tot=0
+                    grb_var2 = model.getVarByName(
+                    f"Ssjk[0,0,{k}]"
                 )
-                sol[i] = grb_var.X
+                    tot= grb_var2.X
+                    print(f"Surplus in week {j} for band {k}: ",tot)
+
             of = model.getObjective().getValue()
         
         #Return
+        print("Surplus: ",surplus)
         return of, sol, comp_time, model
