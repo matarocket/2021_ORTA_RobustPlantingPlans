@@ -13,8 +13,6 @@ class RobustPlantingPlanSolver():
             gap=None, verbose=False
             ):
         
-        #Measure of execution time
-        start = time.time()
         
         #Load data from configuration file
         scenarios = range(dict_data['scenarios'])
@@ -124,12 +122,10 @@ class RobustPlantingPlanSolver():
             Expected = gp.quicksum(dict_data["prob_s"][s]*function_of_s(s) for s in scenarios)
             return Expected
         
-        print("Gurobi print1!")
         #Objective function
         obj_funct = (1-w)*E_s(Profit) - w*gp.quicksum(dict_data["prob_s"][s]*z[s] for s in scenarios)
         model.setObjective(obj_funct, GRB.MAXIMIZE)
         
-        print("Gurobi print2!")
 
         #%% Definition of contraints
        
@@ -232,6 +228,7 @@ class RobustPlantingPlanSolver():
         #%% Optimization of the model
         
         print("Gurobi model generation!")
+
         #Update model
         model.update()
         if gap:
@@ -247,11 +244,14 @@ class RobustPlantingPlanSolver():
 
         
         print("Gurobi start!")
+
+        start = time.time()
         model.optimize()
-        #model.display()
-        model.write("log.lp")
+        model.write('./logs/gurobi_optimal.lp')
         end = time.time()
         comp_time = end - start
+        
+       
         print("Gurobi ended! = ", comp_time)
         
         #Preparation of results
@@ -259,56 +259,9 @@ class RobustPlantingPlanSolver():
         surplus = [0] * dict_data["bands"]
         of = -1
         if model.status == GRB.Status.OPTIMAL:
-            for j in weeks:
-                harvested = [0] * dict_data["crops"]
-                for i in crops:
-                    grb_var = model.getVarByName(
-                        f"Ai[{i}]"
-                    )
-                    grb_var3 = model.getVarByName(
-                      f"Hsij[0,{i},{j}]"
-                    )
-                    harvested[i] = grb_var3.X
-                    sol[i] = grb_var.X
-                print(f"Harvested for week {j}: ",harvested)
-
-
-            for j in weeks:
-                for k in bands:
-                    tot=0
-                    for m in customers:
-                        grb_var4 = model.getVarByName(
-                      f"Fsjmk[0,{j},{m},{k}]"
-                    )
-                        tot= grb_var4.X
-                        if(k in dict_data["Km"][m]):
-                            print(f"Sold for week {j} in band {k} for customer {m}: ",tot," / ",dict_data["d_mj"][m][j])
-                        else:
-                            print(f"Sold for week {j} in band {k} for customer {m}: ",tot)
-            for j in weeks:
-                for m in customers:
-                    tot=0
-                    grb_var5 = model.getVarByName(
-                      f"Psmj[0,{m},{j}]"
-                    )
-                    tot= grb_var5.X
-                    print(f"Loss in week {j} for customer {m}: ",tot)
-        
-
-                    
-
-                    
-            for j in weeks:
-                for k in bands:
-                    tot=0
-                    grb_var2 = model.getVarByName(
-                    f"Ssjk[0,0,{k}]"
-                )
-                    tot= grb_var2.X
-                    print(f"Surplus in week {j} for band {k}: ",tot)
-
+            for i in crops:
+                grb_var = model.getVarByName(f"Ai[{i}]")
+                sol[i] = grb_var.X
             of = model.getObjective().getValue()
         
-        #Return
-        print("Surplus: ",surplus)
         return of, sol, comp_time, model

@@ -10,6 +10,7 @@ from alns import ALNS, State
 from alns.accept import *
 from alns.stop import *
 from alns.weights import *
+import time 
 
 SEED = 42
 
@@ -30,6 +31,13 @@ class Heuristic():
 
     def __init__(self,dict_data):
         self.dict_data = dict_data
+
+    def collapse_prob(mat, prob_s):
+        e_s = np.copy(mat)
+        for s in range(len(prob_s)):
+            e_s[s] = prob_s[s]*e_s[s]
+        e_s = np.sum(e_s, axis=0)
+        return e_s
 
     def weekly_demand_matrix(dict_data, y_ijk):
         customers = range(dict_data["customers"])
@@ -62,19 +70,32 @@ class Heuristic():
         initial_sol[0] = dict_data["a"]
 
         sowingState = SowingState(initial_sol,dict_data,occupation_matr)
+        start=time.time()
         alns = make_alns()
         alns.iterate(sowingState, weights, crit, MaxIterations(MAX_ITERATIONS))
-        print("Best objective: ",sowingState.best_sol)
-        print("Best a_i: ",sowingState.best_a_i)
+        end=time.time()
+        comp_time_first = end-start
+        # print("Best objective: ",sowingState.best_sol)
+        # print("Best a_i: ",sowingState.best_a_i)
         
         '''_, ax = plt.subplots(figsize=(12, 6))
         res.plot_objectives(ax=ax, lw=2)
         plt.show()'''
-
+        
         heu1 = heu_second.SecondStageSolver()
-        of_heu, sol_heu, comp_time_heu = heu1.solve(dict_data,0, sowingState.best_a_i, dict_data["a"]-sowingState.best_sol,0)
-        print(of_heu, sol_heu, comp_time_heu)
-        print("Profit !!!!!!!!!!!!!!!!!!!", of_heu)
+        
+        scenarios=range(dict_data["scenarios"])
+        start=time.time()
+        profit=0
+
+        for s in scenarios:
+            of_heu, sol_heu, comp_time = heu1.solve(dict_data,s, sowingState.best_a_i, dict_data["a"]-sowingState.best_sol,0)
+            profit += of_heu*dict_data["prob_s"][s]
+
+        end=time.time()
+        comp_time_second=end-start
+
+        return of_heu, sol_heu, comp_time_second, comp_time_first
 
 
 class SowingState(State):
@@ -82,6 +103,7 @@ class SowingState(State):
     Solution class for the 0/1 knapsack problem. It stores the current
     solution as a vector of binary variables, one for each item.
     """
+
     def __init__(self, a_i, dict_data, occupation_matr):
         self.a_i = a_i
         self.dict_data = dict_data
@@ -89,7 +111,8 @@ class SowingState(State):
         self.best_sol = np.sum(a_i)
         self.best_a_i = a_i
         self.iteration_n = 0
-        self.d_jk = Heuristic.weekly_demand_matrix(self.dict_data,self.dict_data["y_sijk"][0,:,:,:])
+        self.y_ijk = Heuristic.collapse_prob(self.dict_data["y_sijk"], self.dict_data["prob_s"])
+        self.d_jk = Heuristic.weekly_demand_matrix(self.dict_data,self.y_ijk)
 
     def objective(self):
         obj = np.sum(self.a_i)
@@ -140,9 +163,6 @@ def make_alns() -> ALNS:
 
 def repair(sowingState, rnd_state):
 
-    y_ijk=copy.deepcopy(sowingState.dict_data["y_sijk"][0,:,:,:])
-    d_jk=copy.deepcopy(Heuristic.weekly_demand_matrix(sowingState.dict_data,y_ijk))
-
     #Compute needed area
     for j in range(sowingState.dict_data["weeks"]):
         for k in range(sowingState.dict_data["bands"]):
@@ -152,8 +172,8 @@ def repair(sowingState, rnd_state):
                     crop = np.random.randint(0,sowingState.dict_data["crops"])
                     if(sowingState.a_i[crop]==0):
                         occupied = False
-                y_aux = y_ijk[crop, j, k]
-                needed_area = d_jk[j][k]/y_aux
+                y_aux = sowingState.y_ijk[crop, j, k]
+                needed_area = sowingState.d_jk[j][k]/y_aux
                 
                 #Land limit constraint
                 av_area = sowingState.dict_data["a"] - np.sum(sowingState.a_i) #Initial available area TODO: aggiungere L_minus

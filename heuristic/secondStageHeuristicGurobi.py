@@ -14,11 +14,8 @@ class SecondStageSolver():
         pass
 
     def solve(
-            self, dict_data,scenario, ai, l_plus, l_minus
+            self, dict_data,scenario, ai, l_plus, l_minus, verbose=False
             ):
-        
-        #Measure of execution time
-        start = time.time()
         
         #Load data from configuration file
         weeks = range(dict_data['weeks'])
@@ -108,14 +105,9 @@ class SecondStageSolver():
             ProfitTerm =  term1 + term2 - term3 + term4 - term5 - term6 - term7
             return ProfitTerm
         
- 
-        
-        print("Gurobi print1!")
         #Objective function
         obj_funct = (1-w)*Profit() 
         model.setObjective(obj_funct, GRB.MAXIMIZE)
-        
-        print("Gurobi print2!")
 
         #%% Definition of contraints
        
@@ -189,23 +181,28 @@ class SecondStageSolver():
         print("Gurobi model generation!")
         #Update model
         model.update()
+        if verbose:
+            model.setParam('OutputFlag', 1)
+        else:
+            model.setParam('OutputFlag', 0)
        
 
         
         print("Gurobi start!")
+        start = time.time()
         model.optimize()
-        #model.display()
-        
-        model.write("log_secondStage.lp")
+        model.write('./logs/gurobi_secondStage.lp')
         end = time.time()
         comp_time = end - start
+
         print("Gurobi ended! = ", comp_time)
         
         #Preparation of results
         of = -1
         if model.status == GRB.Status.OPTIMAL:
             of = model.getObjective().getValue()
-        sol=-1
+            
+    
         return of, ai, comp_time
 
 

@@ -53,25 +53,22 @@ if __name__ == '__main__':
     prb = RobustPlantingPlanSolver()
     of_exact, sol_exact, comp_time_exact, model = prb.solve(
         dict_data,
-        verbose=True
+        #verbose=True
     )
-    print(of_exact, sol_exact, comp_time_exact)
 
-    Heuristic.solve(dict_data)
-   
-   
-    # of = heuristic.simpleHeu.Load_sol_from_gb(model, dict_data)
-    # print("Exact_value = ", of)
-    
-    # heu = SimpleHeu()
-    # of_heu, sol_heu, comp_time_heu = heu.solve(
-    #     dict_data,
-    #     [],
-    #     [],
-    # )
-    # print(of_heu, sol_heu, comp_time_heu)
-    
-    # print("Percentual diference = ", 100*(of_exact - of_heu)/of_exact)
+    of_heu, sol_heu, comp_time_second, comp_time_first = Heuristic.solve(dict_data)
+
+    print("\n\n\n>> Profit exact solver :  ", of_exact," <<\n")
+    print(">> Sowing plan (A_i) :  ", sol_exact," <<\n")
+    print(">> Total computational time :  ", comp_time_exact," <<\n")
+
+    print("\n\n\n>> Profit heuristic solver :  ", of_heu," <<\n")
+    print(">> Heuristic sowing plan (A_i) :  ", sol_heu," <<\n")
+    print(">> First stage computational time for heuristic :  ", comp_time_first," <<")
+    print(">> Second stage computational time for heuristic :  ", comp_time_second," <<")
+    print(">> Total computational time for heuristic :  ", comp_time_second+comp_time_first," <<\n\n\n")
+
+    print(">> Percentual difference :  ", 100*(of_exact - of_heu)/of_exact, " <<")
 
 
 
