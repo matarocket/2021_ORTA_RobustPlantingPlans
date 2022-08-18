@@ -4,6 +4,8 @@ from dataclasses import dataclass
 import matplotlib.pyplot as plt
 import numpy as np
 
+import heuristic.secondStageHeuristicGurobi as heu_second
+
 from alns import ALNS, State
 from alns.accept import *
 from alns.stop import *
@@ -21,7 +23,7 @@ W = 1_000
 
 
 # Percentage of items to remove in each iteration
-DESTROY_RATE = .25
+DESTROY_RATE = .5
 
 class Heuristic():
 
@@ -57,8 +59,15 @@ class Heuristic():
         occupation_matr = np.full((dict_data["weeks"],dict_data["bands"]), -1)
         sowingState = SowingState(np.zeros(dict_data["crops"]),dict_data,occupation_matr)
         alns = make_alns()
-        res = alns.iterate(sowingState, weights, crit, MaxIterations(1000))
+        res = alns.iterate(sowingState, weights, crit, MaxIterations(5))
         print(res.best_state.objective())
+        
+        
+        
+        heu1 = heu_second.SecondStageSolver()
+        of_heu, sol_heu, comp_time_heu = heu1.solve(dict_data,0, res.best_state.a_i, dict_data["a"]-res.best_state.objective(),0)
+        print(of_heu, sol_heu, comp_time_heu)
+        print("Profit !!!!!!!!!!!!!!!!!!!", of_heu)
 
 
 

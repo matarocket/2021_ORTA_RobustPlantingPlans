@@ -8,8 +8,9 @@ from simulator.tester import Tester
 #from solver.simpleKnapsack import SimpleKnapsack
 from solver.robustPlantingPlan import RobustPlantingPlanSolver
 #from solver.experiment import RobustPlantingPlanSolver
-from heuristic.heuristicTwoStage import SimpleHeu
-import heuristic.simpleHeu
+# from heuristic.heuristicTwoStage import SimpleHeu
+# import heuristic.simpleHeu
+from heuristic.firstStageHeuristicALNS import Heuristic
 from solver.sampler import Sampler
 from utility.plot_results import plot_comparison_hist
 
@@ -55,6 +56,8 @@ if __name__ == '__main__':
         verbose=True
     )
     print(of_exact, sol_exact, comp_time_exact)
+
+    Heuristic.solve(dict_data)
    
    
     # of = heuristic.simpleHeu.Load_sol_from_gb(model, dict_data)

@@ -223,22 +223,22 @@ Subject To
  Vu_cumprà_Constraint_-_s__0,_j__0,_m_1,_k__0: Fsjmk[0,0,1,0] = 0
  Vu_cumprà_Constraint_-_s__0,_j__0,_m_2,_k__1: Fsjmk[0,0,2,1] = 0
  Vu_cumprà_Constraint_-_s__0,_j__0,_m_3,_k__0: Fsjmk[0,0,3,0] = 0
- Vu_cumprà_Constraint_-_s__0,_j__0,_m_4,_k__1: Fsjmk[0,0,4,1] = 0
+ Vu_cumprà_Constraint_-_s__0,_j__0,_m_4,_k__0: Fsjmk[0,0,4,0] = 0
  Vu_cumprà_Constraint_-_s__0,_j__1,_m_0,_k__0: Fsjmk[0,1,0,0] = 0
  Vu_cumprà_Constraint_-_s__0,_j__1,_m_1,_k__0: Fsjmk[0,1,1,0] = 0
  Vu_cumprà_Constraint_-_s__0,_j__1,_m_2,_k__1: Fsjmk[0,1,2,1] = 0
  Vu_cumprà_Constraint_-_s__0,_j__1,_m_3,_k__0: Fsjmk[0,1,3,0] = 0
- Vu_cumprà_Constraint_-_s__0,_j__1,_m_4,_k__1: Fsjmk[0,1,4,1] = 0
+ Vu_cumprà_Constraint_-_s__0,_j__1,_m_4,_k__0: Fsjmk[0,1,4,0] = 0
  Vu_cumprà_Constraint_-_s__0,_j__2,_m_0,_k__0: Fsjmk[0,2,0,0] = 0
  Vu_cumprà_Constraint_-_s__0,_j__2,_m_1,_k__0: Fsjmk[0,2,1,0] = 0
  Vu_cumprà_Constraint_-_s__0,_j__2,_m_2,_k__1: Fsjmk[0,2,2,1] = 0
  Vu_cumprà_Constraint_-_s__0,_j__2,_m_3,_k__0: Fsjmk[0,2,3,0] = 0
- Vu_cumprà_Constraint_-_s__0,_j__2,_m_4,_k__1: Fsjmk[0,2,4,1] = 0
+ Vu_cumprà_Constraint_-_s__0,_j__2,_m_4,_k__0: Fsjmk[0,2,4,0] = 0
  Vu_cumprà_Constraint_-_s__0,_j__3,_m_0,_k__0: Fsjmk[0,3,0,0] = 0
  Vu_cumprà_Constraint_-_s__0,_j__3,_m_1,_k__0: Fsjmk[0,3,1,0] = 0
  Vu_cumprà_Constraint_-_s__0,_j__3,_m_2,_k__1: Fsjmk[0,3,2,1] = 0
  Vu_cumprà_Constraint_-_s__0,_j__3,_m_3,_k__0: Fsjmk[0,3,3,0] = 0
- Vu_cumprà_Constraint_-_s__0,_j__3,_m_4,_k__1: Fsjmk[0,3,4,1] = 0
+ Vu_cumprà_Constraint_-_s__0,_j__3,_m_4,_k__0: Fsjmk[0,3,4,0] = 0
  Demand_Constraint_-_s__0,_j__0,_m__0: Fsjmk[0,0,0,1] + Psmj[0,0,0]
    = 100.0616294249995
  Demand_Constraint_-_s__0,_j__0,_m__1: Fsjmk[0,0,1,1] + Psmj[0,1,0]
@@ -247,7 +247,7 @@ Subject To
    = 47.84610056722413
  Demand_Constraint_-_s__0,_j__0,_m__3: Fsjmk[0,0,3,1] + Psmj[0,3,0]
    = 38.99296191769563
- Demand_Constraint_-_s__0,_j__0,_m__4: Fsjmk[0,0,4,0] + Psmj[0,4,0]
+ Demand_Constraint_-_s__0,_j__0,_m__4: Fsjmk[0,0,4,1] + Psmj[0,4,0]
    = 145.5243695025857
  Demand_Constraint_-_s__0,_j__1,_m__0: Fsjmk[0,1,0,1] + Psmj[0,0,1]
    = 65.34439501213851
@@ -257,7 +257,7 @@ Subject To
    = 62.54247488925872
  Demand_Constraint_-_s__0,_j__1,_m__3: Fsjmk[0,1,3,1] + Psmj[0,3,1]
    = 153.3479384468015
- Demand_Constraint_-_s__0,_j__1,_m__4: Fsjmk[0,1,4,0] + Psmj[0,4,1]
+ Demand_Constraint_-_s__0,_j__1,_m__4: Fsjmk[0,1,4,1] + Psmj[0,4,1]
    = 132.1370989235073
  Demand_Constraint_-_s__0,_j__2,_m__0: Fsjmk[0,2,0,1] + Psmj[0,0,2]
    = 165.5337927484073
@@ -267,7 +267,7 @@ Subject To
    = 92.68049839223809
  Demand_Constraint_-_s__0,_j__2,_m__3: Fsjmk[0,2,3,1] + Psmj[0,3,2]
    = 165.2251361225803
- Demand_Constraint_-_s__0,_j__2,_m__4: Fsjmk[0,2,4,0] + Psmj[0,4,2]
+ Demand_Constraint_-_s__0,_j__2,_m__4: Fsjmk[0,2,4,1] + Psmj[0,4,2]
    = 94.44198349488524
  Demand_Constraint_-_s__0,_j__3,_m__0: Fsjmk[0,3,0,1] + Psmj[0,0,3]
    = 91.56242433390312
@@ -277,7 +277,7 @@ Subject To
    = 121.1600296890529
  Demand_Constraint_-_s__0,_j__3,_m__3: Fsjmk[0,3,3,1] + Psmj[0,3,3]
    = 145.198227219448
- Demand_Constraint_-_s__0,_j__3,_m__4: Fsjmk[0,3,4,0] + Psmj[0,4,3]
+ Demand_Constraint_-_s__0,_j__3,_m__4: Fsjmk[0,3,4,1] + Psmj[0,4,3]
    = 66.25778244054462
  _Sell_on_Open_Market_-_s__0,_j__0: Ssjk[0,0,0] + Ssjk[0,0,1]
    <= 108.5730332895443
