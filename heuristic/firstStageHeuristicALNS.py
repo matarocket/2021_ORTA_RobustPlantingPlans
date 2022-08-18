@@ -23,7 +23,8 @@ W = 1_000
 
 
 # Percentage of items to remove in each iteration
-DESTROY_RATE = .5
+DESTROY_RATE = .1
+MAX_ITERATIONS = 100
 
 class Heuristic():
 
@@ -57,18 +58,23 @@ class Heuristic():
                         op_decay=0.8)
         
         occupation_matr = np.full((dict_data["weeks"],dict_data["bands"]), -1)
-        sowingState = SowingState(np.zeros(dict_data["crops"]),dict_data,occupation_matr)
+        initial_sol = np.zeros(dict_data["crops"])
+        initial_sol[0] = dict_data["a"]
+
+        sowingState = SowingState(initial_sol,dict_data,occupation_matr)
         alns = make_alns()
-        res = alns.iterate(sowingState, weights, crit, MaxIterations(5))
-        print(res.best_state.objective())
+        alns.iterate(sowingState, weights, crit, MaxIterations(MAX_ITERATIONS))
+        print("Best objective: ",sowingState.best_sol)
+        print("Best a_i: ",sowingState.best_a_i)
         
-        
-        
+        '''_, ax = plt.subplots(figsize=(12, 6))
+        res.plot_objectives(ax=ax, lw=2)
+        plt.show()'''
+
         heu1 = heu_second.SecondStageSolver()
-        of_heu, sol_heu, comp_time_heu = heu1.solve(dict_data,0, res.best_state.a_i, dict_data["a"]-res.best_state.objective(),0)
+        of_heu, sol_heu, comp_time_heu = heu1.solve(dict_data,0, sowingState.best_a_i, dict_data["a"]-sowingState.best_sol,0)
         print(of_heu, sol_heu, comp_time_heu)
         print("Profit !!!!!!!!!!!!!!!!!!!", of_heu)
-
 
 
 class SowingState(State):
@@ -80,12 +86,15 @@ class SowingState(State):
         self.a_i = a_i
         self.dict_data = dict_data
         self.occupation_matr = occupation_matr
+        self.best_sol = np.sum(a_i)
+        self.best_a_i = a_i
+        self.iteration_n = 0
+        self.d_jk = Heuristic.weekly_demand_matrix(self.dict_data,self.dict_data["y_sijk"][0,:,:,:])
 
     def objective(self):
-        # Negative p since ALNS expects a minimisation problem.
-        #print(self.a_i)
-        #print(self.occupation_matr)
-        return np.sum(self.a_i)
+        obj = np.sum(self.a_i)
+        best_solution(self,obj)
+        return obj
 
 
 #def to_destroy(state: KnapsackState) -> int:
@@ -176,3 +185,10 @@ def remove(sowingState, rnd_state):
         sowingState.occupation_matr[j,k] = -1
 
     return sowingState
+
+def best_solution(self,obj):
+
+    if (obj < self.best_sol) and (np.count_nonzero(self.a_i) == np.count_nonzero(self.d_jk)):
+        self.best_a_i = copy.copy(self.a_i)
+        self.best_sol = obj        
+    return
