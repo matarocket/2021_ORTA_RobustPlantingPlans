@@ -6,6 +6,8 @@ import json
 import numpy as np
 import gurobipy as gp
 from gurobipy import GRB
+from simulator.instance import Instance
+import heuristic.secondStageHeuristicGurobi as Heuristic
 
 
 class Tester():
@@ -69,42 +71,79 @@ class Tester():
 
         return ans
 
-    def in_sample_stability(self, problem, sampler, instance, n_repertions, n_scenarios_sol):
-        ans = [0] * n_repertions
-        for i in range(n_repertions):
-            reward = sampler.sample_stoch(
-                instance,
-                n_scenarios=n_scenarios_sol
-            )
-            of, sol, comp_time = problem.solve(
-                instance,
-                reward,
-                n_scenarios_sol
-            )
-            ans[i] = of
-        return ans
+    # def in_sample_stability(self, problem, sampler, instance, n_repertions, n_scenarios_sol):
+    #     ans = [0] * n_repertions
+    #     for i in range(n_repertions):
+    #         reward = sampler.sample_stoch(
+    #             instance,
+    #             n_scenarios=n_scenarios_sol
+    #         )
+    #         of, sol, comp_time = problem.solve(
+    #             instance,
+    #             reward,
+    #             n_scenarios_sol
+    #         )
+    #         ans[i] = of
+    #     return ans
     
-    def out_of_sample_stability(self, problem, sampler, instance, n_repertions, n_scenarios_sol, n_scenarios_out):
+    def in_sample_stability(self, sim_setting, problem, sampler, instance, dict_data, n_repertions, n_scenarios_sol):
         ans = [0] * n_repertions
         for i in range(n_repertions):
-            reward= sampler.sample_stoch(
-                instance,
-                n_scenarios=n_scenarios_sol
+            
+            sim_setting["n_scenarios"] = n_scenarios_sol
+            inst = Instance(sim_setting)
+            dict_data = inst.get_data()
+            prob_s = sampler.sample_stoch(inst)
+            
+            of, _, _, _ = problem.solve(
+                dict_data,
+                prob_s
             )
-            of, sol, comp_time = problem.solve(
-                instance,
-                reward,
-                n_scenarios_sol
+            
+            ans[i] = of
+        return np.mean(ans), np.std(ans)
+    
+    def out_of_sample_stability(self, sim_setting, problem, sampler, instance, n_repertions, n_scenarios_sol, n_scenarios_out):
+        ans = [0] * n_repertions
+        heu1 = Heuristic.SecondStageSolver()
+        
+        for i in range(n_repertions):
+            
+            sim_setting["n_scenarios"] = n_scenarios_sol
+            inst = Instance(sim_setting)
+            dict_data = inst.get_data()
+            prob_s = sampler.sample_stoch(inst)
+            
+            of, _, _, opt_model = problem.solve(
+                dict_data,
+                prob_s
             )
-            reward_out = sampler.sample_stoch(
-                instance,
-                n_scenarios=n_scenarios_out
-            )
-            profits = self.solve_second_stages(
-                instance, sol,
-                n_scenarios_out, reward_out,
-                "profit"
-            )
-            ans[i]=np.mean(profits)
+            
+            crops = range(dict_data["crops"]) 
+            L_minus = 0
+            L_plus = 0
+            A_i = np.zeros((dict_data['crops']))
+            
+            grb_var = opt_model.getVarByName("Lminus[0]") 
+            L_minus = grb_var.X
+            grb_var = opt_model.getVarByName("Lplus[0]") 
+            L_plus = grb_var.X
+            for i in crops:
+                grb_var = opt_model.getVarByName(
+                    f"Ai[{i}]"
+                )
+                A_i[i] = grb_var.X
+            
+            sim_setting["n_scenarios"] = n_scenarios_out
+            inst = Instance(sim_setting)
+            dict_data = inst.get_data()
+            prob_s = sampler.sample_stoch(inst)
+            
+            profit = 0
+            for s in n_scenarios_out:
+                of_heu, sol_heu, comp_time = heu1.solve(dict_data, s, A_i, L_plus, L_minus)
+                profit += of_heu*prob_s[s]
+            
+            ans[i] = profit
             
         return ans

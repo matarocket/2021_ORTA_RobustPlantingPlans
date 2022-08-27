@@ -168,6 +168,24 @@ if __name__ == '__main__':
     #     prob_s=prob_s
     #     #verbose=True
     # )
+    
+    # IN SAMPLE STABILITY
+    test = Tester()
+    n_scenarios_vector = [5,10,20]
+    in_sample_res = []
+    for n_scenarios in n_scenarios_vector:
+        n_repetitions = 25
+        of_mean, of_std = test.in_sample_stability(sim_setting, prb, sam, inst, dict_data, n_repetitions, n_scenarios)
+        in_sample_res.append((of_mean, of_std))
+
+    # OUT OF SAMPLE STABILITY 
+    n_scenarios_vector = [5,10,20]
+    out_sample_res = []
+    n_scenarios = 5
+    for n_scenarios in n_scenarios_vector:
+        n_scenarios_out = 25
+        of_mean, of_std = test.out_of_sample_stability(sim_setting, prb, sam, inst, dict_data, n_repetitions, n_scenarios, n_scenarios_out)
+        out_sample_res.append((of_mean, of_std))
 
     # of_heu, sol_heu, comp_time_second, comp_time_first = Heuristic.solve(dict_data, prob_s)
 
