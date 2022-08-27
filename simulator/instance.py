@@ -50,8 +50,8 @@ class Instance():
             
         
         #Probability of scenario s
-        self.prob_s = np.random.uniform(0, 1, self.n_scenarios)
-        self.prob_s = self.prob_s/np.sum(self.prob_s)
+        #self.prob_s = np.random.uniform(0, 1, self.n_scenarios)
+        #self.prob_s = self.prob_s/np.sum(self.prob_s)
         
         #Impact of each scenario on yields
         self.scenario_impact = np.random.normal(1, 0.1, self.n_scenarios)
@@ -124,7 +124,7 @@ class Instance():
         logging.info(f"diseases: {self.n_diseases}")
         logging.info(f"scenarios: {self.n_scenarios}")
         logging.info(f"scenarios_impact: {self.scenario_impact}")
-        logging.info(f"prob s: {self.prob_s}")
+        #logging.info(f"prob s: {self.prob_s}")
         logging.info(f"w: {self.w}")
         logging.info(f"c prime: {self.c_prime}")
         logging.info(f"c_sij: {self.c_sij}")
@@ -170,7 +170,7 @@ class Instance():
             "diseases": self.n_diseases,
             "scenarios": self.n_scenarios,
             "w" : self.w,
-            "prob_s": self.prob_s,
+            #"prob_s": self.prob_s,
             "c_prime": self.c_prime,
             "c_sij": self.c_sij,
             "d_mj": self.d_mj,

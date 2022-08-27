@@ -56,7 +56,7 @@ class Heuristic():
                 d_jk[j,best_band] += demand     
         return d_jk
 
-    def solve(dict_data):
+    def solve(dict_data, prob_s):
 
         crit = HillClimbing()
 
@@ -69,7 +69,7 @@ class Heuristic():
         initial_sol = np.zeros(dict_data["crops"])
         initial_sol[0] = dict_data["a"]
 
-        sowingState = SowingState(initial_sol,dict_data,occupation_matr)
+        sowingState = SowingState(initial_sol,dict_data,prob_s, occupation_matr)
         start=time.time()
         alns = make_alns()
         alns.iterate(sowingState, weights, crit, MaxIterations(MAX_ITERATIONS))
@@ -90,7 +90,7 @@ class Heuristic():
 
         for s in scenarios:
             of_heu, sol_heu, comp_time = heu1.solve(dict_data,s, sowingState.best_a_i, dict_data["a"]-sowingState.best_sol,0)
-            profit += of_heu*dict_data["prob_s"][s]
+            profit += of_heu*prob_s[s]
 
         end=time.time()
         comp_time_second=end-start
@@ -104,14 +104,14 @@ class SowingState(State):
     solution as a vector of binary variables, one for each item.
     """
 
-    def __init__(self, a_i, dict_data, occupation_matr):
+    def __init__(self, a_i, dict_data, prob_s, occupation_matr):
         self.a_i = a_i
         self.dict_data = dict_data
         self.occupation_matr = occupation_matr
         self.best_sol = np.sum(a_i)
         self.best_a_i = a_i
         self.iteration_n = 0
-        self.y_ijk = Heuristic.collapse_prob(self.dict_data["y_sijk"], self.dict_data["prob_s"])
+        self.y_ijk = Heuristic.collapse_prob(self.dict_data["y_sijk"], prob_s)
         self.d_jk = Heuristic.weekly_demand_matrix(self.dict_data,self.y_ijk)
 
     def objective(self):

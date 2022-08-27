@@ -9,7 +9,7 @@ class RobustPlantingPlanSolver():
         pass
 
     def solve(
-            self, dict_data, reward=None,time_limit=None, 
+            self, dict_data, prob_s=None,time_limit=None, 
             gap=None, verbose=False
             ):
         
@@ -119,11 +119,11 @@ class RobustPlantingPlanSolver():
         
         #Expected value for a function in s
         def E_s(function_of_s):
-            Expected = gp.quicksum(dict_data["prob_s"][s]*function_of_s(s) for s in scenarios)
+            Expected = gp.quicksum(prob_s[s]*function_of_s(s) for s in scenarios)
             return Expected
         
         #Objective function
-        obj_funct = (1-w)*E_s(Profit) - w*gp.quicksum(dict_data["prob_s"][s]*z[s] for s in scenarios)
+        obj_funct = (1-w)*E_s(Profit) - w*gp.quicksum(prob_s[s]*z[s] for s in scenarios)
         model.setObjective(obj_funct, GRB.MAXIMIZE)
         
 

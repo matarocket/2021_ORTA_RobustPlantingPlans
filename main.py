@@ -41,8 +41,9 @@ if __name__ == '__main__':
     #     inst,
     #     n_scenarios=n_scenarios
     # )
-
     
+    # Prob scenarios
+    prob_s = sam.sample_stoch(inst)
 
     # mean_reward = sam.sample_ev(
     #     inst,
@@ -53,10 +54,11 @@ if __name__ == '__main__':
     prb = RobustPlantingPlanSolver()
     of_exact, sol_exact, comp_time_exact, model = prb.solve(
         dict_data,
+        prob_s=prob_s
         #verbose=True
     )
 
-    of_heu, sol_heu, comp_time_second, comp_time_first = Heuristic.solve(dict_data)
+    of_heu, sol_heu, comp_time_second, comp_time_first = Heuristic.solve(dict_data, prob_s)
 
     print("\n\n\n>> Profit exact solver :  ", of_exact," <<\n")
     print(">> Sowing plan (A_i) :  ", sol_exact," <<\n")
@@ -69,7 +71,27 @@ if __name__ == '__main__':
     print(">> Total computational time for heuristic :  ", comp_time_second+comp_time_first," <<\n\n\n")
 
     print(">> Percentual difference :  ", 100*(of_exact - of_heu)/of_exact, " <<")
-
+    
+    
+    # w_vector = np.linspace(0,1,10)
+    # N = 10
+    # res_w = []
+    
+    # idx_w = 0
+    # for w in w_vector:
+    #     res_w.append([])
+    #     for n in range(N):   
+    #         # Prob scenarios
+    #         prob_s = sam.sample_stoch(inst)
+    #         dict_data = inst.get_data()
+    #         inst.prob_s = prob_s
+            
+    #         of_exact, _, _, _ = prb.solve(
+    #             dict_data,
+    #             #verbose=True
+    #         )
+    #         res_w[idx_w].append(of_exact)
+    #     idx_w += 1
 
 
 
