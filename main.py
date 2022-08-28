@@ -12,6 +12,7 @@ from solver.robustPlantingPlan import RobustPlantingPlanSolver
 from heuristic.firstStageHeuristicALNS import Heuristic
 from solver.sampler import Sampler
 from utility.plot_results import plot_comparison_hist
+from utility.plot_results import plot_w_comparison
 import matplotlib.pyplot as plt
 
 np.random.seed(0)
@@ -169,23 +170,24 @@ if __name__ == '__main__':
     #     #verbose=True
     # )
     
-    # IN SAMPLE STABILITY
+    #%% IN SAMPLE STABILITY
+    
     test = Tester()
-    n_scenarios_vector = [5,10,20]
+    n_scenarios_vector = [12, 15]
     in_sample_res = []
     for n_scenarios in n_scenarios_vector:
-        n_repetitions = 25
+        n_repetitions = 50
         of_mean, of_std = test.in_sample_stability(sim_setting, prb, sam, inst, dict_data, n_repetitions, n_scenarios)
         in_sample_res.append((of_mean, of_std))
 
-    # OUT OF SAMPLE STABILITY 
-    n_scenarios_vector = [5,10,20]
-    out_sample_res = []
-    n_scenarios = 5
-    for n_scenarios in n_scenarios_vector:
-        n_scenarios_out = 25
-        of_mean, of_std = test.out_of_sample_stability(sim_setting, prb, sam, inst, dict_data, n_repetitions, n_scenarios, n_scenarios_out)
-        out_sample_res.append((of_mean, of_std))
+    # # OUT OF SAMPLE STABILITY 
+    # n_scenarios_vector = [5,10,20]
+    # out_sample_res = []
+    # n_scenarios = 5
+    # for n_scenarios in n_scenarios_vector:
+    #     n_scenarios_out = 25
+    #     of_mean, of_std = test.out_of_sample_stability(sim_setting, prb, sam, inst, dict_data, n_repetitions, n_scenarios, n_scenarios_out)
+    #     out_sample_res.append((of_mean, of_std))
 
     # of_heu, sol_heu, comp_time_second, comp_time_first = Heuristic.solve(dict_data, prob_s)
 
@@ -202,8 +204,10 @@ if __name__ == '__main__':
     # print(">> Percentual difference :  ", 100*(of_exact - of_heu)/of_exact, " <<")
     
     
-    # w_vector = np.linspace(0,0.9,5)
-    # N = 3
+    #%% VARYING W
+    
+    # w_vector = np.linspace(0,0.9,10)
+    # N = 25
     # res_w_exact = np.zeros((N, len(w_vector)))
     # res_w_heu = np.zeros((N, len(w_vector)))
     
@@ -236,24 +240,17 @@ if __name__ == '__main__':
     #         #res_w_heu[n, idx_w] = of_heu
            
     # #Exact results
-    # w_res_norm = (1./res_w_exact)*res_w_exact[0,:]
+    # w_res_norm = (res_w_exact)*(1./res_w_exact[:,0].reshape(-1,1))
     # mean_w_exact = np.mean(w_res_norm, axis=0)
-    # stddev_w_exact = np.std(w_res_norm, axis=0)
+    # stddev_w_exact = np.std(res_w_exact, axis=0)
+    # stddev_w_norm = stddev_w_exact[0]*(1./stddev_w_exact)
     
-    # #Plots
-    # plt.plot(w_vector, mean_w_exact, color='blue')
-    # plt.plot(w_vector, mean_w_exact+stddev_w_exact, linestyle='--', color='blue')
-    # plt.plot(w_vector, mean_w_exact-stddev_w_exact, linestyle='--', color='blue')
-    # plt.xlabel("w")
-    # plt.ylabel("OF [eur]")
-    # plt.title("Mean results by varying w")
-    # plt.grid()
-    # plt.show()
+    # plot_w_comparison(w_vector, mean_w_exact, stddev_w_norm)
     
-
-
-    # COMPARISON:
-    # test = Tester()
+    
+    #%% COMPARISON:
+    
+        # test = Tester()
     # n_scenarios = 1000
     # reward_1 = sam.sample_stoch(
     #     inst,

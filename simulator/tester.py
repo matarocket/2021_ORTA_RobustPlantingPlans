@@ -88,11 +88,13 @@ class Tester():
     
     def in_sample_stability(self, sim_setting, problem, sampler, instance, dict_data, n_repertions, n_scenarios_sol):
         ans = [0] * n_repertions
+        
         for i in range(n_repertions):
             
             sim_setting["n_scenarios"] = n_scenarios_sol
             inst = Instance(sim_setting)
             dict_data = inst.get_data()
+            
             prob_s = sampler.sample_stoch(inst)
             
             of, _, _, _ = problem.solve(
