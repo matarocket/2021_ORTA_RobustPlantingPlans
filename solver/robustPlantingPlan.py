@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from calendar import week
 import time
 import logging
 import gurobipy as gp
@@ -95,6 +96,15 @@ class RobustPlantingPlanSolver():
                 name='Ai'
             )
 
+        #over harvesting
+        Trash= model.addVars(
+            dict_data["crops"], 
+            #lb=0,
+            #ub=10000,
+            vtype=GRB.CONTINUOUS,
+            name='Trash'
+        )
+
         #Auxiliar variable by {scenario}
         z = model.addVars(
                 dict_data["scenarios"],
@@ -190,22 +200,26 @@ class RobustPlantingPlanSolver():
                     "Land Use Constraint - 1"
                 )
 
+
+        #Disease Constraint 
+        for s in scenarios:
+            for i in crops:
+                model.addConstr(
+                    Trash[i] == gp.quicksum(dict_data["r_iq"][i][q]*dict_data["u_q"][q]*Ai[i] for q in diseases),
+                    f"Disease Constraint - i: {i} "
+                )
+
+
         #Land Use Constraint - 2  
         for s in scenarios:
             for  i in crops:
                 model.addConstr(
-                    Ai[i] == gp.quicksum(Hsij[s,i,j] for j in weeks),
+                    Ai[i] == gp.quicksum(Hsij[s,i,j] for j in weeks)+Trash[i],
                     f"Land Use Constraint - 2 - s: {s}, i: {i}"
                 )
-
-        #Disease Constraint 
-        for j in weeks:
-            for q in diseases:
-                for s in scenarios:
-                    model.addConstr(
-                        gp.quicksum(dict_data["r_iq"][i][q]*gp.quicksum(dict_data['y_sijk'][s][i][j][k]*Hsij[s,i,j] for k in bands) for i in crops) <= dict_data['u_q'][q]*gp.quicksum(dict_data['d_mj'][m][j] for m in customers),
-                        f"Disease Constraint - s: {s}, j: {j}, q: {q}"
-                    )
+        
+        
+                
 
         #Individual Variety Limit 
         for v in varieties:
@@ -239,7 +253,7 @@ class RobustPlantingPlanSolver():
             model.setParam('OutputFlag', 1)
         else:
             model.setParam('OutputFlag', 0)
-        model.setParam('LogFile', './logs/gurobi.log')
+        model.setParam('LogFile', 'C:\\Users\\Giulia\\Desktop\\PoliTO\\Operational research\\2021_ORTA_RobustPlantingPlans\\logs\\gurobi.log')
         # model.write("./logs/model.lp")
 
         
@@ -247,7 +261,7 @@ class RobustPlantingPlanSolver():
 
         start = time.time()
         model.optimize()
-        model.write('./logs/gurobi_optimal.lp')
+        model.write('C:\\Users\\Giulia\\Desktop\\PoliTO\\Operational research\\2021_ORTA_RobustPlantingPlans\\logs\\gurobi_optimal.lp')
         end = time.time()
         comp_time = end - start
         

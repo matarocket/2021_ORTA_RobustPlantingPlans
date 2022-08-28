@@ -191,7 +191,7 @@ class SecondStageSolver():
         print("Gurobi start!")
         start = time.time()
         model.optimize()
-        model.write('./logs/gurobi_secondStage.lp')
+        model.write('C:\\Users\\Giulia\\Desktop\\PoliTO\\Operational research\\2021_ORTA_RobustPlantingPlans\\logs\\gurobi_secondStage.lp')
         end = time.time()
         comp_time = end - start
 

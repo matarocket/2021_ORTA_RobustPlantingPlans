@@ -31,3 +31,28 @@ def plot_w_comparison(w_vector, mean_w_exact, stddev_w_norm):
     pyplot.savefig(f"./results/w_comparision_std.png")
     pyplot.close()
     #plt.show()
+
+def plot_comparison_compTimes(N, comp_G, comp_Heu):
+    plt.plot(range(1,1+N), comp_G, label="exact", color="dodgerblue")
+    plt.plot(range(1,1+N),comp_Heu, label="heuristic", color="gold")
+    plt.xlabel("N° of scenarios")
+    plt.ylabel("Computational time [s]")
+    plt.grid()
+    plt.title("Computational time over the number of scenarios")
+    plt.legend()
+    plt.show()
+    #pyplot.savefig(f"C:\\Users\\Giulia\\Desktop\\PoliTO\\Operational research\\2021_ORTA_RobustPlantingPlans\\results\\comp_time.png")
+    #pyplot.close()
+
+
+def plot_comparison_compTimes_crops(N, comp_G, comp_Heu):
+    plt.plot(range(3,1+N), comp_G, label="exact", color="dodgerblue")
+    plt.plot(range(3,1+N),comp_Heu, label="heuristic", color="gold")
+    plt.xlabel("Crop dimensionality [n x n x n]")
+    plt.ylabel("Computational time [s]")
+    plt.grid()
+    plt.title("Computational time over the dimensionality settings")
+    plt.legend()
+    plt.show()
+    #pyplot.savefig(f"C:\\Users\\Giulia\\Desktop\\PoliTO\\Operational research\\2021_ORTA_RobustPlantingPlans\\results\\comp_time_crops.png")
+    #pyplot.close()

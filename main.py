@@ -14,6 +14,7 @@ from solver.sampler import Sampler
 from utility.plot_results import plot_comparison_hist
 from utility.plot_results import plot_w_comparison
 import matplotlib.pyplot as plt
+import utility.plot_results as pr
 
 np.random.seed(0)
 
@@ -129,7 +130,7 @@ def Mean_profit_from_gb(model, dict_data, prob_s):
     return ret
 
 if __name__ == '__main__':
-    log_name = "./logs/main.log"
+    log_name = "C:\\Users\\Giulia\\Desktop\\PoliTO\\Operational research\\2021_ORTA_RobustPlantingPlans\\logs\\main.log"
     logging.basicConfig(
         filename=log_name,
         format='%(asctime)s %(levelname)s: %(message)s',
@@ -137,7 +138,7 @@ if __name__ == '__main__':
         filemode='w'
     )
 
-    fp = open("./etc/sim_setting.json", 'r')
+    fp = open("C:\\Users\\Giulia\\Desktop\\PoliTO\\Operational research\\2021_ORTA_RobustPlantingPlans\\etc\\sim_setting.json", 'r')
     sim_setting = json.load(fp)
     fp.close()
 
@@ -164,21 +165,21 @@ if __name__ == '__main__':
     # print(mean_reward)
 
     prb = RobustPlantingPlanSolver()
-    # of_exact, sol_exact, comp_time_exact, model = prb.solve(
-    #     dict_data,
-    #     prob_s=prob_s
-    #     #verbose=True
-    # )
+    of_exact, sol_exact, comp_time_exact, model = prb.solve(
+        dict_data,
+        prob_s=prob_s
+        #verbose=True
+    )
     
-    #%% IN SAMPLE STABILITY
+    # #%% IN SAMPLE STABILITY
     
-    test = Tester()
-    n_scenarios_vector = [12, 15]
-    in_sample_res = []
-    for n_scenarios in n_scenarios_vector:
-        n_repetitions = 50
-        of_mean, of_std = test.in_sample_stability(sim_setting, prb, sam, inst, dict_data, n_repetitions, n_scenarios)
-        in_sample_res.append((of_mean, of_std))
+    # test = Tester()
+    # n_scenarios_vector = [12, 15]
+    # in_sample_res = []
+    # for n_scenarios in n_scenarios_vector:
+    #     n_repetitions = 50
+    #     of_mean, of_std = test.in_sample_stability(sim_setting, prb, sam, inst, dict_data, n_repetitions, n_scenarios)
+    #     in_sample_res.append((of_mean, of_std))
 
     # # OUT OF SAMPLE STABILITY 
     # n_scenarios_vector = [5,10,20]
@@ -189,19 +190,19 @@ if __name__ == '__main__':
     #     of_mean, of_std = test.out_of_sample_stability(sim_setting, prb, sam, inst, dict_data, n_repetitions, n_scenarios, n_scenarios_out)
     #     out_sample_res.append((of_mean, of_std))
 
-    # of_heu, sol_heu, comp_time_second, comp_time_first = Heuristic.solve(dict_data, prob_s)
+    of_heu, sol_heu, comp_time_second, comp_time_first = Heuristic.solve(dict_data, prob_s)
 
-    # print("\n\n\n>> Profit exact solver :  ", of_exact," <<\n")
-    # print(">> Sowing plan (A_i) :  ", sol_exact," <<\n")
-    # print(">> Total computational time :  ", comp_time_exact," <<\n")
+    print("\n\n\n>> Profit exact solver :  ", of_exact," <<\n")
+    print(">> Sowing plan (A_i) :  ", sol_exact," <<\n")
+    print(">> Total computational time :  ", comp_time_exact," <<\n")
 
-    # print("\n\n\n>> Profit heuristic solver :  ", of_heu," <<\n")
-    # print(">> Heuristic sowing plan (A_i) :  ", sol_heu," <<\n")
-    # print(">> First stage computational time for heuristic :  ", comp_time_first," <<")
-    # print(">> Second stage computational time for heuristic :  ", comp_time_second," <<")
-    # print(">> Total computational time for heuristic :  ", comp_time_second+comp_time_first," <<\n\n\n")
+    print("\n\n\n>> Profit heuristic solver :  ", of_heu," <<\n")
+    print(">> Heuristic sowing plan (A_i) :  ", sol_heu," <<\n")
+    print(">> First stage computational time for heuristic :  ", comp_time_first," <<")
+    print(">> Second stage computational time for heuristic :  ", comp_time_second," <<")
+    print(">> Total computational time for heuristic :  ", comp_time_second+comp_time_first," <<\n\n\n")
 
-    # print(">> Percentual difference :  ", 100*(of_exact - of_heu)/of_exact, " <<")
+    print(">> Percentual difference :  ", 100*(of_exact - of_heu)/of_exact, " <<")
     
     
     #%% VARYING W
@@ -247,56 +248,61 @@ if __name__ == '__main__':
     
     # plot_w_comparison(w_vector, mean_w_exact, stddev_w_norm)
     
-    
-    #%% COMPARISON:
-    
-        # test = Tester()
-    # n_scenarios = 1000
-    # reward_1 = sam.sample_stoch(
-    #     inst,
-    #     n_scenarios=n_scenarios
-    # )
-    # ris1 = test.solve_second_stages(
-    #     inst,
-    #     sol_exact,
-    #     n_scenarios,
-    #     reward_1
-    # )
-    # reward_2 = sam.sample_stoch(
-    #     inst,
-    #     n_scenarios=n_scenarios
-    # )
-    # ris2 = test.solve_second_stages(
-    #     inst,
-    #     sol_exact,
-    #     n_scenarios,
-    #     reward_2
-    # )
-    # plot_comparison_hist(
-    #     [ris1, ris2],
-    #     ["run1", "run2"],
-    #     ['red', 'blue'],
-    #     "profit", "occurencies"
-    # )
 
-    '''
-    heu = SimpleHeu(2)
-    of_heu, sol_heu, comp_time_heu = heu.solve(
-        dict_data
-    )
-    print(of_heu, sol_heu, comp_time_heu)
 
-    # printing results of a file
-    file_output = open(
-        "./results/exp_general_table.csv",
-        "w"
-    )
-    file_output.write("method, of, sol, time\n")
-    file_output.write("{}, {}, {}, {}\n".format(
-        "heu", of_heu, sol_heu, comp_time_heu
-    ))
-    file_output.write("{}, {}, {}, {}\n".format(
-        "exact", of_exact, sol_exact, comp_time_exact
-    ))
-    file_output.close()
-    '''
+
+    #COMPARISON HEURISTIC - GUROBI IN TERMS OF TIME 
+    #>> 1
+    #evaluation of computational time over the changing number of scenarios 
+    
+    
+    N = 10
+    time_Gurobi=[]
+    time_Heu=[]
+    for n in range(1,N+1):   
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", n)
+
+        dictionary={"n_diseases": 3,"n_varieties": 8,"n_spacings" : 4,"n_size_bands": 5,"n_customers": 10,"n_scenarios": n,"n_sowing_dates": 4,"n_harvesting_dates": 4,"w": 0.5}
+        inst = Instance(dictionary)
+        dict_data = inst.get_data()
+        prob_s = sam.sample_stoch(inst)
+        inst.prob_s = prob_s
+        
+        _, _, comp_time_Gurobi, _ = prb.solve(
+            dict_data,
+            prob_s
+        )
+        
+        _, _, comp_time_2, comp_time_1 = Heuristic.solve(dict_data, prob_s)
+
+        time_Gurobi.append(comp_time_Gurobi)
+        time_Heu.append(comp_time_1+comp_time_2)
+
+    pr.plot_comparison_compTimes(N, time_Gurobi, time_Heu)
+
+
+    #>> 2
+    #evaluation of computational time over the changing number of crops 
+    N = 10
+    time_Gurobi_crops=[]
+    time_Heu_crops=[]
+    for n in range(3,N+1):   
+        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", n)
+
+        dictionary={"n_diseases": 3,"n_varieties": n,"n_spacings" : n,"n_size_bands": 5,"n_customers": 10,"n_scenarios": 5,"n_sowing_dates": n,"n_harvesting_dates": 4,"w": 0.5}
+        inst = Instance(dictionary)
+        dict_data = inst.get_data()
+        prob_s = sam.sample_stoch(inst)
+        inst.prob_s = prob_s
+        
+        _, _, comp_time_Gurobi, _ = prb.solve(
+            dict_data,
+            prob_s
+        )
+        
+        _, _, comp_time_2, comp_time_1 = Heuristic.solve(dict_data, prob_s)
+
+        time_Gurobi_crops.append(comp_time_Gurobi)
+        time_Heu_crops.append(comp_time_1+comp_time_2)
+
+    pr.plot_comparison_compTimes_crops(N, time_Gurobi_crops, time_Heu_crops)

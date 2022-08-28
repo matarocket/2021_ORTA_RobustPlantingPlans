@@ -110,8 +110,8 @@ class Instance():
         #Susceptibility to diseases {crop, disease}
         self.r_iq = np.around(np.random.rand(self.n_crops,self.n_diseases), 0)
         
-        #Upper limit to harvested proportion of a field for a given disease
-        self.u_q = np.random.uniform(0.7,1,self.n_diseases)
+        #upper limit on the harvesting part affected by illnesses 
+        self.u_q = np.random.uniform(0,0.2,self.n_diseases)
 
         #Log variables
         logging.info(f"crops: {self.n_crops}")
