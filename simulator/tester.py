@@ -7,7 +7,7 @@ import numpy as np
 import gurobipy as gp
 from gurobipy import GRB
 from simulator.instance import Instance
-import heuristic.secondStageHeuristicGurobi as Heuristic
+import heuristic.secondStageHeuristicGurobi as heu
 
 
 class Tester():
@@ -104,48 +104,150 @@ class Tester():
             
             ans[i] = of
         return np.mean(ans), np.std(ans)
+
+    def in_sample_stability_new(self, N_scen_tot, sam, problem):
+        x_mean=[]
+        x_std=[]
+
+        dictionary={"n_diseases": 3,"n_varieties": 8,"n_spacings" : 4,"n_size_bands": 5,"n_customers": 10,"n_scenarios": N_scen_tot,"n_sowing_dates": 4,"n_harvesting_dates": 4,"w": 0.5}
     
-    def out_of_sample_stability(self, sim_setting, problem, sampler, instance, n_repertions, n_scenarios_sol, n_scenarios_out):
-        ans = [0] * n_repertions
-        heu1 = Heuristic.SecondStageSolver()
-        
-        for i in range(n_repertions):
-            
-            sim_setting["n_scenarios"] = n_scenarios_sol
-            inst = Instance(sim_setting)
-            dict_data = inst.get_data()
-            prob_s = sampler.sample_stoch(inst)
-            
-            of, _, _, opt_model = problem.solve(
+        inst = Instance(dictionary)
+        dict_data = inst.get_data()
+        prob_s = sam.sample_stoch(inst)
+        inst.prob_s = prob_s
+
+        print(">>>>>>>>>>> TEST start <<<<<<<<<<<<<<<<<<<<<<")
+        _, sol, _, model = problem.solve(
                 dict_data,
                 prob_s
             )
+        
+        grb_var = model.getVarByName("Lminus[0]") 
+        L_minus = grb_var.X
+        grb_var = model.getVarByName("Lplus[0]") 
+        L_plus = grb_var.X
+
+        x = range(1,N_scen_tot)
+        heu1 = heu.SecondStageSolver()
+        of_results=[]
+
+        print(">>>>>>>>>>> TEST stop <<<<<<<<<<<<<<<<<<<<<<")
+
+        for i in x:
+            print(">>>>>>>> Heu iteration N° ", i)
+            of_heu, _, _ = heu1.solve(dict_data, i, sol, L_plus, L_minus)
+            of_results.append(of_heu)
+
+        for i in x:
+            print(">>>>>>>> Mean and std iteration N° ", i)
+            aux=of_results[0:i]
+            print(aux)
+            if(i==1):
+                for elem in aux:
+                    x_mean.append(elem)
+                    x_std.append(0)
+            else:
+                x_mean.append(np.mean(aux))
+                x_std.append(np.std(aux))
             
-            crops = range(dict_data["crops"]) 
-            L_minus = 0
-            L_plus = 0
-            A_i = np.zeros((dict_data['crops']))
+        return x_mean, x_std
+
+    def out_of_sample_stability_new(self, N_scen_tot, sam, problem):
+        x_mean=[]
+        x_std=[]
+
+        x = range(1,N_scen_tot)
+        x_train_len=int(np.around(0.3*len(x)))
+        #x_train=x[:x_train_len]
+        x_test=x[x_train_len:]
+        x_test_len=len(x_test)
+        x_range=range(1,x_test_len+1)
+
+        dictionary={"n_diseases": 3,"n_varieties": 8,"n_spacings" : 4,"n_size_bands": 5,"n_customers": 10,"n_scenarios": N_scen_tot,"n_sowing_dates": 4,"n_harvesting_dates": 4,"w": 0.5}
+    
+        inst = Instance(dictionary)
+        dict_data = inst.get_data()
+        prob_s = sam.sample_stoch_alternative(N_scen_tot, x_train_len)
+        inst.prob_s = prob_s
+
+        print(">>>>>>>>>>> TEST start <<<<<<<<<<<<<<<<<<<<<<")
+        _, sol, _, model = problem.solve(
+                dict_data,
+                prob_s
+            )
+        
+        grb_var = model.getVarByName("Lminus[0]") 
+        L_minus = grb_var.X
+        grb_var = model.getVarByName("Lplus[0]") 
+        L_plus = grb_var.X
+
+        x = range(1,N_scen_tot)
+        heu1 = heu.SecondStageSolver()
+        of_results=[]
+
+        print(">>>>>>>>>>> TEST stop <<<<<<<<<<<<<<<<<<<<<<")
+
+        for i in x_test:
+            print(">>>>>>>> Heu iteration N° ", i)
+            of_heu, _, _ = heu1.solve(dict_data, i, sol, L_plus, L_minus)
+            of_results.append(of_heu)
+
+        for i in x_range:
+            print(">>>>>>>> Mean and std iteration N° ", i)
+            aux=of_results[0:i]
+            print(aux)
+            if(i==1):
+                for elem in aux:
+                    x_mean.append(elem)
+                    x_std.append(0)
+            else:
+                x_mean.append(np.mean(aux))
+                x_std.append(np.std(aux))
             
-            grb_var = opt_model.getVarByName("Lminus[0]") 
-            L_minus = grb_var.X
-            grb_var = opt_model.getVarByName("Lplus[0]") 
-            L_plus = grb_var.X
-            for i in crops:
-                grb_var = opt_model.getVarByName(
-                    f"Ai[{i}]"
-                )
-                A_i[i] = grb_var.X
+        return x_mean, x_std, x_range
+
+    
+    # def out_of_sample_stability(self, sim_setting, problem, sampler, instance, n_repertions, n_scenarios_sol, n_scenarios_out):
+    #     ans = [0] * n_repertions
+    #     heu1 = Heuristic.SecondStageSolver()
+        
+    #     for i in range(n_repertions):
             
-            sim_setting["n_scenarios"] = n_scenarios_out
-            inst = Instance(sim_setting)
-            dict_data = inst.get_data()
-            prob_s = sampler.sample_stoch(inst)
+    #         sim_setting["n_scenarios"] = n_scenarios_sol
+    #         inst = Instance(sim_setting)
+    #         dict_data = inst.get_data()
+    #         prob_s = sampler.sample_stoch(inst)
             
-            profit = 0
-            for s in n_scenarios_out:
-                of_heu, sol_heu, comp_time = heu1.solve(dict_data, s, A_i, L_plus, L_minus)
-                profit += of_heu*prob_s[s]
+    #         of, _, _, opt_model = problem.solve(
+    #             dict_data,
+    #             prob_s
+    #         )
             
-            ans[i] = profit
+    #         crops = range(dict_data["crops"]) 
+    #         L_minus = 0
+    #         L_plus = 0
+    #         A_i = np.zeros((dict_data['crops']))
             
-        return ans
+    #         grb_var = opt_model.getVarByName("Lminus[0]") 
+    #         L_minus = grb_var.X
+    #         grb_var = opt_model.getVarByName("Lplus[0]") 
+    #         L_plus = grb_var.X
+    #         for i in crops:
+    #             grb_var = opt_model.getVarByName(
+    #                 f"Ai[{i}]"
+    #             )
+    #             A_i[i] = grb_var.X
+            
+    #         sim_setting["n_scenarios"] = n_scenarios_out
+    #         inst = Instance(sim_setting)
+    #         dict_data = inst.get_data()
+    #         prob_s = sampler.sample_stoch(inst)
+            
+    #         profit = 0
+    #         for s in n_scenarios_out:
+    #             of_heu, sol_heu, comp_time = heu1.solve(dict_data, s, A_i, L_plus, L_minus)
+    #             profit += of_heu*prob_s[s]
+            
+    #         ans[i] = profit
+            
+    #     return ans

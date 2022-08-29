@@ -129,7 +129,11 @@ def Mean_profit_from_gb(model, dict_data, prob_s):
     
     return ret
 
+
+
 if __name__ == '__main__':
+
+
     log_name = "C:\\Users\\Giulia\\Desktop\\PoliTO\\Operational research\\2021_ORTA_RobustPlantingPlans\\logs\\main.log"
     logging.basicConfig(
         filename=log_name,
@@ -138,50 +142,67 @@ if __name__ == '__main__':
         filemode='w'
     )
 
+
     fp = open("C:\\Users\\Giulia\\Desktop\\PoliTO\\Operational research\\2021_ORTA_RobustPlantingPlans\\etc\\sim_setting.json", 'r')
     sim_setting = json.load(fp)
     fp.close()
 
     sam = Sampler()
-
-    inst = Instance(sim_setting)
-    dict_data = inst.get_data()
-    print(dict_data)
-    
-    # # Reward generation
-    # n_scenarios = 5
-    # reward = sam.sample_stoch(
-    #     inst,
-    #     n_scenarios=n_scenarios
-    # )
-    
-    # Prob scenarios
-    prob_s = sam.sample_stoch(inst)
-
-    # mean_reward = sam.sample_ev(
-    #     inst,
-    #     n_scenarios=n_scenarios
-    # )
-    # print(mean_reward)
-
     prb = RobustPlantingPlanSolver()
-    of_exact, sol_exact, comp_time_exact, model = prb.solve(
-        dict_data,
-        prob_s=prob_s
-        #verbose=True
-    )
+
+    #%% Gurobi solution
+    # inst = Instance(sim_setting)
+    # dict_data = inst.get_data()
+    # print(dict_data)
+   
+    # # Prob scenarios
+    # prob_s = sam.sample_stoch(inst)
+
+    # of_exact, sol_exact, comp_time_exact, model = prb.solve(
+    #     dict_data,
+    #     prob_s=prob_s
+    #     #verbose=True
+    # )
     
+    #%% Old in sample stability
+    #TODO check if we should remove it 
     # #%% IN SAMPLE STABILITY
     
     # test = Tester()
-    # n_scenarios_vector = [12, 15]
-    # in_sample_res = []
+    # n_scenarios_v = np.linspace(1,500,10)
+
+
+    # n_scenarios_vector=[]
+    # for i in n_scenarios_v:
+    #     n_scenarios_vector.append(int(np.around(i)))
+
+    # in_sample_res_mean = []
+    # in_sample_res_std = []
     # for n_scenarios in n_scenarios_vector:
+    #     print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", n_scenarios)
     #     n_repetitions = 50
     #     of_mean, of_std = test.in_sample_stability(sim_setting, prb, sam, inst, dict_data, n_repetitions, n_scenarios)
-    #     in_sample_res.append((of_mean, of_std))
+    #     in_sample_res_mean.append(of_mean)
+    #     in_sample_res_std.append(of_std)
+    
+    # pr.mean_std_plot(n_scenarios_vector, in_sample_res_std, in_sample_res_mean)
 
-    # # OUT OF SAMPLE STABILITY 
+    #%% STABILITY - new 
+    test = Tester()
+    N_scen_tot=150
+
+    #IN SAMPLE STABILITY
+    x_mean, x_std = test.in_sample_stability_new(N_scen_tot, sam, prb)
+    pr.mean_std_plot(range(1,N_scen_tot), x_std, x_mean)
+
+    #OUT OF SAMPLE STABILITY
+    x_mean_out, x_std_out, x = test.out_of_sample_stability_new(N_scen_tot, sam, prb)
+    pr.mean_std_plot_out(x, x_std_out, x_mean_out)
+
+    
+    
+    #%% Old out of sample stability
+    #TODO check if we should remove it 
     # n_scenarios_vector = [5,10,20]
     # out_sample_res = []
     # n_scenarios = 5
@@ -190,19 +211,19 @@ if __name__ == '__main__':
     #     of_mean, of_std = test.out_of_sample_stability(sim_setting, prb, sam, inst, dict_data, n_repetitions, n_scenarios, n_scenarios_out)
     #     out_sample_res.append((of_mean, of_std))
 
-    of_heu, sol_heu, comp_time_second, comp_time_first = Heuristic.solve(dict_data, prob_s)
+    # of_heu, sol_heu, comp_time_second, comp_time_first = Heuristic.solve(dict_data, prob_s)
 
-    print("\n\n\n>> Profit exact solver :  ", of_exact," <<\n")
-    print(">> Sowing plan (A_i) :  ", sol_exact," <<\n")
-    print(">> Total computational time :  ", comp_time_exact," <<\n")
+    # print("\n\n\n>> Profit exact solver :  ", of_exact," <<\n")
+    # print(">> Sowing plan (A_i) :  ", sol_exact," <<\n")
+    # print(">> Total computational time :  ", comp_time_exact," <<\n")
 
-    print("\n\n\n>> Profit heuristic solver :  ", of_heu," <<\n")
-    print(">> Heuristic sowing plan (A_i) :  ", sol_heu," <<\n")
-    print(">> First stage computational time for heuristic :  ", comp_time_first," <<")
-    print(">> Second stage computational time for heuristic :  ", comp_time_second," <<")
-    print(">> Total computational time for heuristic :  ", comp_time_second+comp_time_first," <<\n\n\n")
+    # print("\n\n\n>> Profit heuristic solver :  ", of_heu," <<\n")
+    # print(">> Heuristic sowing plan (A_i) :  ", sol_heu," <<\n")
+    # print(">> First stage computational time for heuristic :  ", comp_time_first," <<")
+    # print(">> Second stage computational time for heuristic :  ", comp_time_second," <<")
+    # print(">> Total computational time for heuristic :  ", comp_time_second+comp_time_first," <<\n\n\n")
 
-    print(">> Percentual difference :  ", 100*(of_exact - of_heu)/of_exact, " <<")
+    # print(">> Percentual difference :  ", 100*(of_exact - of_heu)/of_exact, " <<")
     
     
     #%% VARYING W
@@ -250,59 +271,58 @@ if __name__ == '__main__':
     
 
 
-
-    #COMPARISON HEURISTIC - GUROBI IN TERMS OF TIME 
+    #%% COMPARISON HEURISTIC - GUROBI IN TERMS OF TIME 
     #>> 1
     #evaluation of computational time over the changing number of scenarios 
     
     
-    N = 10
-    time_Gurobi=[]
-    time_Heu=[]
-    for n in range(1,N+1):   
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", n)
+    # N = 10
+    # time_Gurobi=[]
+    # time_Heu=[]
+    # for n in range(1,N+1):   
+    #     print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", n)
 
-        dictionary={"n_diseases": 3,"n_varieties": 8,"n_spacings" : 4,"n_size_bands": 5,"n_customers": 10,"n_scenarios": n,"n_sowing_dates": 4,"n_harvesting_dates": 4,"w": 0.5}
-        inst = Instance(dictionary)
-        dict_data = inst.get_data()
-        prob_s = sam.sample_stoch(inst)
-        inst.prob_s = prob_s
+    #     dictionary={"n_diseases": 3,"n_varieties": 8,"n_spacings" : 4,"n_size_bands": 5,"n_customers": 10,"n_scenarios": n,"n_sowing_dates": 4,"n_harvesting_dates": 4,"w": 0.5}
+    #     inst = Instance(dictionary)
+    #     dict_data = inst.get_data()
+    #     prob_s = sam.sample_stoch(inst)
+    #     inst.prob_s = prob_s
         
-        _, _, comp_time_Gurobi, _ = prb.solve(
-            dict_data,
-            prob_s
-        )
+    #     _, _, comp_time_Gurobi, _ = prb.solve(
+    #         dict_data,
+    #         prob_s
+    #     )
         
-        _, _, comp_time_2, comp_time_1 = Heuristic.solve(dict_data, prob_s)
+    #     _, _, comp_time_2, comp_time_1 = Heuristic.solve(dict_data, prob_s)
 
-        time_Gurobi.append(comp_time_Gurobi)
-        time_Heu.append(comp_time_1+comp_time_2)
+    #     time_Gurobi.append(comp_time_Gurobi)
+    #     time_Heu.append(comp_time_1+comp_time_2)
 
-    pr.plot_comparison_compTimes(N, time_Gurobi, time_Heu)
+    # pr.plot_comparison_compTimes(N, time_Gurobi, time_Heu)
 
 
-    #>> 2
-    #evaluation of computational time over the changing number of crops 
-    N = 10
-    time_Gurobi_crops=[]
-    time_Heu_crops=[]
-    for n in range(3,N+1):   
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", n)
+    # #>> 2
+    # #evaluation of computational time over the changing number of crops 
+    # N = 10
+    # time_Gurobi_crops=[]
+    # time_Heu_crops=[]
+    # for n in range(3,N+1):   
+    #     print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", n)
 
-        dictionary={"n_diseases": 3,"n_varieties": n,"n_spacings" : n,"n_size_bands": 5,"n_customers": 10,"n_scenarios": 5,"n_sowing_dates": n,"n_harvesting_dates": 4,"w": 0.5}
-        inst = Instance(dictionary)
-        dict_data = inst.get_data()
-        prob_s = sam.sample_stoch(inst)
-        inst.prob_s = prob_s
+    #     dictionary={"n_diseases": 3,"n_varieties": n,"n_spacings" : n,"n_size_bands": 5,"n_customers": 10,"n_scenarios": 5,"n_sowing_dates": n,"n_harvesting_dates": 4,"w": 0.5}
+    #     inst = Instance(dictionary)
+    #     dict_data = inst.get_data()
+    #     prob_s = sam.sample_stoch(inst)
+    #     inst.prob_s = prob_s
         
-        _, _, comp_time_Gurobi, _ = prb.solve(
-            dict_data,
-            prob_s
-        )
+    #     _, _, comp_time_Gurobi, _ = prb.solve(
+    #         dict_data,
+    #         prob_s
+    #     )
         
-        _, _, comp_time_2, comp_time_1 = Heuristic.solve(dict_data, prob_s)
+    #     _, _, comp_time_2, comp_time_1 = Heuristic.solve(dict_data, prob_s)
 
-        time_Gurobi_crops.append(comp_time_Gurobi)
-        time_Heu_crops.append(comp_time_1+comp_time_2)
+    #     time_Gurobi_crops.append(comp_time_Gurobi)
+    #     time_Heu_crops.append(comp_time_1+comp_time_2)
 
-    pr.plot_comparison_compTimes_crops(N, time_Gurobi_crops, time_Heu_crops)
+    # pr.plot_comparison_compTimes_crops(N, time_Gurobi_crops, time_Heu_crops)

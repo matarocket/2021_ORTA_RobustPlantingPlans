@@ -31,3 +31,16 @@ class Sampler:
         prob_s = prob_s/np.sum(prob_s)
         
         return prob_s
+
+    def sample_stoch_alternative(self, tot_scen, train_len):
+        
+        p=np.zeros(tot_scen-train_len)
+        aux=[]
+        for elem in p:
+            aux.append(int(elem))
+            
+        prob_s = np.random.uniform(0, 1, train_len)
+        prob_s = prob_s/np.sum(prob_s)
+        prob=[j for i in [prob_s, aux] for j in i] 
+        
+        return prob

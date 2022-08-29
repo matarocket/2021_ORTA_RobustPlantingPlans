@@ -56,3 +56,25 @@ def plot_comparison_compTimes_crops(N, comp_G, comp_Heu):
     plt.show()
     #pyplot.savefig(f"C:\\Users\\Giulia\\Desktop\\PoliTO\\Operational research\\2021_ORTA_RobustPlantingPlans\\results\\comp_time_crops.png")
     #pyplot.close()
+
+def mean_std_plot(n_scenarios_vector, in_sample_res_std, in_sample_res_mean):
+    plt.errorbar(n_scenarios_vector, in_sample_res_mean, in_sample_res_std,capsize=5, linestyle='None', marker='o', ecolor="lightcoral", c="dodgerblue")
+    plt.xlabel("N° scenarios")
+    plt.ylabel("Mean and std of profits")
+    plt.grid()
+    plt.title("Mean and std over different N° of scenarios")
+    plt.legend()
+    #plt.show()
+    pyplot.savefig(f"C:\\Users\\Giulia\\Desktop\\PoliTO\\Operational research\\2021_ORTA_RobustPlantingPlans\\results\\mean_std.png")
+    pyplot.close()
+
+def mean_std_plot_out(x, in_sample_res_std, in_sample_res_mean):
+    plt.errorbar(x, in_sample_res_mean, in_sample_res_std,capsize=5, linestyle='None', marker='o', ecolor="lightcoral", c="dodgerblue")
+    plt.xlabel("N° scenarios")
+    plt.ylabel("Mean and std of profits")
+    plt.grid()
+    plt.title("Mean and std over different N° of scenarios")
+    plt.legend()
+    #plt.show()
+    pyplot.savefig(f"C:\\Users\\Giulia\\Desktop\\PoliTO\\Operational research\\2021_ORTA_RobustPlantingPlans\\results\\mean_std_out.png")
+    pyplot.close()
