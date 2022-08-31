@@ -13,7 +13,7 @@ class Instance():
     #Constructor
     def __init__(self, sim_setting):
         
-        np.random.seed(0)
+        #np.random.seed(0)
         
         #Log
         logging.info("starting simulation...")

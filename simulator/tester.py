@@ -86,71 +86,102 @@ class Tester():
     #         ans[i] = of
     #     return ans
     
-    def in_sample_stability(self, sim_setting, problem, sampler, instance, dict_data, n_repertions, n_scenarios_sol):
-        ans = [0] * n_repertions
+    # def in_sample_stability(self, sim_setting, problem, sampler, instance, dict_data, n_repertions, n_scenarios_sol):
+    #     ans = [0] * n_repertions
         
-        for i in range(n_repertions):
+    #     for i in range(n_repertions):
             
-            sim_setting["n_scenarios"] = n_scenarios_sol
-            inst = Instance(sim_setting)
-            dict_data = inst.get_data()
+    #         sim_setting["n_scenarios"] = n_scenarios_sol
+    #         inst = Instance(sim_setting)
+    #         dict_data = inst.get_data()
             
-            prob_s = sampler.sample_stoch(inst)
+    #         prob_s = sampler.sample_stoch(inst)
             
-            of, _, _, _ = problem.solve(
-                dict_data,
-                prob_s
-            )
+    #         of, _, _, _ = problem.solve(
+    #             dict_data,
+    #             prob_s
+    #         )
             
-            ans[i] = of
-        return np.mean(ans), np.std(ans)
+    #         ans[i] = of
+    #     return np.mean(ans), np.std(ans)
 
-    def in_sample_stability_new(self, N_scen_tot, sam, problem):
+    # def in_sample_stability_new(self, N_scen_tot, sam, problem):
+    #     x_mean=[]
+    #     x_std=[]
+
+    #     dictionary={"n_diseases": 3,"n_varieties": 8,"n_spacings" : 4,"n_size_bands": 5,"n_customers": 10,"n_scenarios": N_scen_tot,"n_sowing_dates": 4,"n_harvesting_dates": 4,"w": 0.5}
+    
+    #     inst = Instance(dictionary)
+    #     dict_data = inst.get_data()
+    #     prob_s = sam.sample_stoch(inst)
+    #     inst.prob_s = prob_s
+
+    #     print(">>>>>>>>>>> TEST start <<<<<<<<<<<<<<<<<<<<<<")
+    #     _, sol, _, model = problem.solve(
+    #             dict_data,
+    #             prob_s
+    #         )
+        
+    #     grb_var = model.getVarByName("Lminus[0]") 
+    #     L_minus = grb_var.X
+    #     grb_var = model.getVarByName("Lplus[0]") 
+    #     L_plus = grb_var.X
+
+    #     x = range(1,N_scen_tot)
+    #     heu1 = heu.SecondStageSolver()
+    #     of_results=[]
+
+    #     print(">>>>>>>>>>> TEST stop <<<<<<<<<<<<<<<<<<<<<<")
+
+    #     for i in x:
+    #         print(">>>>>>>> Heu iteration N° ", i)
+    #         of_heu, _, _ = heu1.solve(dict_data, i, sol, L_plus, L_minus)
+    #         of_results.append(of_heu)
+
+    #     for i in x:
+    #         print(">>>>>>>> Mean and std iteration N° ", i)
+    #         aux=of_results[0:i]
+    #         print(aux)
+    #         if(i==1):
+    #             for elem in aux:
+    #                 x_mean.append(elem)
+    #                 x_std.append(0)
+    #         else:
+    #             x_mean.append(np.mean(aux))
+    #             x_std.append(np.std(aux))
+            
+    #     return x_mean, x_std
+
+
+    def in_sample_stability(self, N_scen_tot, sam, problem,sim_setting, n_repetitions):
+        sim_setting["n_scenarios"] = N_scen_tot
         x_mean=[]
         x_std=[]
 
-        dictionary={"n_diseases": 3,"n_varieties": 8,"n_spacings" : 4,"n_size_bands": 5,"n_customers": 10,"n_scenarios": N_scen_tot,"n_sowing_dates": 4,"n_harvesting_dates": 4,"w": 0.5}
-    
-        inst = Instance(dictionary)
-        dict_data = inst.get_data()
-        prob_s = sam.sample_stoch(inst)
-        inst.prob_s = prob_s
+        for s in range(3,N_scen_tot+3):
+            aux=[]
+            
+            for i in range(n_repetitions):
 
-        print(">>>>>>>>>>> TEST start <<<<<<<<<<<<<<<<<<<<<<")
-        _, sol, _, model = problem.solve(
+                sim_setting["n_scenarios"] = s
+                inst = Instance(sim_setting)
+                dict_data = inst.get_data()
+                prob_s = sam.sample_stoch(inst)
+                inst.prob_s = prob_s
+
+                print(">>>>> scenario N° ", s, " it. N° ", i)
+
+                of, _, _, _ = problem.solve(
                 dict_data,
-                prob_s
-            )
-        
-        grb_var = model.getVarByName("Lminus[0]") 
-        L_minus = grb_var.X
-        grb_var = model.getVarByName("Lplus[0]") 
-        L_plus = grb_var.X
+                prob_s)
+                aux.append(of)
 
-        x = range(1,N_scen_tot)
-        heu1 = heu.SecondStageSolver()
-        of_results=[]
-
-        print(">>>>>>>>>>> TEST stop <<<<<<<<<<<<<<<<<<<<<<")
-
-        for i in x:
-            print(">>>>>>>> Heu iteration N° ", i)
-            of_heu, _, _ = heu1.solve(dict_data, i, sol, L_plus, L_minus)
-            of_results.append(of_heu)
-
-        for i in x:
-            print(">>>>>>>> Mean and std iteration N° ", i)
-            aux=of_results[0:i]
-            print(aux)
-            if(i==1):
-                for elem in aux:
-                    x_mean.append(elem)
-                    x_std.append(0)
-            else:
-                x_mean.append(np.mean(aux))
-                x_std.append(np.std(aux))
+            x_mean.append(np.mean(aux))
+            x_std.append(np.std(aux))
             
         return x_mean, x_std
+
+        
 
     def out_of_sample_stability_new(self, N_scen_tot, sam, problem):
         x_mean=[]

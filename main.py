@@ -134,7 +134,7 @@ def Mean_profit_from_gb(model, dict_data, prob_s):
 if __name__ == '__main__':
 
 
-    log_name = "C:\\Users\\Giulia\\Desktop\\PoliTO\\Operational research\\2021_ORTA_RobustPlantingPlans\\logs\\main.log"
+    log_name = "./logs/main.log"
     logging.basicConfig(
         filename=log_name,
         format='%(asctime)s %(levelname)s: %(message)s',
@@ -143,7 +143,7 @@ if __name__ == '__main__':
     )
 
 
-    fp = open("C:\\Users\\Giulia\\Desktop\\PoliTO\\Operational research\\2021_ORTA_RobustPlantingPlans\\etc\\sim_setting.json", 'r')
+    fp = open("./etc/sim_setting.json", 'r')
     sim_setting = json.load(fp)
     fp.close()
 
@@ -189,15 +189,16 @@ if __name__ == '__main__':
 
     #%% STABILITY - new 
     test = Tester()
-    N_scen_tot=150
+    N_scen_tot=50
+    N_repetitions=25
 
     #IN SAMPLE STABILITY
-    x_mean, x_std = test.in_sample_stability_new(N_scen_tot, sam, prb)
-    pr.mean_std_plot(range(1,N_scen_tot), x_std, x_mean)
+    x_mean, x_std = test.in_sample_stability(N_scen_tot, sam, prb,sim_setting, N_repetitions)
+    pr.mean_std_plot(range(3,N_scen_tot+3), x_std, x_mean)
 
     #OUT OF SAMPLE STABILITY
-    x_mean_out, x_std_out, x = test.out_of_sample_stability_new(N_scen_tot, sam, prb)
-    pr.mean_std_plot_out(x, x_std_out, x_mean_out)
+    # x_mean_out, x_std_out, x = test.out_of_sample_stability_new(N_scen_tot, sam, prb)
+    # pr.mean_std_plot_out(x, x_std_out, x_mean_out)
 
     
     
