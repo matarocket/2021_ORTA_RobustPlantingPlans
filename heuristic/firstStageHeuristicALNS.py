@@ -16,7 +16,7 @@ SEED = 42
 
 np.random.seed(SEED)
 
-
+heu1 = heu_second.SecondStageSolver()
 n = 100
 p = np.random.randint(1, 100, size=n)
 w = np.random.randint(10, 50, size=n)
@@ -72,18 +72,17 @@ class Heuristic():
         sowingState = SowingState(initial_sol,dict_data,prob_s, occupation_matr)
         start=time.time()
         alns = make_alns()
-        alns.iterate(sowingState, weights, crit, MaxIterations(MAX_ITERATIONS))
+        res = alns.iterate(sowingState, weights, crit, MaxIterations(MAX_ITERATIONS))
         end=time.time()
         comp_time_first = end-start
         # print("Best objective: ",sowingState.best_sol)
         # print("Best a_i: ",sowingState.best_a_i)
         
-        '''_, ax = plt.subplots(figsize=(12, 6))
+
+        _, ax = plt.subplots(figsize=(12, 6))
         res.plot_objectives(ax=ax, lw=2)
-        plt.show()'''
-        
-        heu1 = heu_second.SecondStageSolver()
-        
+
+
         scenarios=range(dict_data["scenarios"])
         start=time.time()
         profit=0
@@ -115,8 +114,15 @@ class SowingState(State):
         self.d_jk = Heuristic.weekly_demand_matrix(self.dict_data,self.y_ijk)
 
     def objective(self):
-        obj = np.sum(self.a_i)
-        best_solution(self,obj)
+
+        #Retrieve scenarios
+        scenarios = range(self.dict_data["scenarios"])
+        #Draw a scenario to use in second stage
+        scenario = np.random.choice(scenarios,self.prob_s)
+        #Evaluate objective function
+        obj , _, _ = heu1.solve(self.dict_data,scenario, self.a_i, self.dict_data["a"]-np.sum(self.a_i),0)
+        #obj = np.sum(self.a_i)
+        #best_solution(self,obj)
         return obj
 
 
@@ -151,8 +157,8 @@ def make_alns() -> ALNS:
     rnd_state = np.random.RandomState(SEED)
     alns = ALNS(rnd_state)
     #alns = ALNS()
-    alns.add_destroy_operator(remove)
-
+    alns.add_destroy_operator(destroyLargestCrops)
+    alns.add_destroy_operator(destroyRandomCrops)
     alns.add_repair_operator(repair)
 
     return alns
@@ -195,10 +201,28 @@ def repair(sowingState, rnd_state):
     return sowingState
 
 
-def remove(sowingState, rnd_state):
+def destroyLargestCrops(sowingState, rnd_state):
 
+    #Calculate how many crops to remove
     n_to_remove = round((sowingState.dict_data["weeks"]*sowingState.dict_data["bands"])*DESTROY_RATE)
+    #Find indexes of n largest crops
     indexes = np.argpartition(sowingState.a_i, -n_to_remove)[-n_to_remove:]
+    #Remove the crops
+    for i in indexes:
+        sowingState.a_i[i] = 0
+        j,k=np.where(sowingState.occupation_matr == i)
+        sowingState.occupation_matr[j,k] = -1
+
+    return sowingState
+
+def destroyRandomCrops(sowingState, rnd_state):
+
+    #Calculate how many crops to remove
+    n_to_remove = round((sowingState.dict_data["weeks"]*sowingState.dict_data["bands"])*DESTROY_RATE)
+    #Find sowed crops
+    indexes = np.nonzero(sowingState.a_i)
+    #Remove n crops
+    indexes = np.random.choice(indexes, min(n_to_remove,len(indexes)), replace=False)
     for i in indexes:
         sowingState.a_i[i] = 0
         j,k=np.where(sowingState.occupation_matr == i)
