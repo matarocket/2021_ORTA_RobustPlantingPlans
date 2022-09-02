@@ -150,7 +150,7 @@ if __name__ == '__main__':
     sam = Sampler()
     prb = RobustPlantingPlanSolver()
 
-    #%% Gurobi solution
+    # #%% GUROBI solution
     # inst = Instance(sim_setting)
     # dict_data = inst.get_data()
     # print(dict_data)
@@ -163,57 +163,14 @@ if __name__ == '__main__':
     #     prob_s=prob_s
     #     #verbose=True
     # )
-    
-    #%% Old in sample stability
-    #TODO check if we should remove it 
-    # #%% IN SAMPLE STABILITY
-    
-    # test = Tester()
-    # n_scenarios_v = np.linspace(1,500,10)
-
-
-    # n_scenarios_vector=[]
-    # for i in n_scenarios_v:
-    #     n_scenarios_vector.append(int(np.around(i)))
-
-    # in_sample_res_mean = []
-    # in_sample_res_std = []
-    # for n_scenarios in n_scenarios_vector:
-    #     print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", n_scenarios)
-    #     n_repetitions = 50
-    #     of_mean, of_std = test.in_sample_stability(sim_setting, prb, sam, inst, dict_data, n_repetitions, n_scenarios)
-    #     in_sample_res_mean.append(of_mean)
-    #     in_sample_res_std.append(of_std)
-    
-    # pr.mean_std_plot(n_scenarios_vector, in_sample_res_std, in_sample_res_mean)
-
-    #%% STABILITY - new 
-    test = Tester()
-    N_scen_tot=50
-    N_repetitions=25
-
-    #IN SAMPLE STABILITY
-    x_mean, x_std = test.in_sample_stability(N_scen_tot, sam, prb,sim_setting, N_repetitions)
-    pr.mean_std_plot(range(3,N_scen_tot+3), x_std, x_mean)
-
-    #OUT OF SAMPLE STABILITY
-    # x_mean_out, x_std_out, x = test.out_of_sample_stability_new(N_scen_tot, sam, prb)
-    # pr.mean_std_plot_out(x, x_std_out, x_mean_out)
 
     
-    
-    #%% Old out of sample stability
-    #TODO check if we should remove it 
-    # n_scenarios_vector = [5,10,20]
-    # out_sample_res = []
-    # n_scenarios = 5
-    # for n_scenarios in n_scenarios_vector:
-    #     n_scenarios_out = 25
-    #     of_mean, of_std = test.out_of_sample_stability(sim_setting, prb, sam, inst, dict_data, n_repetitions, n_scenarios, n_scenarios_out)
-    #     out_sample_res.append((of_mean, of_std))
+    #%% HEURISTIC solution 
 
     # of_heu, sol_heu, comp_time_second, comp_time_first = Heuristic.solve(dict_data, prob_s)
 
+
+    # #%% CONTROL print 
     # print("\n\n\n>> Profit exact solver :  ", of_exact," <<\n")
     # print(">> Sowing plan (A_i) :  ", sol_exact," <<\n")
     # print(">> Total computational time :  ", comp_time_exact," <<\n")
@@ -226,8 +183,27 @@ if __name__ == '__main__':
 
     # print(">> Percentual difference :  ", 100*(of_exact - of_heu)/of_exact, " <<")
     
+    #%% STABILITY 
+    test = Tester()
     
-    #%% VARYING W
+
+    #IN SAMPLE STABILITY
+    N_scen_tot=8
+    N_repetitions=60
+
+    of_exact, of_heu = test.in_sample_stability(N_scen_tot, sam, prb,sim_setting, N_repetitions)
+    pr.plot_hist_in_exact(of_exact)
+    pr.plot_hist_in_heu(of_heu)
+
+    #OUT OF SAMPLE STABILITY
+    N_scen_tot=10
+    N_repetitions=100
+
+    of_exact, of_heu = test.out_of_sample_stability(N_scen_tot, sam, prb,sim_setting, N_repetitions)
+    pr.plot_hist_out_heu(of_heu)
+    pr.plot_hist_out_exact(of_exact)
+
+    # %% VARYING W
     
     # w_vector = np.linspace(0,0.9,10)
     # N = 25

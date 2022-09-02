@@ -14,7 +14,7 @@ import time
 
 SEED = 42
 
-np.random.seed(SEED)
+#np.random.seed(SEED)
 
 heu1 = heu_second.SecondStageSolver()
 n = 100
@@ -24,8 +24,8 @@ W = 1_000
 
 
 # Percentage of items to remove in each iteration
-DESTROY_RATE = .1
-MAX_ITERATIONS = 100
+DESTROY_RATE = .4
+MAX_ITERATIONS = 5
 
 class Heuristic():
 
@@ -61,7 +61,7 @@ class Heuristic():
         crit = HillClimbing()
 
         weights = SimpleWeights(scores=[5, 2, 1, 0.5],
-                        num_destroy=1,
+                        num_destroy=2,
                         num_repair=1,
                         op_decay=0.8)
         
@@ -75,20 +75,15 @@ class Heuristic():
         res = alns.iterate(sowingState, weights, crit, MaxIterations(MAX_ITERATIONS))
         end=time.time()
         comp_time_first = end-start
-        # print("Best objective: ",sowingState.best_sol)
-        # print("Best a_i: ",sowingState.best_a_i)
+        print("Best objective: ",sowingState.best_sol)
+        print("Best a_i: ",sowingState.best_a_i)
         
-
-        _, ax = plt.subplots(figsize=(12, 6))
-        res.plot_objectives(ax=ax, lw=2)
-
-
         scenarios=range(dict_data["scenarios"])
         start=time.time()
         profit=0
 
         for s in scenarios:
-            of_heu, sol_heu, comp_time = heu1.solve(dict_data,s, sowingState.best_a_i, dict_data["a"]-sowingState.best_sol,0)
+            of_heu, sol_heu, comp_time = heu1.solve(dict_data,s, sowingState.best_a_i, dict_data["a"]-np.sum(sowingState.best_a_i),0)
             profit += of_heu*prob_s[s]
 
         end=time.time()
@@ -107,22 +102,23 @@ class SowingState(State):
         self.a_i = a_i
         self.dict_data = dict_data
         self.occupation_matr = occupation_matr
-        self.best_sol = np.sum(a_i)
+        self.best_sol = -10000000
         self.best_a_i = a_i
         self.iteration_n = 0
         self.y_ijk = Heuristic.collapse_prob(self.dict_data["y_sijk"], prob_s)
         self.d_jk = Heuristic.weekly_demand_matrix(self.dict_data,self.y_ijk)
+        self.prob_s=prob_s
 
     def objective(self):
 
         #Retrieve scenarios
         scenarios = range(self.dict_data["scenarios"])
         #Draw a scenario to use in second stage
-        scenario = np.random.choice(scenarios,self.prob_s)
+        scenario = np.random.choice(scenarios,p=self.prob_s)
         #Evaluate objective function
         obj , _, _ = heu1.solve(self.dict_data,scenario, self.a_i, self.dict_data["a"]-np.sum(self.a_i),0)
         #obj = np.sum(self.a_i)
-        #best_solution(self,obj)
+        best_solution(self,obj)
         return obj
 
 
@@ -154,8 +150,8 @@ def random_remove(sowingState, rnd_state):
     #         return state
 
 def make_alns() -> ALNS:
-    rnd_state = np.random.RandomState(SEED)
-    alns = ALNS(rnd_state)
+    #rnd_state = np.random.RandomState(SEED)
+    alns = ALNS()
     #alns = ALNS()
     alns.add_destroy_operator(destroyLargestCrops)
     alns.add_destroy_operator(destroyRandomCrops)
@@ -220,7 +216,7 @@ def destroyRandomCrops(sowingState, rnd_state):
     #Calculate how many crops to remove
     n_to_remove = round((sowingState.dict_data["weeks"]*sowingState.dict_data["bands"])*DESTROY_RATE)
     #Find sowed crops
-    indexes = np.nonzero(sowingState.a_i)
+    indexes = np.flatnonzero(sowingState.a_i)
     #Remove n crops
     indexes = np.random.choice(indexes, min(n_to_remove,len(indexes)), replace=False)
     for i in indexes:
@@ -232,7 +228,7 @@ def destroyRandomCrops(sowingState, rnd_state):
 
 def best_solution(self,obj):
 
-    if (obj < self.best_sol) and (np.count_nonzero(self.a_i) == np.count_nonzero(self.d_jk)):
+    if (obj > self.best_sol) and (np.count_nonzero(self.a_i) == np.count_nonzero(self.d_jk)):
         self.best_a_i = copy.copy(self.a_i)
         self.best_sol = obj        
     return

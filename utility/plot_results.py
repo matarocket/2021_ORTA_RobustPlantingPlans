@@ -2,7 +2,7 @@
 import numpy as np
 from matplotlib import pyplot
 import matplotlib.pyplot as plt
-
+plt.style.use("seaborn-deep")
 
 def plot_comparison_hist(values, labels, colors, x_label, y_label):
     for i, item in enumerate(values):
@@ -11,6 +11,45 @@ def plot_comparison_hist(values, labels, colors, x_label, y_label):
     pyplot.ylabel(y_label)
     pyplot.legend(loc='upper left')
     pyplot.savefig(f"./results/hist_profit.png")
+    pyplot.close()
+
+def plot_hist_in_heu(exact):
+    pyplot.hist(exact, bins=30, alpha=0.5, color="gold")
+    plt.grid()
+    pyplot.xlabel("Objective function [£]")
+    pyplot.ylabel("Occurrencies")
+    plt.title("In-sample stability - heuristic")
+    pyplot.savefig(f"./results/hist_inSample_heu.png")
+    pyplot.close()
+
+def plot_hist_in_exact(exact):
+    pyplot.hist(exact, bins=30, alpha=0.5, color="dodgerblue")
+    plt.grid()
+    pyplot.xlabel("Objective function [£]")
+    pyplot.ylabel("Occurrencies")
+    plt.title("In-sample stability - exact")
+    pyplot.legend()
+    pyplot.savefig(f"./results/hist_inSample_exact.png")
+    pyplot.close()
+
+def plot_hist_out_heu(exact):
+    pyplot.hist(exact, bins=15, alpha=0.5, color="limegreen")
+    plt.grid()
+    pyplot.xlabel("Objective function [£]")
+    pyplot.ylabel("Occurrencies")
+    plt.title("Out-of-sample stability - heuristic")
+    pyplot.legend()
+    pyplot.savefig(f"./results/hist_outSample_heu.png")
+    pyplot.close()
+
+def plot_hist_out_exact(exact):
+    pyplot.hist(exact, bins=15, alpha=0.5, color="red")
+    plt.grid()
+    pyplot.xlabel("Objective function [£]")
+    pyplot.ylabel("Occurrencies")
+    plt.title("Out-of-sample stability - exact")
+    pyplot.legend()
+    pyplot.savefig(f"./results/hist_outSample_exact.png")
     pyplot.close()
 
 def plot_w_comparison(w_vector, mean_w_exact, stddev_w_norm):
@@ -64,9 +103,9 @@ def mean_std_plot(n_scenarios_vector, in_sample_res_std, in_sample_res_mean):
     plt.grid()
     plt.title("Mean and std over different N° of scenarios")
     plt.legend()
-    #plt.show()
-    pyplot.savefig(f"C:\\Users\\Giulia\\Desktop\\PoliTO\\Operational research\\2021_ORTA_RobustPlantingPlans\\results\\mean_std.png")
-    pyplot.close()
+    plt.show()
+    # pyplot.savefig(f"C:\\Users\\Giulia\\Desktop\\PoliTO\\Operational research\\2021_ORTA_RobustPlantingPlans\\results\\mean_std_1.png")
+    # pyplot.close()
 
 def mean_std_plot_out(x, in_sample_res_std, in_sample_res_mean):
     plt.errorbar(x, in_sample_res_mean, in_sample_res_std,capsize=5, linestyle='None', marker='o', ecolor="lightcoral", c="dodgerblue")

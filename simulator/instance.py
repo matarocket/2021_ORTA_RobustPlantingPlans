@@ -42,40 +42,16 @@ class Instance():
         #Variety growing rate
         self.variety_rate = np.random.normal(1, 0.1, self.n_varieties)
         
-        #Vector of size bands preferences of customers
-        self.Km_number = np.random.randint(1, self.n_size_bands, self.n_customers)
-        self.Km = []
-        for m in range(self.n_customers):
-            self.Km.append(random.sample(list(range(self.n_size_bands)),self.Km_number[m]))
-            
-        
-        #Probability of scenario s
-        #self.prob_s = np.random.uniform(0, 1, self.n_scenarios)
-        #self.prob_s = self.prob_s/np.sum(self.prob_s)
-        
         #Impact of each scenario on yields
         self.scenario_impact = np.random.normal(1, 0.1, self.n_scenarios)
-        
-        #Cost of land - €/ha - checked for Italy
-        #https://www.kpu.ca/sites/default/files/ISFS/Brussel%20Sprouts.pdf
-        self.c_prime = np.random.normal(15000, 0.05*15000)
         
         #Cost of harvesting {scenario, crop, harvesting_date}
         #https://www.farmersjournal.ie/my-farming-christmas-anthony-weldon-swords-north-co-dublin-196397
         self.c_sij = np.random.normal(8700,0.01*8700,(self.n_scenarios, self.n_crops, self.n_harvesting_dates))
         
-        #Demand {costumer, harvesting_date}
-        #https://www.freshplaza.it/article/9397379/oltre-24mila-tonnellate-di-cavoletti-di-bruxelles-in-30-varieta-e-16-calibri-diversi/
-        #demand proportioned to 10 customers 
-        self.d_mj = np.random.normal(100, 0.35*100, (self.n_customers, self.n_harvesting_dates))
-        
-        #Profit {costumer, harvesting_date}
-        #online supermarket 
-        self.f_mj = np.random.normal(2000, 0.1*2000,(self.n_customers, self.n_harvesting_dates))
-        
         #Surplus selling to the market {scenario, harvesting_date}
         #set to a half of the previous
-        self.s_sj = np.random.normal(2000, 0.1*2000,(self.n_scenarios, self.n_harvesting_dates))
+        self.s_sj = np.random.normal(700, 0.1*700,(self.n_scenarios, self.n_harvesting_dates))
         
         #Yield crop {scenario, crop, harvesting_date, size_band}
         #https://www.agrifarming.in/brussels-sprout-cultivation-information
@@ -85,33 +61,62 @@ class Instance():
         
         #Area of grower's land
         self.a = 10000 
-        
-        #Cost of extra land required 
-        #https://www.affittoterreno.com/prezzo-affitto-terreno-agricolo
-        self.c_minus = np.random.randint(2000,3500) #+ self.c_prime
-        
+            
+
+
+        #>>>>>>>> TODO - Moved ITEMS
+        np.random.seed(24) 
+        #Susceptibility to diseases {crop, disease}
+        self.r_iq = np.around(np.random.rand(self.n_crops,self.n_diseases), 0)
+         
+        #upper limit on the harvesting part affected by illnesses 
+        self.u_q = np.random.uniform(0,0.2,self.n_diseases)
+
         #Cost of unused land
         #https://www.affittoterreno.com/prezzo-affitto-terreno-agricolo
         #since it is unused, you lost the price for the rental
         #the alternative could be to set 0 -> no use, nothing is lost 
         self.c_plus = np.random.randint(2000,3500)
+
+        #Cost of extra land required 
+        #https://www.affittoterreno.com/prezzo-affitto-terreno-agricolo
+        self.c_minus = np.random.randint(2000,3500) #+ self.c_prime
+
+        #Profit {costumer, harvesting_date}
+        #online supermarket 
+        self.f_mj = np.random.normal(700, 0.1*700,(self.n_customers, self.n_harvesting_dates))
         
         #Penalty of failiure in satisfying demand {scenario, costumer, harvesting_date}
         f_smj = np.zeros((self.n_scenarios, self.f_mj.shape[0], self.f_mj.shape[1]))
         for s in range(self.n_scenarios):
             f_smj[s,:,:] = np.copy(self.f_mj)
         self.f_smj = f_smj
-            
+
         psmj = np.zeros((self.n_scenarios, self.n_customers, self.n_harvesting_dates))
         for s in range(self.n_scenarios):
             psmj[s] = self.f_mj
         self.p_smj = psmj
         
-        #Susceptibility to diseases {crop, disease}
-        self.r_iq = np.around(np.random.rand(self.n_crops,self.n_diseases), 0)
+        #Demand {costumer, harvesting_date}
+        #https://www.freshplaza.it/article/9397379/oltre-24mila-tonnellate-di-cavoletti-di-bruxelles-in-30-varieta-e-16-calibri-diversi/
+        #demand proportioned to 10 customers 
+        self.d_mj = np.random.normal(100, 0.35*100, (self.n_customers, self.n_harvesting_dates))
+      
+        #Cost of land - €/ha - checked for Italy
+        #https://www.kpu.ca/sites/default/files/ISFS/Brussel%20Sprouts.pdf
+        self.c_prime = np.random.normal(1500, 0.05*1500)
+
+        #Vector of size bands preferences of customers
+        self.Km_number = np.random.randint(1, self.n_size_bands, self.n_customers)
+        self.Km = []
         
-        #upper limit on the harvesting part affected by illnesses 
-        self.u_q = np.random.uniform(0,0.2,self.n_diseases)
+        random.seed(25)
+        for m in range(self.n_customers):
+            self.Km.append(random.sample(list(range(self.n_size_bands)),self.Km_number[m]))
+            
+
+        np.random.seed()
+        random.seed()
 
         #Log variables
         logging.info(f"crops: {self.n_crops}")
