@@ -20,7 +20,7 @@ heu1 = heu_second.SecondStageSolver()
 
 # Percentage of items to remove in each iteration
 DESTROY_RATE = .4
-MAX_ITERATIONS = 5
+MAX_ITERATIONS = 15
 
 class Heuristic():
 
@@ -70,7 +70,7 @@ class Heuristic():
         sowingState = SowingState(initial_sol,dict_data,prob_s, occupation_matr)
         start=time.time()
         alns = make_alns()
-        res = alns.iterate(sowingState, weights, crit, MaxRuntime(MAX_ITERATIONS))
+        res = alns.iterate(sowingState, weights, crit, MaxIterations(MAX_ITERATIONS))
         end=time.time()
         comp_time_first = end-start
         print("Best objective: ",sowingState.best_sol)
