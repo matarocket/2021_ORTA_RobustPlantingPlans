@@ -74,9 +74,7 @@ $$
 O.F.=(weighted)\cdot ExpecteProfit-RiskTerm=(1-\omega)\cdot E(Profit_{s})-\omega\cdot E(|Profit_{s}-E(Profit_{s})|)
 $$
 where the profit is defined as:
-$$
-E(Profit_{s})=\sum_{s}prob_{s}\cdot\left(\sum_{j,k}s_{sj}\cdot S_{sjk}+\sum_{m,j,k}f_{mj}\cdot F_{sjmk}-\sum_{i,j}c_{sij}\cdot H_{sij}+c^{+}\cdot L^{+}-c^{-}\cdot L^{-}-c'\cdot\sum_{i}A_{i}-\sum_{m,j}p_{smj}\cdot P_{smj}\right)
-$$
+$$ E(Profit_{s})=\sum_{s}prob_{s}\cdot\left(\sum_{j,k}s_{sj}\cdot S_{sjk}+\sum_{m,j,k}f_{mj}\cdot F_{sjmk}-\sum_{i,j}c_{sij}\cdot H_{sij}+c^{+}\cdot L^{+}-c^{-}\cdot L^{-}-c'\cdot\sum_{i}A_{i}-\sum_{m,j}p_{smj}\cdot P_{smj}\right) $$
 
 The maximization must be done respecting a series of constraints that are linked to the market and the nature of the plants. They are listed hereunder:
 
