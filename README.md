@@ -70,54 +70,38 @@ project
 The object of the project is to set up a Planting Plan with Risk Management, considering a problem in which in a first stage, the planting plan is constructed, and a second stage will set up the harvesting plan for a given number of possible scenarios.
 
 We consider the following Object Function (O.F.) to be maxized:
-$$
-O.F.=(weighted)\cdot ExpecteProfit-RiskTerm=(1-\omega)\cdot E(Profit_{s})-\omega\cdot E(|Profit_{s}-E(Profit_{s})|)
-$$
+$$O.F.=(weighted)\cdot ExpecteProfit-RiskTerm=(1-\omega)\cdot E(Profit_{s})-\omega\cdot E(|Profit_{s}-E(Profit_{s})|)$$
 where the profit is defined as:
-$$ E(Profit_{s})=\sum_{s}prob_{s}\cdot\left(\sum_{j,k}s_{sj}\cdot S_{sjk}+\sum_{m,j,k}f_{mj}\cdot F_{sjmk}-\sum_{i,j}c_{sij}\cdot H_{sij}+c^{+}\cdot L^{+}-c^{-}\cdot L^{-}-c'\cdot\sum_{i}A_{i}-\sum_{m,j}p_{smj}\cdot P_{smj}\right) $$
+$$E(Profit_{s})=\sum_{s}prob_{s}\cdot\left(\sum_{j,k}s_{sj}\cdot S_{sjk}+\sum_{m,j,k}f_{mj}\cdot F_{sjmk}-\sum_{i,j}c_{sij}\cdot H_{sij}+c^{+}\cdot L^{+}-c^{-}\cdot L^{-}-c'\cdot\sum_{i}A_{i}-\sum_{m,j}p_{smj}\cdot P_{smj}\right)$$
 
 The maximization must be done respecting a series of constraints that are linked to the market and the nature of the plants. They are listed hereunder:
 
 
 ### Marketing Constraint 
 Expresses the fact that the weekly harvest is sold either to customers or on the open market:
-$$
-\sum_{i}y_{sijk}\cdot H_{sij}-S_{sjk}-\sum_{m}F_{sjmk}=0
-$$
+$$\sum_{i}y_{sijk}\cdot H_{sij}-S_{sjk}-\sum_{m}F_{sjmk}=0$$
 
 ### Demand Constraint
 The quantity of sprouts sold is given by the sum in the demand the customer and shortage:
-$$
-\sum_{k}F_{sjmk}=P_{smj}+d_{mj}
-$$
+$$\sum_{k}F_{sjmk}=P_{smj}+d_{mj}$$
 
 ### Sell on Open Market 
 Imposes a limit on the amount of sprouts that can be sold on free-trade option:
-$$
-\sum_{k}S_{sjk}\leq0.25\cdot\sum_{m}d_{mj}
-$$
+$$\sum_{k}S_{sjk}\leq0.25\cdot\sum_{m}d_{mj}$$
 
 ### Land Use Constraints  
 Imposes a limit on the amount of sprouts that can be sold on free-trade option:
-$$
-\sum_{i}A_{i}=a+L^{-}-L^{+}
-$$
+$$\sum_{i}A_{i}=a+L^{-}-L^{+}$$
 Another constraint imposes the area of each crop planted matches the harvested area:
-$$
-A_{i}=\sum_{j}H_{sij}
-$$
+$$A_{i}=\sum_{j}H_{sij}$$
 
 ### Individual Variety Limit   
 Sets limits on the amount of demand of crops that can be susceptible to each kind of plant illness:
-$$
-\sum_{i\in I_{v}}A_{i}\leq0.4\cdot\sum_{i}A_{i}
-$$
+$$\sum_{i\in I_{v}}A_{i}\leq0.4\cdot\sum_{i}A_{i}$$
 
 ### Individual Crop Limit
 Sets limits on the amount of area assigned to each crop:
-$$
-A_{i}\leq0.2\cdot\sum_{i}A_{i}
-$$
+$$A_{i}\leq0.2\cdot\sum_{i}A_{i}$$
 
 
 
