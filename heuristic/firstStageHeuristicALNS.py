@@ -61,7 +61,7 @@ class Heuristic():
         crit = HillClimbing()
 
         weights = SimpleWeights(scores=[5, 2, 1, 0.5],
-                        num_destroy=2,
+                        num_destroy=1,
                         num_repair=1,
                         op_decay=0.8)
         
@@ -72,7 +72,7 @@ class Heuristic():
         sowingState = SowingState(initial_sol,dict_data,prob_s, occupation_matr)
         start=time.time()
         alns = make_alns()
-        res = alns.iterate(sowingState, weights, crit, MaxIterations(MAX_ITERATIONS))
+        res = alns.iterate(sowingState, weights, crit, MaxRuntime(MAX_ITERATIONS))
         end=time.time()
         comp_time_first = end-start
         print("Best objective: ",sowingState.best_sol)
@@ -154,7 +154,7 @@ def make_alns() -> ALNS:
     alns = ALNS()
     #alns = ALNS()
     alns.add_destroy_operator(destroyLargestCrops)
-    alns.add_destroy_operator(destroyRandomCrops)
+    #alns.add_destroy_operator(destroyRandomCrops)
     alns.add_repair_operator(repair)
 
     return alns

@@ -187,21 +187,21 @@ if __name__ == '__main__':
     test = Tester()
     
 
-    #IN SAMPLE STABILITY
+    # #IN SAMPLE STABILITY
     N_scen_tot=8
-    N_repetitions=60
+    N_repetitions=100
 
     of_exact, of_heu = test.in_sample_stability(N_scen_tot, sam, prb,sim_setting, N_repetitions)
     pr.plot_hist_in_exact(of_exact)
     pr.plot_hist_in_heu(of_heu)
 
     #OUT OF SAMPLE STABILITY
-    N_scen_tot=10
-    N_repetitions=100
+    # N_scen_tot=10
+    # N_repetitions=100
 
-    of_exact, of_heu = test.out_of_sample_stability(N_scen_tot, sam, prb,sim_setting, N_repetitions)
-    pr.plot_hist_out_heu(of_heu)
-    pr.plot_hist_out_exact(of_exact)
+    # of_exact, of_heu = test.out_of_sample_stability(N_scen_tot, sam, prb,sim_setting, N_repetitions)
+    # pr.plot_hist_out_heu(of_heu)
+    # pr.plot_hist_out_exact(of_exact)
 
     # %% VARYING W
     
@@ -253,7 +253,8 @@ if __name__ == '__main__':
     #evaluation of computational time over the changing number of scenarios 
     
     
-    # N = 10
+    # N = 50
+    # N_repetitions=5
     # time_Gurobi=[]
     # time_Heu=[]
     # for n in range(1,N+1):   
@@ -264,15 +265,20 @@ if __name__ == '__main__':
     #     dict_data = inst.get_data()
     #     prob_s = sam.sample_stoch(inst)
     #     inst.prob_s = prob_s
+
+    #     ans=[]
+
+    #     for i in range(N_repetitions):
         
-    #     _, _, comp_time_Gurobi, _ = prb.solve(
-    #         dict_data,
-    #         prob_s
-    #     )
+    #         _, _, comp_time_Gurobi, _ = prb.solve(
+    #             dict_data,
+    #             prob_s
+    #         )
+    #         ans.append(comp_time_Gurobi)
         
     #     _, _, comp_time_2, comp_time_1 = Heuristic.solve(dict_data, prob_s)
 
-    #     time_Gurobi.append(comp_time_Gurobi)
+    #     time_Gurobi.append(np.mean(ans))
     #     time_Heu.append(comp_time_1+comp_time_2)
 
     # pr.plot_comparison_compTimes(N, time_Gurobi, time_Heu)

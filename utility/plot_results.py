@@ -14,42 +14,42 @@ def plot_comparison_hist(values, labels, colors, x_label, y_label):
     pyplot.close()
 
 def plot_hist_in_heu(exact):
-    pyplot.hist(exact, bins=30, alpha=0.5, color="gold")
+    pyplot.hist(exact, bins=15, alpha=1, color="gold")
     plt.grid()
     pyplot.xlabel("Objective function [£]")
     pyplot.ylabel("Occurrencies")
     plt.title("In-sample stability - heuristic")
-    pyplot.savefig(f"./results/hist_inSample_heu.png")
+    pyplot.savefig(f"./results/hist_inSample_heu_new.png")
     pyplot.close()
 
 def plot_hist_in_exact(exact):
-    pyplot.hist(exact, bins=30, alpha=0.5, color="dodgerblue")
+    pyplot.hist(exact, bins=15, alpha=1, color="dodgerblue")
     plt.grid()
     pyplot.xlabel("Objective function [£]")
     pyplot.ylabel("Occurrencies")
     plt.title("In-sample stability - exact")
     pyplot.legend()
-    pyplot.savefig(f"./results/hist_inSample_exact.png")
+    pyplot.savefig(f"./results/hist_inSample_exact_new.png")
     pyplot.close()
 
 def plot_hist_out_heu(exact):
-    pyplot.hist(exact, bins=15, alpha=0.5, color="limegreen")
+    pyplot.hist(exact, bins=15, alpha=1, color="limegreen")
     plt.grid()
     pyplot.xlabel("Objective function [£]")
     pyplot.ylabel("Occurrencies")
     plt.title("Out-of-sample stability - heuristic")
     pyplot.legend()
-    pyplot.savefig(f"./results/hist_outSample_heu.png")
+    pyplot.savefig(f"./results/hist_outSample_heu_new.png")
     pyplot.close()
 
 def plot_hist_out_exact(exact):
-    pyplot.hist(exact, bins=15, alpha=0.5, color="red")
+    pyplot.hist(exact, bins=15, alpha=1, color="red")
     plt.grid()
     pyplot.xlabel("Objective function [£]")
     pyplot.ylabel("Occurrencies")
     plt.title("Out-of-sample stability - exact")
     pyplot.legend()
-    pyplot.savefig(f"./results/hist_outSample_exact.png")
+    pyplot.savefig(f"./results/hist_outSample_exact_new.png")
     pyplot.close()
 
 def plot_w_comparison(w_vector, mean_w_exact, stddev_w_norm):
@@ -79,9 +79,9 @@ def plot_comparison_compTimes(N, comp_G, comp_Heu):
     plt.grid()
     plt.title("Computational time over the number of scenarios")
     plt.legend()
-    plt.show()
-    #pyplot.savefig(f"C:\\Users\\Giulia\\Desktop\\PoliTO\\Operational research\\2021_ORTA_RobustPlantingPlans\\results\\comp_time.png")
-    #pyplot.close()
+    #plt.show()
+    pyplot.savefig(f"C:\\Users\\Giulia\\Desktop\\PoliTO\\Operational research\\2021_ORTA_RobustPlantingPlans\\results\\comp_time_new.png")
+    pyplot.close()
 
 
 def plot_comparison_compTimes_crops(N, comp_G, comp_Heu):
