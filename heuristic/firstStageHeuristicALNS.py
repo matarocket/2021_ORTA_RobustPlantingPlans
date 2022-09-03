@@ -12,16 +12,11 @@ from alns.stop import *
 from alns.weights import *
 import time 
 
+#General seed
 SEED = 42
 
-#np.random.seed(SEED)
-
+#Global instance of SecondStageSolver
 heu1 = heu_second.SecondStageSolver()
-n = 100
-p = np.random.randint(1, 100, size=n)
-w = np.random.randint(10, 50, size=n)
-W = 1_000
-
 
 # Percentage of items to remove in each iteration
 DESTROY_RATE = .4
@@ -32,6 +27,7 @@ class Heuristic():
     def __init__(self,dict_data):
         self.dict_data = dict_data
 
+    #Function for computing the mean value over scenarios
     def collapse_prob(mat, prob_s):
         e_s = np.copy(mat)
         for s in range(len(prob_s)):
@@ -39,6 +35,7 @@ class Heuristic():
         e_s = np.sum(e_s, axis=0)
         return e_s
 
+    #Function to generate the weekly demand matrix
     def weekly_demand_matrix(dict_data, y_ijk):
         customers = range(dict_data["customers"])
         weeks = range(dict_data["weeks"])
@@ -56,6 +53,7 @@ class Heuristic():
                 d_jk[j,best_band] += demand     
         return d_jk
 
+    #Function to solve the first and second stage of the heuristic solution
     def solve(dict_data, prob_s):
 
         crit = HillClimbing()
@@ -91,12 +89,8 @@ class Heuristic():
 
         return of_heu, sol_heu, comp_time_second, comp_time_first
 
-
+#Solution class: it stores the current best solution and useful information
 class SowingState(State):
-    """
-    Solution class for the 0/1 knapsack problem. It stores the current
-    solution as a vector of binary variables, one for each item.
-    """
 
     def __init__(self, a_i, dict_data, prob_s, occupation_matr):
         self.a_i = a_i
@@ -109,32 +103,29 @@ class SowingState(State):
         self.d_jk = Heuristic.weekly_demand_matrix(self.dict_data,self.y_ijk)
         self.prob_s=prob_s
 
+    #Objective function evaluation
     def objective(self):
-
         #Retrieve scenarios
         scenarios = range(self.dict_data["scenarios"])
         #Draw a scenario to use in second stage
         scenario = np.random.choice(scenarios,p=self.prob_s)
         #Evaluate objective function
         obj , _, _ = heu1.solve(self.dict_data,scenario, self.a_i, self.dict_data["a"]-np.sum(self.a_i),0)
-        #obj = np.sum(self.a_i)
         best_solution(self,obj)
         return obj
 
+#Structure of the ALNS
 def make_alns() -> ALNS:
 
     alns = ALNS()
-
+    
     alns.add_destroy_operator(destroyLargestCrops)
     alns.add_destroy_operator(destroyRandomCrops)
     alns.add_repair_operator(repair)
 
     return alns
 
-# Terrible - but simple - first solution, where only the first item is
-# selected.
-
-
+#Random constructor
 def repair(sowingState, rnd_state):
 
     #Compute needed area
@@ -168,7 +159,7 @@ def repair(sowingState, rnd_state):
 
     return sowingState
 
-
+#Largest Crop Destroyer
 def destroyLargestCrops(sowingState, rnd_state):
 
     #Calculate how many crops to remove
@@ -183,6 +174,7 @@ def destroyLargestCrops(sowingState, rnd_state):
 
     return sowingState
 
+#Random Crop Destroyer
 def destroyRandomCrops(sowingState, rnd_state):
 
     #Calculate how many crops to remove
@@ -198,6 +190,7 @@ def destroyRandomCrops(sowingState, rnd_state):
 
     return sowingState
 
+#Function to keep track of the best solution
 def best_solution(self,obj):
 
     if (obj > self.best_sol) and (np.count_nonzero(self.a_i) == np.count_nonzero(self.d_jk)):

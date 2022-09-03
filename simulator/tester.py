@@ -10,7 +10,7 @@ class Tester():
     def __init__(self):
         pass
 
-
+    # Function for computing in-sample stability
     def in_sample_stability(self, N_scen_tot, sam, problem,sim_setting, n_repetitions):
         ans=[]
         ans_heu=[]
@@ -45,7 +45,7 @@ class Tester():
 
   
 
-
+    # Function for computing out-of-sample stability
     def out_of_sample_stability(self, N_scen_tot, sam, problem,sim_setting, n_repetitions):
         
         print(">>> OUT OF SAMPLE stability <<<")

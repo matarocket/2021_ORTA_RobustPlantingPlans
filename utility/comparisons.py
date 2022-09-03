@@ -123,7 +123,7 @@ def w_changing(sim_setting, sam, prb, N, N_samples):
 
 
 #functions to compute COMPARISON of GUROBI profits by changing risk term (w)
-#Profit for a given scenario
+#Profit for a given scenario given the decision variables and parameters
 def Profit_s(F_sjmk, H_sij, S_sjk, L_minus, L_plus, P_smj, A_i, dict_data, s):
     
     term1 = 0
@@ -166,6 +166,7 @@ def compute_mean_profit(prob_s, F_sjmk, H_sij, S_sjk, L_minus, L_plus, P_smj, A_
     
     return E_s
 
+#Mean profit computed from the optimized model by gurobi
 def Mean_profit_from_gb(model, dict_data, prob_s):
     
     scenarios = range(dict_data['scenarios'])

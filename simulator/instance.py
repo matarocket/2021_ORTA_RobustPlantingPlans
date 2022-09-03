@@ -13,8 +13,6 @@ class Instance():
     #Constructor
     def __init__(self, sim_setting):
         
-        #np.random.seed(0)
-        
         #Log
         logging.info("starting simulation...")
 
@@ -61,10 +59,7 @@ class Instance():
         
         #Area of grower's land
         self.a = 10000
-            
 
-
-        #>>>>>>>> TODO - Moved ITEMS
         np.random.seed(24) 
         random.seed(25)
 
@@ -130,7 +125,6 @@ class Instance():
         logging.info(f"diseases: {self.n_diseases}")
         logging.info(f"scenarios: {self.n_scenarios}")
         logging.info(f"scenarios_impact: {self.scenario_impact}")
-        #logging.info(f"prob s: {self.prob_s}")
         logging.info(f"w: {self.w}")
         logging.info(f"c prime: {self.c_prime}")
         logging.info(f"c_sij: {self.c_sij}")
@@ -156,12 +150,8 @@ class Instance():
             for i in range(self.n_crops):
                 for j in range(self.n_harvesting_dates):
                     for k in range(self.n_size_bands):
-                        #print(s, " , ",i, " , ",j, " , ",k)
-                        #self.y_sijk[s][i][j][k] = self.scenario_impact[s]*grow_week_curve(self.Ai_dict[i]["Variety"], j + (self.Ai_dict[i]["SowingDate"] - (self.n_sowing_dates-1)))
                         aux_rate = self.variety_rate[self.Ai_dict[i]["Variety"]]
-                        #TODO fix grow_week_curve -> it should became Gaussian
                         self.y_sijk[s][i][j][k] = (k+1)*self.scenario_impact[s]*grow_week_curve(aux_rate*(k+1), j + ((self.n_sowing_dates-1) - self.Ai_dict[i]["SowingDate"])) 
-                        #print(self.y_sijk[s][i][j][k])
                         pass
         
     #Get data (instance as dictionary)
@@ -176,7 +166,6 @@ class Instance():
             "diseases": self.n_diseases,
             "scenarios": self.n_scenarios,
             "w" : self.w,
-            #"prob_s": self.prob_s,
             "c_prime": self.c_prime,
             "c_sij": self.c_sij,
             "d_mj": self.d_mj,
@@ -232,7 +221,6 @@ if __name__ == "__main__":
     
     #Generate an instance
     ins = Instance(sim_setting)
-    #ins.yield_instance_gen()
     
     #Plot the evolution of a certain crop
     ins.plot_crop_evolution(0)

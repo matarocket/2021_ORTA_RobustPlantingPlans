@@ -17,7 +17,6 @@ def plot_hist_in_heu(exact):
   
 
 
-
 #PLOT: histogram for the in sample stability (exact solver) 
 
 def plot_hist_in_exact(exact):
@@ -57,7 +56,8 @@ def plot_hist_out_exact(exact):
 
 
 
-#TODO: to be made with the dash line and to write the description
+#PLOT: Impact of w on the Profit and its variability (individual plots)
+
 def plot_w_comparison(w_vector, mean_w_exact, stddev_w_norm):
 
     plt.plot(w_vector, mean_w_exact, color='dodgerblue')
@@ -76,6 +76,10 @@ def plot_w_comparison(w_vector, mean_w_exact, stddev_w_norm):
     plt.grid()
     pyplot.savefig(f"./results/w_comparision_std.png")
     pyplot.close()
+
+
+
+#PLOT: Impact of w on the Profit and its variability (together)
 
 def plot_w_comparison_together(w_vector, mean_w_exact, stddev_w_norm):
     plt.plot(w_vector, mean_w_exact, color='dodgerblue', label="mean profit")

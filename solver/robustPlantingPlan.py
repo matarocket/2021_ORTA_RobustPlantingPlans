@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from calendar import week
 import time
 import logging
 import gurobipy as gp
@@ -28,7 +27,6 @@ class RobustPlantingPlanSolver():
         #Problem name logging
         problem_name = "RobustPlantingPlan"
         logging.info("{}".format(problem_name))
-        # logging.info(f"{problem_name}")
 
         #Creation of model
         model = gp.Model(problem_name)
@@ -46,7 +44,6 @@ class RobustPlantingPlanSolver():
         Hsij = model.addVars(
                 dict_data["scenarios"],dict_data['crops'],dict_data["weeks"],
                 lb=0,
-                #ub=10000,
                 vtype=GRB.CONTINUOUS,
                 name='Hsij'
             )
@@ -55,7 +52,6 @@ class RobustPlantingPlanSolver():
         Ssjk = model.addVars(
                 dict_data["scenarios"],dict_data["weeks"],dict_data["bands"],
                 lb=0,
-                #ub=10000,
                 vtype=GRB.CONTINUOUS,
                 name='Ssjk'
             )
@@ -81,8 +77,6 @@ class RobustPlantingPlanSolver():
         #Shortage in demand by {scenario, customer, week}
         Psmj = model.addVars(
                 dict_data["scenarios"],dict_data["customers"],dict_data["weeks"],
-                #lb=0,
-                #ub=300,
                 vtype=GRB.CONTINUOUS,
                 name='Psmj'
             )
@@ -96,11 +90,9 @@ class RobustPlantingPlanSolver():
                 name='Ai'
             )
 
-        #over harvesting
+        #Unusable harvesting by {crop}
         Trash= model.addVars(
             dict_data["crops"], 
-            #lb=0,
-            #ub=10000,
             vtype=GRB.CONTINUOUS,
             name='Trash'
         )
@@ -108,7 +100,6 @@ class RobustPlantingPlanSolver():
         #Auxiliar variable by {scenario}
         z = model.addVars(
                 dict_data["scenarios"],
-                #lb=0,
                 vtype=GRB.CONTINUOUS,
                 name='z'
             )
@@ -150,18 +141,18 @@ class RobustPlantingPlanSolver():
                         f"Absolute value of z 2 - s: {s}"
                     )
         
-        #Marketing Constraint 
+        #Marketing Constraint 1
         for s in scenarios:
             for j in weeks:
                 for k in bands:
                     model.addConstr(
                         (gp.quicksum(dict_data['y_sijk'][s][i][j][k]*Hsij[s,i,j] for i in crops) - Ssjk[s,j,k] - gp.quicksum(Fsjmk[s,j,m,k] for m in customers) )== 0,
-                        f"Marketing Constraint - s: {s}, j: {j}, k: {k}"
+                        f"Marketing Constraint 1 - s: {s}, j: {j}, k: {k}"
                     )
 
 
 
-        #Vu cumprà Constraint
+        #Marketing Contraint 2
         for s in scenarios:
             for j in weeks:
                 for m in customers:
@@ -169,7 +160,7 @@ class RobustPlantingPlanSolver():
                         if(k not in dict_data["Km"][m]):
                             model.addConstr(
                             Fsjmk[s,j,m,k] == 0,
-                            f"Vu cumprà Constraint - s: {s}, j: {j}, m:{m}, k: {k}"
+                            f"Marketing Contraint 2 - s: {s}, j: {j}, m:{m}, k: {k}"
                             )
 
 
@@ -178,9 +169,7 @@ class RobustPlantingPlanSolver():
             for j in weeks:
                 for m in customers:
                     model.addConstr(
-                        #gp.quicksum(Fsjmk[s,j,m,k] for k in bands) == Psmj[s,m,j] + dict_data['d_mj'][m][j],
                         (gp.quicksum(Fsjmk[s,j,m,k] for k in dict_data["Km"][m])) == (dict_data['d_mj'][m][j] - Psmj[s,m,j]),
-                        #Fsjmk[s,j,m,dict_data["Km"][m]] == Psmj[s,m,j] + dict_data['d_mj'][m][j],
                         f"Demand Constraint - s: {s}, j: {j}, m: {m}"
                     )
 
@@ -253,15 +242,14 @@ class RobustPlantingPlanSolver():
             model.setParam('OutputFlag', 1)
         else:
             model.setParam('OutputFlag', 0)
-        model.setParam('LogFile', 'C:\\Users\\Giulia\\Desktop\\PoliTO\\Operational research\\2021_ORTA_RobustPlantingPlans\\logs\\gurobi.log')
-        # model.write("./logs/model.lp")
+        model.setParam('LogFile', './logs/gurobi.log')
 
         
         print("Gurobi start!")
 
         start = time.time()
         model.optimize()
-        model.write('C:\\Users\\Giulia\\Desktop\\PoliTO\\Operational research\\2021_ORTA_RobustPlantingPlans\\logs\\gurobi_optimal.lp')
+        model.write('./logs/gurobi_optimal.lp')
         end = time.time()
         comp_time = end - start
         
@@ -270,7 +258,6 @@ class RobustPlantingPlanSolver():
         
         #Preparation of results
         sol = [0] * dict_data['crops']
-        surplus = [0] * dict_data["bands"]
         of = -1
         if model.status == GRB.Status.OPTIMAL:
             for i in crops:

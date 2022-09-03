@@ -13,6 +13,7 @@ class SecondStageSolver():
     def __init__(self):
         pass
 
+    #Function to solve the second single-scenario stage through Gurobi
     def solve(
             self, dict_data,scenario, ai, l_plus, l_minus, verbose=False
             ):
@@ -29,7 +30,6 @@ class SecondStageSolver():
         #Problem name logging
         problem_name = "SecondStageSolverRobustPlantingPlan"
         logging.info("{}".format(problem_name))
-        # logging.info(f"{problem_name}")
 
         #Creation of model
         model = gp.Model(problem_name)
@@ -40,7 +40,6 @@ class SecondStageSolver():
         Fjmk = model.addVars(
                 dict_data["weeks"],dict_data["customers"],dict_data["bands"],
                 vtype=GRB.CONTINUOUS,
-                #lb=0,
                 name='Fjmk'
             )
         
@@ -48,7 +47,6 @@ class SecondStageSolver():
         Hij = model.addVars(
                 dict_data['crops'],dict_data["weeks"],
                 lb=0,
-                #ub=dict_data["a"],
                 vtype=GRB.CONTINUOUS,
                 name='Hij'
             )
@@ -57,7 +55,6 @@ class SecondStageSolver():
         Sjk = model.addVars(
                 dict_data["weeks"],dict_data["bands"],
                 lb=0,
-                #ub=10000,
                 vtype=GRB.CONTINUOUS,
                 name='Sjk'
             ) 
@@ -66,8 +63,6 @@ class SecondStageSolver():
         #Shortage in demand by {scenario, customer, week}
         Pmj = model.addVars(
                 dict_data["customers"],dict_data["weeks"],
-                #lb=0,
-                #ub=300,
                 vtype=GRB.CONTINUOUS,
                 name='Pmj'
             )
@@ -75,17 +70,13 @@ class SecondStageSolver():
         #overproduction
         Ojk = model.addVars(
             dict_data["weeks"],dict_data["bands"],
-            #lb=0,
-            #ub=10000,
             vtype=GRB.CONTINUOUS,
             name='Ojk'
         )
 
-        #over harvesting
+        #Unusable harvesting
         OHi= model.addVars(
             dict_data["crops"],
-            #lb=0,
-            #ub=10000,
             vtype=GRB.CONTINUOUS,
             name='OHi'
         )
@@ -111,37 +102,35 @@ class SecondStageSolver():
 
         #%% Definition of contraints
        
-        #Marketing Constraint 
-
+        #Marketing Constraint 1
+        
         for j in weeks:
             for k in bands:
                 model.addConstr(
                     (gp.quicksum(dict_data['y_sijk'][scenario][i][j][k]*Hij[i,j] for i in crops) - Sjk[j,k] -Ojk[j,k]- gp.quicksum(Fjmk[j,m,k] for m in customers) )== 0,
-                    f"Marketing Constraint -  j: {j}, k: {k}"
+                    f"Marketing Constraint 1 -  j: {j}, k: {k}"
                 )
 
 
 
-        #Vu cumprà Constraint
-
+        #Marketing Constraint 2
+        
         for j in weeks:
             for m in customers:
                 for k in bands:
                     if(k not in dict_data["Km"][m]):
                         model.addConstr(
                         Fjmk[j,m,k] == 0,
-                        f"Vu cumprà Constraint - j: {j}, m:{m}, k: {k}"
+                        f"Marketing Constraint 2 - j: {j}, m:{m}, k: {k}"
                         )
 
 
         #Demand Constraint 
-  
+        
         for j in weeks:
             for m in customers:
                 model.addConstr(
-                    #gp.quicksum(Fsjmk[s,j,m,k] for k in bands) == Psmj[s,m,j] + dict_data['d_mj'][m][j],
                     (gp.quicksum(Fjmk[j,m,k] for k in dict_data["Km"][m])) == (dict_data['d_mj'][m][j] - Pmj[m,j]),
-                    #Fsjmk[s,j,m,dict_data["Km"][m]] == Psmj[s,m,j] + dict_data['d_mj'][m][j],
                     f"Demand Constraint - j: {j}, m: {m}"
                 )
 
