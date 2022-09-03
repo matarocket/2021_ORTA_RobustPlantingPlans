@@ -72,7 +72,7 @@ class Heuristic():
         sowingState = SowingState(initial_sol,dict_data,prob_s, occupation_matr)
         start=time.time()
         alns = make_alns()
-        res = alns.iterate(sowingState, weights, crit, MaxIterations(MAX_ITERATIONS))
+        res = alns.iterate(sowingState, weights, crit, MaxRuntime(MAX_ITERATIONS))
         end=time.time()
         comp_time_first = end-start
         print("Best objective: ",sowingState.best_sol)

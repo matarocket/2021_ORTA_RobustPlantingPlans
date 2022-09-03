@@ -65,8 +65,8 @@ class Instance():
 
 
         #>>>>>>>> TODO - Moved ITEMS
-        # np.random.seed(24) 
-        # random.seed(25)
+        np.random.seed(24) 
+        random.seed(25)
 
         #Susceptibility to diseases {crop, disease}
         self.r_iq = np.around(np.random.rand(self.n_crops,self.n_diseases), 0)

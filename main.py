@@ -80,8 +80,8 @@ if __name__ == '__main__':
 
 
     # #>> 1: evaluation of computational time over the changing number of scenarios 
-    # N = 50 #number of scenarios to be tested 
-    # cp.scenario_increasing_comparison(N, sam, prb)
+    N = 50 #number of scenarios to be tested 
+    cp.scenario_increasing_comparison(N, sam, prb)
 
 
     #>> 2: evaluation of computational time over the changing number of crops 
@@ -89,9 +89,9 @@ if __name__ == '__main__':
     # cp.dimensionality_increasing_comparison(N, sam, prb)
 
     # %%COMPARISON of GUROBI profits by changing risk term (w)
-    N = 15 #number of considered problems 
-    N_samples=10 #number of considered samples 
-    cp.w_changing(sim_setting, sam, prb, N, N_samples)
+    # N = 15 #number of considered problems 
+    # N_samples=10 #number of considered samples 
+    # cp.w_changing(sim_setting, sam, prb, N, N_samples)
   
 
   
