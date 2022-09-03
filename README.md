@@ -77,13 +77,17 @@ $$E(Profit_{s})=\sum_{s}prob_{s}\cdot\left(\sum_{j,k}s_{sj}\cdot S_{sjk}+\sum_{m
 The maximization must be done respecting a series of constraints that are linked to the market and the nature of the plants. They are listed hereunder:
 
 
-### Marketing Constraint 
+### Marketing Constraint 1
 Expresses the fact that the weekly harvest is sold either to customers or on the open market:
 $$\sum_{i}y_{sijk}\cdot H_{sij}-S_{sjk}-\sum_{m}F_{sjmk}=0$$
 
+### Marketing Constraint 2
+Expresses the fact that some customers are not buying:
+$$F_{sjmk}=0$$
+
 ### Demand Constraint
 The quantity of sprouts sold is given by the sum in the demand the customer and shortage:
-$$\sum_{k}F_{sjmk}=P_{smj}+d_{mj}$$
+$$\sum_{k}F_{sjmk}=d_{mj} - P_{smj}$$
 
 ### Sell on Open Market 
 Imposes a limit on the amount of sprouts that can be sold on free-trade option:
@@ -93,7 +97,11 @@ $$\sum_{k}S_{sjk}\leq0.25\cdot\sum_{m}d_{mj}$$
 Imposes a limit on the amount of sprouts that can be sold on free-trade option:
 $$\sum_{i}A_{i}=a+L^{-}-L^{+}$$
 Another constraint imposes the area of each crop planted matches the harvested area:
-$$A_{i}=\sum_{j}H_{sij}$$
+$$A_{i}=\sum_{j}H_{sij}+Trash_{i}$$
+
+### Disease Contraints
+Sets the ammount of crop area that cannot be sold due to the presence of diseases:  
+$$Trash_{i}=\sum_{q}\left(r_{iq}\cdot u_{q}\cdot A_{i}\right)$$
 
 ### Individual Variety Limit   
 Sets limits on the amount of demand of crops that can be susceptible to each kind of plant illness:

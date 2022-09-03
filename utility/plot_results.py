@@ -12,7 +12,7 @@ def plot_hist_in_heu(exact):
     pyplot.xlabel("Objective function [£]")
     pyplot.ylabel("Occurrencies")
     plt.title("In-sample stability - heuristic")
-    pyplot.savefig(f"./results/hist_inSample_heu_new.png")
+    pyplot.savefig(f"./results/hist_inSample_heu.png")
     pyplot.close()
   
 
@@ -25,7 +25,7 @@ def plot_hist_in_exact(exact):
     pyplot.xlabel("Objective function [£]")
     pyplot.ylabel("Occurrencies")
     plt.title("In-sample stability - exact")
-    pyplot.savefig(f"./results/hist_inSample_exact_new.png")
+    pyplot.savefig(f"./results/hist_inSample_exact.png")
     pyplot.close()
 
 
@@ -38,7 +38,7 @@ def plot_hist_out_heu(exact):
     pyplot.xlabel("Objective function [£]")
     pyplot.ylabel("Occurrencies")
     plt.title("Out-of-sample stability - heuristic")
-    pyplot.savefig(f"./results/hist_outSample_heu_new.png")
+    pyplot.savefig(f"./results/hist_outSample_heu.png")
     pyplot.close()
 
 
@@ -51,7 +51,7 @@ def plot_hist_out_exact(exact):
     pyplot.xlabel("Objective function [£]")
     pyplot.ylabel("Occurrencies")
     plt.title("Out-of-sample stability - exact")
-    pyplot.savefig(f"./results/hist_outSample_exact_new.png")
+    pyplot.savefig(f"./results/hist_outSample_exact.png")
     pyplot.close()
 
 
@@ -106,7 +106,7 @@ def plot_comparison_compTimes(N, comp_G, comp_Heu):
     plt.grid()
     plt.title("Computational time over the number of scenarios")
     plt.legend()
-    pyplot.savefig(f"./results/comp_time_new.png")
+    pyplot.savefig(f"./results/comp_time.png")
     pyplot.close()
 
 
