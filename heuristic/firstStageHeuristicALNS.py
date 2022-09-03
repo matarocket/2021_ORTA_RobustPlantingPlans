@@ -61,7 +61,7 @@ class Heuristic():
         crit = HillClimbing()
 
         weights = SimpleWeights(scores=[5, 2, 1, 0.5],
-                        num_destroy=1,
+                        num_destroy=2,
                         num_repair=1,
                         op_decay=0.8)
         
@@ -72,7 +72,7 @@ class Heuristic():
         sowingState = SowingState(initial_sol,dict_data,prob_s, occupation_matr)
         start=time.time()
         alns = make_alns()
-        res = alns.iterate(sowingState, weights, crit, MaxRuntime(MAX_ITERATIONS))
+        res = alns.iterate(sowingState, weights, crit, MaxIterations(MAX_ITERATIONS))
         end=time.time()
         comp_time_first = end-start
         print("Best objective: ",sowingState.best_sol)
@@ -121,40 +121,12 @@ class SowingState(State):
         best_solution(self,obj)
         return obj
 
-
-#def to_destroy(state: KnapsackState) -> int:
-    #return int(destroy_rate * state.x.sum())
-
-def random_remove(sowingState, rnd_state):
-    # state = copy.deepcopy(state)
-
-    # to_remove = rnd_state.choice(np.arange(n),
-    #                              size=to_destroy(state),
-    #                              p=state.x / state.x.sum())
-
-    # state.x[to_remove] = 0
-
-    return sowingState
-#def random_repair(state: KnapsackState, rnd_state):
-    # unselected = np.argwhere(state.x == 0)
-    # rnd_state.shuffle(unselected)
-
-    # while True:
-    #     can_insert = w[unselected] <= W - state.weight()
-    #     unselected = unselected[can_insert]
-
-    #     if len(unselected) != 0:
-    #         insert, unselected = unselected[0], unselected[1:]
-    #         state.x[insert] = 1
-    #     else:
-    #         return state
-
 def make_alns() -> ALNS:
-    #rnd_state = np.random.RandomState(SEED)
+
     alns = ALNS()
-    #alns = ALNS()
+
     alns.add_destroy_operator(destroyLargestCrops)
-    #alns.add_destroy_operator(destroyRandomCrops)
+    alns.add_destroy_operator(destroyRandomCrops)
     alns.add_repair_operator(repair)
 
     return alns

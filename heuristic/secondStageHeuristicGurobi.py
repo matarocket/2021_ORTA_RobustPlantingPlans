@@ -87,7 +87,7 @@ class SecondStageSolver():
             #lb=0,
             #ub=10000,
             vtype=GRB.CONTINUOUS,
-            name='Ojk'
+            name='OHi'
         )
         
         

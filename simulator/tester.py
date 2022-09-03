@@ -1,14 +1,9 @@
 # -*- coding: utf-8 -*-
-import os
-import time
-import logging
-import json
 import numpy as np
-import gurobipy as gp
-from gurobipy import GRB
 from simulator.instance import Instance
 from heuristic.firstStageHeuristicALNS import Heuristic
 import heuristic.secondStageHeuristicGurobi as ss
+import utility.plot_results as pr
 
 
 class Tester():
@@ -42,8 +37,10 @@ class Tester():
             ans.append(of)
             ans_heu.append(of_heu)
 
+        pr.plot_hist_in_exact(ans)
+        pr.plot_hist_in_heu(ans_heu)
 
-        return ans, ans_heu
+        return 
 
 
   
@@ -99,9 +96,10 @@ class Tester():
             ans_heu.append(of_heu)
 
         
-        
+        pr.plot_hist_out_heu(ans_heu)
+        pr.plot_hist_out_exact(ans)
 
-        return ans, ans_heu
+        return
 
         
 

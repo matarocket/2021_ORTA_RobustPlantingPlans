@@ -60,12 +60,14 @@ class Instance():
         self.y_sijk = self.y_sijk*40
         
         #Area of grower's land
-        self.a = 10000 
+        self.a = 10000
             
 
 
         #>>>>>>>> TODO - Moved ITEMS
-        np.random.seed(24) 
+        # np.random.seed(24) 
+        # random.seed(25)
+
         #Susceptibility to diseases {crop, disease}
         self.r_iq = np.around(np.random.rand(self.n_crops,self.n_diseases), 0)
          
@@ -110,7 +112,6 @@ class Instance():
         self.Km_number = np.random.randint(1, self.n_size_bands, self.n_customers)
         self.Km = []
         
-        random.seed(25)
         for m in range(self.n_customers):
             self.Km.append(random.sample(list(range(self.n_size_bands)),self.Km_number[m]))
             
