@@ -1,0 +1,5907 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+\usepackage{fullpage}
+\usepackage{url}
+\usepackage{caption}
+\usepackage{subfig}
+\usepackage{amsfonts}
+\usepackage{xcolor}
+
+
+\title{\textbf{Operational Research }\\Robust Planting Plan\\Group 7}
+\author{Marolicaru Elena Roxana - s287503\\Matarazzo Emanuele Kaled - s280143\\Spoturno Felipe - s287530\\Terzolo Giulia - s281990}
+\date{September 2022}
+\end_preamble
+\use_default_options false
+\maintain_unincluded_children false
+\language english
+\language_package none
+\inputencoding utf8
+\fontencoding default
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 0
+\use_package esint 1
+\use_package mathdots 0
+\use_package mathtools 0
+\use_package mhchem 0
+\use_package stackrel 0
+\use_package stmaryrd 0
+\use_package undertilde 0
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+
+\size small
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+maketitle
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename ../Il mio Drive/Polito/ICT4SS/Operational research/Report/Images/polito_logo_2021_blu.jpeg
+	lyxscale 10
+	scale 10
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\size small
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+thispagestyle{empty}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\size small
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\size small
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+thispagestyle{empty}
+\end_layout
+
+\end_inset
+
+
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\size small
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Abstract
+
+\size small
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+thispagestyle{empty}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Abstract
+In the phases of production and sale of vegetables, the scheduling of planting
+ and harvesting is crucial to avoid crop waste and maximize profits.
+ In this project, the operational research approach was used to ensure the
+ optimal planning of the planting and harvesting of Brussels sprouts, taking
+ into account many crop-related variables, including species, size, diseases,
+ and market-related variables.
+ Moreover, the planning of planting and harvesting of Brussels sprouts must
+ respect a considerable number of constraints.
+ 
+\end_layout
+
+\begin_layout Abstract
+The problem was solved using two different approaches: firstly, the exact
+ problem was solved using Gurobi, thanks to which the optimal solution was
+ obtained.
+ Secondly, a heuristic method based on the ALNS (Adaptive Large Neighbourhood
+ Search) algorithm was implemented.
+ Finally, the performance of the two methods was compared, paying particular
+ attention to the computational time, which is crucial when dealing with
+ complex problems with many variables.
+\end_layout
+
+\begin_layout Abstract
+
+\shape italic
+\size small
+Keywords: Optimization, Heuristics, ALNS
+\end_layout
+
+\begin_layout Standard
+
+\size small
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+setcounter{page}{1}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+The problem of planning the planting and harvesting of vegetables has begun
+ to be of increasing interest with the increase in demand for these items
+ on a global scale.
+ Consequently, there is a clear need to optimize the planning of the planting
+ and the harvesting phases of fresh items in order to satisfy the demand
+ on the market, maximizing profits and therefore minimizing waste.
+ This study will address the problem of optimizing the plantation and harvesting
+ of Brussels sprouts with the aim of maximizing the grower's profit.
+ Various parameters and constraints will be considered in the analysis of
+ the problem.
+ Two different approaches will be used and compared: the first will analyze
+ the problem by searching for the exact optimal solution, using Gurobi optimizer
+, a powerful mathematical solver which solves the problem by using Linear
+ Programming (LP).
+ The second one will be a heuristic approach, based on ALNS (Adaptive Large
+ Neighborhood Search) algorithm which consists in recurrent distructions
+ and repairings of the solution.
+ 
+\end_layout
+
+\begin_layout Section
+Literature review
+\end_layout
+
+\begin_layout Standard
+The optimization of planting and harvesting phases of the supply chain have
+ been analysed in several studies with different approaches.
+ Different studies analize the problem at increasing levels of complexity:
+ in the case of Fresh fruit supply chains, the models that deal with them
+ range from planting, to harvesting, to distribution of final products (Masini
+ et al.
+ (2008)
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-16"
+literal "false"
+
+\end_inset
+
+).
+ One of the first studies related to the optimization of the plantation
+ was developed by Willis et al.
+ (1976)
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-20"
+literal "false"
+
+\end_inset
+
+ who used dynamic linear programming to optimize the combination of apple
+ varieties to be planted.
+ Many subsequent studies have focused on the plantation step, considering
+ harvesting as a given.
+ For this phase, attention is for the choice of crops, the choice of the
+ machinery to be used (Annetts and Ambiudsley (2002)
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-21"
+literal "false"
+
+\end_inset
+
+), optimization of the environmental benefits (Biswas and Pal (2005)
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-2"
+literal "false"
+
+\end_inset
+
+, Huh and Lall (2013)
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-15"
+literal "false"
+
+\end_inset
+
+).
+ Regarding harvesting modeling, studies address the problem with various
+ objectives (minimization of the cost of harvesting, maximization of profit,
+ minimization of waste).
+ These studies mainly use MILP (Mixed-Integer Linear Programming): Herrera-Cácer
+es et al.
+ (2017)
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-14"
+literal "false"
+
+\end_inset
+
+ implemented plans that are flexible for different climatological risk levels;
+ Ferrer et al.
+ (2008)
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-11"
+literal "false"
+
+\end_inset
+
+ used a MILP model for scheduling the harvesting of wine grapes: the goal
+ was to minimize harvesting costs and the loss of quality of wine grapes
+ due to a wrong harvesting schedule; González-Araya et al.
+ (2015)
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-13"
+literal "false"
+
+\end_inset
+
+ proposed a MILP model for apple orchard harvest planning.
+ As before, the goal was to minimize harvesting costs, but the objective
+ function also contained a penalty cost for fruit that did not meet the
+ export requirements.
+ 
+\end_layout
+
+\begin_layout Standard
+In several cases, the studies carried out were then applied in real companies:
+ a MILP for olive harvest planning found in practice an increase in oil
+ extraction of 4% (Herrera-Cáceres et al.
+ (2017)
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-14"
+literal "false"
+
+\end_inset
+
+).
+ Other studies focus on the search for a heuristic solution, which can reduce
+ the time and complexity of computation.
+ Thuankaewsing et al.
+ (2015)
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-19"
+literal "false"
+
+\end_inset
+
+ implemented a heuristic algorithm to identify the amount of sugarcane harvest
+ with the best schedule that could guarantee equal benefits to all growers.
+ Blanco et al.
+ (2010)
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-9"
+literal "false"
+
+\end_inset
+
+, Carpente et al.
+ (2010)
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-10"
+literal "false"
+
+\end_inset
+
+ and Stray et al.
+ (2012)
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-18"
+literal "false"
+
+\end_inset
+
+ show that models using mathematical programming can be used for small problems,
+ while when the problem becomes complex using heuristic solutions saves
+ time with a good approximation of optimization.
+ Amin Khajepour et al.
+ (2020)
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-3"
+literal "false"
+
+\end_inset
+
+ used the Adaptive Large Neighborhood Search (ALNS) algorithm for a large
+ instance which consists in removing and inserting heuristics to reach the
+ optimal solution: this approach should have as result a more efficient
+ computation of the solution with respect to traditional heuristics.
+ 
+\end_layout
+
+\begin_layout Section
+Instance generation
+\end_layout
+
+\begin_layout Standard
+The problem is composed by a two-stage stochastic model, used to determine
+ optimal planting plans for a vegetable crop.
+ The first stage of the model relates to finding a planting plan which is
+ common to all scenarios and the second stage is concerned with deriving
+ a harvesting schedule for each scenario.
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In order to run a simulation of the model, an instance of the problem must
+ be introduced.
+ A crop is defined as a particular variety of Brussels sprouts planted in
+ a given week at a given spacing and the problem is to decide how much of
+ each of a set of possible crops should be planted, where the exact yield
+ profile is not known.
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+United Kingdom's National Institute of Agricultural Botany 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "NIAB"
+literal "false"
+
+\end_inset
+
+ provides a list of Brussel sprouts varieties and some experimental parameters,
+ based on harvest trials.
+ This paper will base on it instance generation about varieties growing
+ rate, spacing, cost of land and cost of harvesting.
+ 
+\end_layout
+
+\begin_layout Subsection
+Demand
+\end_layout
+
+\begin_layout Standard
+Customers specify a demand as a quantity in tonnes (t) for each harvesting
+ week, and the size band they want.
+ 
+\end_layout
+
+\begin_layout Standard
+Harvesting week is considered 0 from the first day of September, increasing
+ every 7 days.
+\end_layout
+
+\begin_layout Standard
+The client chooses a size band based on the market distribution of the vegetable
+: smaller sizes are perfect to be sold frozen, bigger sizes instead are
+ used for the fresh market.
+ Instance parameters are shown in Tab.
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:client-demand"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+
+\shape italic
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Customers demand.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:client-demand"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="4" columns="6">
+<features booktabs="true" tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Variable
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Unit
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Values
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Mean
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Variance
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Quantity
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $t$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+continuous
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+100
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.35
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Harvesting week
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+week number
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+integer
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0,1,2,3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Size band
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+integer
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0,1,2,3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Crop
+\end_layout
+
+\begin_layout Standard
+A crop is defined as a particular variety of Brussels sprouts planted in
+ a given week at a given spacing.
+ Each crop has a different growing rate, called Yield (t/ha).
+ Fig.
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:growing-rate"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ shows an example for a vegetable with variety 0.
+ If it is sowed in the first possible week (Sub-fig.
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:y1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+), in the harvesting week 0 the bigger size bands are ripe, while the number
+ of smaller sprouts is lower.
+\end_layout
+
+\begin_layout Standard
+Planting the crop 3 weeks after and with a different spacing, leads to different
+ yield profiles (Sub-fig.
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:y2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+): a bigger number of small sprouts is present at the first harvesting week,
+ while the bigger ones ripen after some weeks.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ../Il mio Drive/Polito/ICT4SS/Operational research/Report/Images/Yield_0.eps
+	width 8.5cm
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:y1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename ../Il mio Drive/Polito/ICT4SS/Operational research/Report/Images/Yield_1.eps
+	width 8.5cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:y2"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\shape italic
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\shape italic
+Yield profile for the same variety but with different sowing dates and spacings.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:growing-rate"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The cost of harvesting depends on the crop, the harvesting week and the
+ scenario.
+ It is assumed to be proportional to the quantity.
+\end_layout
+
+\begin_layout Standard
+Susceptibility to diseases is the lost proportion of crop harvested in a
+ certain week due to a disease.
+\end_layout
+
+\begin_layout Standard
+An overview of the instance variable related to the crops is plotted in
+ Tab.
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:crop"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align left
+
+\shape italic
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Crop related variables.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:crop"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="7">
+<features booktabs="true" tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Variable
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Unit
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Values
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Mean
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Variance
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="3" alignment="center" valignment="middle" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Crop
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Variety
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+integer
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+[0,8]
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Sowing week
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+week number
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+integer
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0,1,2,3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Spacing
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+integer
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0,1,2,3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Susceptibility to diseases
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+continuous
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+[0,0.3]
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multicolumn="1" alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Cost of harvesting
+\end_layout
+
+\end_inset
+</cell>
+<cell multicolumn="2" alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $£/ha$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+continuous
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+8700
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.25
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Costs and income
+\end_layout
+
+\begin_layout Standard
+Land cost includes seeds and plants, nutrients, land preparation, planting
+ and machinery 
+\begin_inset CommandInset citation
+LatexCommand cite
+key "KPU"
+literal "false"
+
+\end_inset
+
+.
+ Extra land can be rented to add production capacity.
+ If extra land is bought, land preparation costs are summed to it.
+ Unused land can be rented to others.
+ Costs and income are shown in Tab.
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:cost"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\shape italic
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Costs and income.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:cost"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="6" columns="6">
+<features booktabs="true" tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="0pt">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Variable
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Unit
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Type
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Values
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Mean
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Variance
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+Cost of land
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $£/ha$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+continuous
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+15000
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.1
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Cost of extra land
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $£/ha$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+continuous
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+[2000-3500]
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Value of unused land 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $£/ha$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+continuous
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+[2000-3500]
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Profit from customers
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $£/t$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+continuous
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2000
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.1
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Profit from open market
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $£/t$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+continuous
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2000
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0.5
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Choice of number of scenarios
+\end_layout
+
+\begin_layout Standard
+The analysed problem of planning of the planting and harvesting of Brussels
+ sprouts is a two-stage problem (Fig.
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:problem-structure"
+
+\end_inset
+
+).
+ In particular:
+\end_layout
+
+\begin_layout Itemize
+The first stage consists of the planting plan which is constant for all
+ scenarios of the second stage.
+ 
+\end_layout
+
+\begin_layout Itemize
+The second stage consists of the harvesting plan, which is different for
+ each scenario.
+ The second stage constitutes the stochastic part of the problem.
+ 
+\end_layout
+
+\begin_layout Standard
+The number of scenarios used for analysing the problem is 31, a choice derived
+ from the fact that the study from which the model was taken (Darby-Dowman
+ et al.
+ [5]) used 31 years of weather data to create 31 yield scenarios.
+ The in-sample stability analysis (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:In-sample-stability"
+
+\end_inset
+
+) confirmed this to be a reasonable choice.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename ../Il mio Drive/Polito/ICT4SS/Operational research/Report/Images/problemStructure.png
+	width 14cm
+
+\end_inset
+
+
+\shape italic
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\shape italic
+Stochastic Programming Problem Structure.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:problem-structure"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Mathematical model
+\begin_inset CommandInset label
+LatexCommand label
+name "sec:Mathematical-model"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this section, the mathematical model is presented.
+ 
+\end_layout
+
+\begin_layout Subsection
+Sets
+\end_layout
+
+\begin_layout Standard
+All the used sets, that control the size of the model through their cardinality,
+ are displayed in Tab.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:sets"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+
+\shape italic
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Sets table.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:sets"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="8" columns="2">
+<features booktabs="true" tabularvalignment="middle">
+<column alignment="center" valignment="middle" width="2cm">
+<column alignment="center" valignment="middle" width="2cm">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Notation
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Meaning
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $I$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+crop
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $V$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+variety
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $J$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+week
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $K$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+size band
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $M$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+customer
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $Q$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+disease
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $S$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+scenario
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $K_{m}$
+\end_inset
+
+ contains the indices of the size band specified by customer 
+\begin_inset Formula $m$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Data
+\end_layout
+
+\begin_layout Standard
+In Table 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:data"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, all the known data referring to the model are reported together with their
+ unit of measurement, notation and meaning.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+
+\shape italic
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Data table.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:data"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="14" columns="3">
+<features booktabs="true" islongtable="true" longtabularalignment="center">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top" width="10cm">
+<column alignment="center" valignment="top" width="0pt">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Notation
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Meaning
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Unit
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $c'$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+cost of land
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $£/ha$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $c_{sij}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+cost of harvesting crop 
+\begin_inset Formula $i$
+\end_inset
+
+ in week 
+\begin_inset Formula $j$
+\end_inset
+
+ under scenario 
+\begin_inset Formula $s$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $£/ha$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $d_{mj}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+demand of customer 
+\begin_inset Formula $m$
+\end_inset
+
+ in week 
+\begin_inset Formula $j$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $t$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $f_{mj}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+profit from satisfying the demand of customer 
+\begin_inset Formula $m$
+\end_inset
+
+ in week 
+\begin_inset Formula $j$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $£/ha$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $s_{sj}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+profit from selling surplus-to-demand sprouts on the open market in week
+ 
+\begin_inset Formula $j$
+\end_inset
+
+ under scenario 
+\begin_inset Formula $s$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $£/ha$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $y_{sijk}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+yield of crop 
+\begin_inset Formula $i$
+\end_inset
+
+ in week 
+\begin_inset Formula $j$
+\end_inset
+
+ in size band 
+\begin_inset Formula $k$
+\end_inset
+
+ under scenario 
+\begin_inset Formula $s$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $t/ha$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $a$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+area of grower's land
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $ha$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $c^{-}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+cost of extra land required by grower
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $£/ha$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $c^{+}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+value of land unused by grower
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $£/ha$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $p_{smj}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+penalty for failure to satisfy demand of customer 
+\begin_inset Formula $m$
+\end_inset
+
+ under scenario 
+\begin_inset Formula $s$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $£/t$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $r_{iq}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $1$
+\end_inset
+
+ if crop 
+\begin_inset Formula $i$
+\end_inset
+
+ is susceptible to disease 
+\begin_inset Formula $q$
+\end_inset
+
+, 
+\begin_inset Formula $0$
+\end_inset
+
+ otherwise
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $1,0$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $u_{q}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+upper limit on the portion of crop harvested each week that is susceptible
+ to disease q
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $t$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $prob_{s}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+probability of scenario 
+\begin_inset Formula $s$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $/$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Variables 
+\end_layout
+
+\begin_layout Standard
+In Tab.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:variables"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, the control variables are displayed.
+ They are needed to keep track of the choices that are performed during
+ the simulation.
+ In particular, the variable 
+\begin_inset Formula $Trash_{i}$
+\end_inset
+
+ was introduced to remove the amount of crops discarded due to diseases
+ from the final balance.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+
+\shape italic
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Variables table.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:variables"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="9" columns="3">
+<features booktabs="true" islongtable="true" longtabularalignment="center">
+<column alignment="center" valignment="middle" width="5cm">
+<column alignment="center" valignment="middle" width="5cm">
+<column alignment="center" valignment="middle" width="5cm">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Notation
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Meaning
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Unit
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $F_{sjmk}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+weight of sprouts sold in week 
+\begin_inset Formula $j$
+\end_inset
+
+ to customer 
+\begin_inset Formula $m$
+\end_inset
+
+ in size band 
+\begin_inset Formula $k$
+\end_inset
+
+ under scenario 
+\begin_inset Formula $s$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $t$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $H_{sij}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+area of crop 
+\begin_inset Formula $i$
+\end_inset
+
+ harvested in week 
+\begin_inset Formula $j$
+\end_inset
+
+ under scenario 
+\begin_inset Formula $s$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $ha$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $S_{sjk}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+weight of surplus-to-demand sprouts of size 
+\begin_inset Formula $k$
+\end_inset
+
+ sold on the open market in week 
+\begin_inset Formula $j$
+\end_inset
+
+ under scenario 
+\begin_inset Formula $s$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $t$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $L^{-}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+area of extra land required by grower
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $ha$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $L^{+}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+area of land unused by grower
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $ha$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $P_{smj}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+shortage in demand of customer 
+\begin_inset Formula $m$
+\end_inset
+
+ in week 
+\begin_inset Formula $j$
+\end_inset
+
+ under scenario 
+\begin_inset Formula $s$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $t$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $A_{i}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+total area of crop 
+\begin_inset Formula $i$
+\end_inset
+
+ planted
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $ha$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $Trash_{i}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Quantity of crop 
+\begin_inset Formula $i$
+\end_inset
+
+ discarded due to disease
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $t$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Objective function
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:Objective-function"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The objective function, reported in equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:obj_fun-1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:profit"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, has to be maximized.
+ The term 
+\begin_inset Formula $w$
+\end_inset
+
+, being part of it, represents the risk aversion coefficient and it is user-spec
+ified.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+O.F.=(weighted)*ExpecteProfit-RiskTerm=\label{eq:obj_fun-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+(1-w)*E(Profit_{s})-w*E(|Profit_{s}-E(Profit_{s})|)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+E(Profit_{s})=\sum_{s}prob_{s}*\{\sum_{j,k}s_{sj}*S_{sjk}+\sum_{m,j,k}f_{mj}*F_{sjmk}-\sum_{i,j}c_{sij}*H_{sij}\label{eq:profit}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
++c^{+}*L^{+}-c^{-}*L^{-}-c'*\sum_{i}A_{i}-\sum_{m,j}p_{smj}*P_{smj}\}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Linearization of the objective function
+\end_layout
+
+\begin_layout Standard
+In order to lienarize the non-linear objective function, a variable 
+\begin_inset Formula $z$
+\end_inset
+
+ was introduced:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+z_{s}-(Profit_{s}-E(Profit_{s}))\geqslant0
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+z_{s}+(Profit_{s}-E(Profit_{s}))\geqslant0
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Constraints 
+\end_layout
+
+\begin_layout Standard
+The objective function previously explained in subsec.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "subsec:Objective-function"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+ is subject to some constraints that are needed to express the effects of
+ uncertainty on the model.
+\end_layout
+
+\begin_layout Standard
+In the next part of the document they are described in detail.
+\end_layout
+
+\begin_layout Subsubsection
+Marketing Constraint 
+\end_layout
+
+\begin_layout Standard
+The marketing constraint, equation n°.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:mark_const"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, expresses the fact that the weekly harvest is sold either to customers
+ or on the open market.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\sum_{i}y_{sijk}*H_{sij}-S_{sjk}-\sum_{m}F_{sjmk}=0\label{eq:mark_const}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\forall s\;\forall j\;\forall k
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Marketing Constraint 2
+\end_layout
+
+\begin_layout Standard
+Marketing constraint 2, equation n°
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:mark_const-1"
+
+\end_inset
+
+ was added to the model in order to control the sale in relation to the
+ customer's willingness: if the customer is not interested in purchasing,
+ 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $F_{sjmk}$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ is set to 
+\begin_inset Formula $0$
+\end_inset
+
+.
+ This was introduced because the exact solver sold most of the crop to customers
+ who were not interested, in order to avoid the sell on open market constraint.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+F_{sjmk}=0\label{eq:mark_const-1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\forall s\;\forall j\;\forall m\;\;\;\;\;k\notin K_{m}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Demand Constraint
+\end_layout
+
+\begin_layout Standard
+The demand constraint, equation n°.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:dem_const"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, states that the quantity of sprouts sold is given by the subtraction of
+ the demand the customer made for them and shortage.
+ The original sign of 
+\begin_inset Formula $P_{smj}$
+\end_inset
+
+ was changed from 
+\begin_inset Formula $+$
+\end_inset
+
+ to 
+\begin_inset Formula $-$
+\end_inset
+
+ as it is the shortage of customer 
+\begin_inset Formula $m$
+\end_inset
+
+ 's demand in week
+\begin_inset Formula $j$
+\end_inset
+
+ for a given scenario 
+\begin_inset Formula $s$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\sum_{k}F_{sjmk}=d_{mj}-P_{smj}\label{eq:dem_const}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\forall s\;\forall j\;\forall m\;\;\;\;\;k\in K_{m}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Sell on Open Market 
+\end_layout
+
+\begin_layout Standard
+The sell on open market constraint, equation n°.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:Sell-on-Open"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, imposes a limit on the amount of sprouts that can be sold on free-trade
+ option.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\sum_{k}S_{sjk}\leq0.25*\sum_{m}d_{mj}\label{eq:Sell-on-Open}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\forall s\;\forall j
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Land Use Constraints 
+\end_layout
+
+\begin_layout Standard
+Two land use constraints have to be set.
+ 
+\end_layout
+
+\begin_layout Standard
+The first one, eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:land_use_1"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, declares that the total area of all crops is equal to the amount of required
+ land, given by the initial quantity plus the one that is needed to fulfill
+ the demand necessity and minus the unused terrain.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\sum_{i}A_{i}=a+L^{-}-L^{+}\label{eq:land_use_1}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The second one, instead, formula n°.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:land_use_2"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, makes sure that the area of each crop planted matches the harvested area.
+ Compared to the original equation, the variable 
+\begin_inset Formula $Trash_{i}$
+\end_inset
+
+ was also incorporated into the area calculation for crop 
+\begin_inset Formula $i$
+\end_inset
+
+ since it represents the part of the harvest that cannot be sold due to
+ diseases.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+A_{i}=\sum_{j}H_{sij}+Trash_{i}\label{eq:land_use_2}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\forall s\;\forall i
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Disease Constraint 
+\end_layout
+
+\begin_layout Standard
+The disease constraint, eq.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:dis_const"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, sets limits on the amount of demand of crops that can be susceptible to
+ each kind of plant illness.
+ quantità di crop da buttare per disease.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Trash_{i}=\sum_{q}\left(r_{iq}*u_{q}*A_{i}\right)\label{eq:dis_const}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\forall i\;\forall q
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This formula imposes that the planting plans produced with this model are
+ less risky than they would otherwise be.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Individual Variety Limit 
+\end_layout
+
+\begin_layout Standard
+The individual variety boundary, formula n°.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:dis_const"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, imposes limits on the amount of area that can be assigned to each variety
+ of brussel sprouts.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+\sum_{i\in I_{v}}A_{i}\leq0.4*\sum_{i}A_{i}\label{eq:ind_var_limit}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\forall v
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In this equation, 
+\begin_inset Formula $I_{v}$
+\end_inset
+
+contains the indices of the crops associated with each variety 
+\begin_inset Formula $v$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+This equation imposes that the planting plans produced with this model are
+ less risky than they would otherwise be.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+Individual Crop Limit
+\end_layout
+
+\begin_layout Standard
+The individual crop boundary, equation n°.
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:ind_var_limit"
+plural "false"
+caps "false"
+noprefix "false"
+
+\end_inset
+
+, sets limits on the amount of area assigned to each crop.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+A_{i}\leq0.2*\sum_{i}A_{i}\label{eq:ind_crop_limit}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\forall i
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This formula imposes that the planting plans produced with this model are
+ less risky than they would otherwise be.
+ 
+\end_layout
+
+\begin_layout Section
+Variation of results with respect to the risk adversion coefficient 
+\begin_inset Formula $w$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The graph in Fig.
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:meanstd"
+
+\end_inset
+
+ shows how the profit and standard deviation of profit vary as 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $w$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\xout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ varies.
+ The graph was obtained by averaging over 
+\begin_inset Formula $25$
+\end_inset
+
+ instances for each value of 
+\begin_inset Formula $w$
+\end_inset
+
+ and normalising with respect to profit for 
+\begin_inset Formula $w=0$
+\end_inset
+
+.
+ In particular, Fig.
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:meanstd"
+
+\end_inset
+
+ shows how the standard deviation decreases as 
+\begin_inset Formula $w$
+\end_inset
+
+ increases, since risk is introduced into the objective function.
+ As result, the profit is lower and the variance of the profit decreases
+ as well.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename ../Il mio Drive/Polito/ICT4SS/Operational research/Report/Images/w_comparision_std.png
+	width 8.5cm
+
+\end_inset
+
+
+\shape italic
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\shape italic
+Profit mean and standard deviation in function of w.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:meanstd"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Heuristic method
+\end_layout
+
+\begin_layout Standard
+Heuristics is a problem-solving method that aims at building a practical
+ resolution of the problem that would give a fairly good result and close
+ enough to the exact solution.
+ The advantage over the exact solution is mainly a shorter computational
+ time, which turns out to be a crucial point especially when analyzing a
+ very complex problem with a large number of iterations.
+ In our case, heuristics was implemented using the ALNS algorithm in the
+ first stage of the problem.
+ The ALNS algorithm consists of repeated destructions and reconstructions
+ of the solution (Roozbeh et al.
+\begin_inset CommandInset citation
+LatexCommand cite
+key "key-1-1"
+literal "false"
+
+\end_inset
+
+).
+ 
+\end_layout
+
+\begin_layout Standard
+In the analyzed problem the constructor builds a solution in a random fashion.
+ The two destroyers act in the following way:
+\end_layout
+
+\begin_layout Itemize
+The former removes 40% of the crops that were planted using more hectares.
+ The reason for this is that it has been assumed that since the customers'
+ demands are similar, planting more hectares for a similar crop means that
+ the yield is low.
+ 
+\end_layout
+
+\begin_layout Itemize
+The latter is a random destroyer, which randomly chooses 40% of the crops
+ to discard.
+ This choice allows for a better exploration of the solutions' space.
+\end_layout
+
+\begin_layout Standard
+The initial stage of the algorithm consists of random planting with the
+ aim of satisfying all customers and respecting all the constraints of the
+ mathematical model.
+ It then considers a scenario at the second stage to calculate the exact
+ solution, which then has the objective function as output.
+ At this point, in the first stage, the destruction of part of the solution
+ and its reconstruction takes place .
+ This is iterated for 
+\begin_inset Formula $N$
+\end_inset
+
+ number of times.
+ Finally, the objective function that turns out to be the best is used to
+ identify the best 
+\begin_inset Formula $A_{i}$
+\end_inset
+
+ vector to use.
+\end_layout
+
+\begin_layout Standard
+Two variables were added to the second stage exact solver in order to cope
+ with model's constraints:
+\end_layout
+
+\begin_layout Itemize
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $OH_{i}$
+\end_inset
+
+: Over-harvesting of crop 
+\begin_inset Formula $i$
+\end_inset
+
+.
+ Since, according to the model, part of the production cannot be harvested
+ due to disease, this variable stores this quantity to eliminate it from
+ the final balance.
+\end_layout
+
+\begin_layout Itemize
+
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\xout off
+\uuline off
+\uwave off
+\noun off
+\color none
+\begin_inset Formula $O_{jk}$
+\end_inset
+
+: Over-production of size band 
+\begin_inset Formula $k$
+\end_inset
+
+ in week 
+\begin_inset Formula $j$
+\end_inset
+
+.
+ This variable was introduced to comply with the Sell on Open Market constraint,
+ according to which no more than 25% of the harvest can be sold on the open
+ market.
+ If the first stage has an output that is too high, which would lead to
+ violating this constraint, that quantity is stored in this variable.
+\end_layout
+
+\begin_layout Section
+Results
+\end_layout
+
+\begin_layout Standard
+In this section, stability analysis and computational time comparison between
+ exact problem solution and heuristic solution will be presneted.
+\end_layout
+
+\begin_layout Subsection
+In-sample stability
+\begin_inset CommandInset label
+LatexCommand label
+name "subsec:In-sample-stability"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For the stability analysis, in-sample stability was studied first.
+ In-sample stability occurs when the optimal value of the objective function
+ remains approximately similar for any scenario tree.
+\end_layout
+
+\begin_layout Standard
+To test the in-sample stability, 100 scenario trees were generated.
+ The problem was solved and an objective function was obtained for each
+ scenario tree.
+ The histogram with the results for the exact problem and for heuristic
+ is shown in Fig.
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:inSampleStability"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ../Il mio Drive/Polito/ICT4SS/Operational research/Report/Images/hist_inSample_exact.png
+	width 8.5cm
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "inSsampleExact"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename ../Il mio Drive/Polito/ICT4SS/Operational research/Report/Images/hist_inSample_heu.png
+	width 8.5cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:inSampleHeu"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\shape italic
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\shape italic
+In-sample stability histogram.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:inSampleStability"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Out-of-sample stability
+\end_layout
+
+\begin_layout Standard
+Subsequently, out-of-sample stability was studied, which occurs when the
+ real performance of the solution does not depend on the scenario tree.
+ 
+\end_layout
+
+\begin_layout Standard
+For out-of-sample stability, 10 scenarios were considered and the complete
+ problem was solved for these.
+ Then, starting with the first stage of the exact solution, 1000 new scenarios
+ were generated and the second stage was evaluated for them.
+ The histogram related to out-of-sample stability is shown in Fig.
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:outSampleStability"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ../Il mio Drive/Polito/ICT4SS/Operational research/Report/Images/hist_outSample_exact_new.png
+	width 8.5cm
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "outSsampleExact-1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename ../Il mio Drive/Polito/ICT4SS/Operational research/Report/Images/hist_outSample_heu_new.png
+	width 8.5cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:outSampleHeu-1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\shape italic
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\shape italic
+Out-of--sample stability histogram.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:outSampleStability"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Computational time
+\end_layout
+
+\begin_layout Standard
+In Fig.
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "inSsampleExact-1"
+
+\end_inset
+
+ it is shown the variation of computational time with increasing dimensionality
+ 
+\begin_inset Formula $n\times n\times n$
+\end_inset
+
+ (
+\begin_inset Formula $variaties$
+\end_inset
+
+ 
+\begin_inset Formula $\times$
+\end_inset
+
+
+\begin_inset Formula $spacing$
+\end_inset
+
+ 
+\begin_inset Formula $\times$
+\end_inset
+
+
+\begin_inset Formula $sowingdates$
+\end_inset
+
+).
+ Although for few iterations the computational time of the heuristic is
+ longer than the computational time of the exact solver, for a large number
+ of iterations the heuristic performs significantly better than the exact
+ solver, thus confirming that a heuristic is preferable to the exact solver
+ for very complex problems.
+\end_layout
+
+\begin_layout Standard
+In Fig.
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:inSampleHeu-1"
+
+\end_inset
+
+ the computational time as the number of scenarios varies is presented.
+ Up to about 40 scenarios, the exact solver performs better than the heuristic,
+ but for a higher number of scenarios, the heuristic has better computational
+ performance.
+ 
+\end_layout
+
+\begin_layout Standard
+Finally, the advantage of heuristics over the exact solver is more immediately
+ visible in the variation of the dimensionality of the problem rather than
+ the number of scenarios.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ../Il mio Drive/Polito/ICT4SS/Operational research/Report/Images/comp_time_crops.png
+	width 8.5cm
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "inSsampleExact-1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename ../Il mio Drive/Polito/ICT4SS/Operational research/Report/Images/comp_time_2.png
+	width 8.5cm
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:inSampleHeu-1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\shape italic
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\shape italic
+Computational time.
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:inSampleStability-1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Performances comparison
+\end_layout
+
+\begin_layout Standard
+In this subsection, the exact solver and the heuristic are compared in terms
+ of dimensionality (
+\begin_inset Formula $variaties$
+\end_inset
+
+ 
+\begin_inset Formula $\times$
+\end_inset
+
+
+\begin_inset Formula $spacing$
+\end_inset
+
+ 
+\begin_inset Formula $\times$
+\end_inset
+
+
+\begin_inset Formula $sowingdates$
+\end_inset
+
+) and number of scenarios for different experiments.
+ For the experiments 
+\begin_inset Formula $3$
+\end_inset
+
+ diseases, 
+\begin_inset Formula $5$
+\end_inset
+
+ size bands and 
+\begin_inset Formula $5$
+\end_inset
+
+ harvesting weeks were considered.
+\end_layout
+
+\begin_layout Standard
+The results are presented in Table
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "tab:variables-1"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+
+\shape italic
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Performance comparison.
+\begin_inset CommandInset label
+LatexCommand label
+name "tab:variables-1"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset VSpace defskip
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="11" columns="7">
+<features booktabs="true" tabularvalignment="middle">
+<column alignment="center" valignment="top" width="0pt">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="middle" width="3cm">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Exp n°
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Method
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Dimensionality [
+\begin_inset Formula $n\times n\times n$
+\end_inset
+
+]
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Scenarios
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Time [s]
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+OF value [£]
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $\triangle\%$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="3" alignment="center" valignment="middle" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+1
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Exact solution
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $3\times3\times3$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="center" valignment="middle" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $5$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $0.07$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+13 252 574
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="center" valignment="middle" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5.75
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Heuristic solution
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $5.84$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+12 490 910
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="3" alignment="center" valignment="middle" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Exact solution
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $10\times10\times10$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="center" valignment="middle" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $5$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $6.86$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+18 139 068
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="center" valignment="middle" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+7.68
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Heuristic solution
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="left" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $14.72$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+16 745 809
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="3" alignment="center" valignment="middle" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+3
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Exact solution
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="left" valignment="middle" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $4\times4\times4$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="center" valignment="middle" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $31$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $3.89$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+17 336 258
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="center" valignment="middle" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+2.41
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Heuristic solution
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="left" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $25.86$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+16 917 778
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="3" alignment="center" valignment="middle" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+4
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Exact solution
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="left" valignment="middle" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $16\times16\times16$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="center" valignment="middle" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $50$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $3514.52$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+19 074 688
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="center" valignment="middle" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+6.50
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Heuristic solution
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $1674.75$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+17 835 327
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="3" alignment="center" valignment="middle" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+5
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Exact solution
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="left" valignment="middle" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $100\times100\times100$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="center" valignment="middle" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $50$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="3" alignment="center" valignment="middle" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+-
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell multirow="4" alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Heuristic solution
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+\begin_inset Formula $81144.32$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+17 637 881
+\end_layout
+
+\end_inset
+</cell>
+<cell multirow="4" alignment="center" valignment="top" bottomline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The heuristic algorithm, with the available hardware, is able to handle
+ very big dimensionalities: in case of 
+\begin_inset Formula $100\times100\times100$
+\end_inset
+
+, Gurobi ends before reaching the exact value of the objective function.
+\end_layout
+
+\begin_layout Section
+Conclusions
+\end_layout
+
+\begin_layout Standard
+This paper was based on the work of Darby-Dowman et al.
+ [5] to create a robust planting and harvesting plan considering the risk
+ introduced by weather variability.
+ Modifications were made to the model under analysis so that it could be
+ written as a linear optimisation problem, as explained in Sect..
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "sec:Mathematical-model"
+
+\end_inset
+
+.
+ After having solved the problem in exact form using Gurobi, a heuristic
+ algorithm was designed to reduce the computational time in the case of
+ high dimensionality with an acceptable difference in the solution.
+ 
+\end_layout
+
+\begin_layout Standard
+The first stage was decoupled from the second stage.
+ The ALNS algorithm at the first stage, and Gurobi at the second stage,
+ solving the exact problem for one scenario at a time.
+ This allowed to reduce the dimensionality of the problem and consequently
+ also the computational time.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "1"
+key "key-21"
+literal "false"
+
+\end_inset
+
+Annetts, J.
+ E., Audsley, E., (2002).
+ Multiple objective linear programming for environmental farm planning.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "2"
+key "key-2"
+literal "false"
+
+\end_inset
+
+Biswas, A., Pal, B.
+ B., (2005).
+ Application of fuzzy goal programming technique to land use planning in
+ agricultural system.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "3"
+key "key-9"
+literal "false"
+
+\end_inset
+
+Blanco, V., Carpente., L., Hinojosa., Y., Puerto, J., (2010).
+ Planning for agricultural forage harvesters and trucks.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "4"
+key "key-10"
+literal "false"
+
+\end_inset
+
+Carpente, L., Casas-Mendez, B., Jacome, C., Puerto, J., (2010).
+ A model and two heuristic approaches for a forage harvester planning problem.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "5"
+key "key-1"
+literal "false"
+
+\end_inset
+
+Darby-Dowman, K., Barker, S., Audsley, E., Parsons, D., (2017).
+ A two-stage stochastic programming with recourse model for determining
+ robust planting plans in horticulture.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "6"
+key "key-11"
+literal "false"
+
+\end_inset
+
+Ferrer, J.
+ C., MacCawley, A., Maturana, S., Toloza, S., Vera, J., (2008) An optimization
+ approach for scheduling wine grape harvest operations.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "7"
+key "key-13"
+literal "false"
+
+\end_inset
+
+González-Araya, M.C., Soto-Silva, W.E., Acosta, E., (2015) Harvest planning in
+ apple orchards using an optimization model.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "8"
+key "key-14"
+literal "false"
+
+\end_inset
+
+Herrera-Cáceres, C.
+ , Pérez-Galarce, F.
+ , Álvarez-Miranda, E.
+ , Candia-Véjar, A.
+ (2017).
+ Optimization of the harvest planning in the olive oil production: A case
+ study in Chile.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "9"
+key "key-15"
+literal "false"
+
+\end_inset
+
+Huh, W.T., Lall, U., (2013).
+ Optimal crop choice, irrigation allocation, and the impact of contract
+ farming.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "10"
+key "key-2"
+literal "false"
+
+\end_inset
+
+Kaut, M., Wallace S.
+ W., (2003).
+ Evaluation of scenario-generation methods for stochastic programming.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "11"
+key "key-3"
+literal "false"
+
+\end_inset
+
+Khajepour., A., Sheikhmohammady, M., Nikbakhsh, E.
+ (2020).
+ Field path planning using capacitated arc routing problem.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "12"
+key "KPU"
+literal "true"
+
+\end_inset
+
+KPU (2022), Southwest British Columbia Small-Scale Farm Enterprise Budget:
+ Brussel Sprout.
+ Kwantlen Polytechnic University.
+ Online resource: https://www.kpu.ca/sites/default/files/ISFS/Brussel%20Sprouts.pdf
+ [opened: 17/06/2022]
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "13"
+key "key-16"
+literal "false"
+
+\end_inset
+
+Masini, G.
+ L., Blanco, A.
+ B.
+ M., Petracci, N.
+ C., Bandoni, A.
+ (2008).
+ Optimal operational planning in the fruit industry supply chain.
+ 
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "14"
+key "NIAB"
+literal "false"
+
+\end_inset
+
+NIAB (1990) Descriptive list of varieties of Brussel sprouts grown in NIAB
+ trials.
+ National Institute of Agricultural Botany, Vegetable Growers Leaflet No.
+ 3, 1989.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "15"
+key "key-1-1"
+literal "false"
+
+\end_inset
+
+ Roozbeh, I., Hearne, J., Abbasi B., Ozlen M.
+ (2021).
+ Decision support for wildfire asset protection: A two-stage stochastic
+ programming approach.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "16"
+key "key-18"
+literal "false"
+
+\end_inset
+
+Stray, B.J., van Vuuren, J.H., Bezuidenhot, C.N., (2012) An optimisation-based
+ seasonal sugarcane harvest scheduling decision support system for commercial
+ growers in South Africa.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "17"
+key "key-19"
+literal "false"
+
+\end_inset
+
+Thuankaewsing, S., Khamjan, S., (2015) Harvest scheduling algorithm to equalize
+ supplier benefits: A case study from the Thai sugar cane industry.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "18"
+key "key-20"
+literal "false"
+
+\end_inset
+
+Willis, C., Hanlon, W., (1976) Temporal model for long-run orchard decisions.
+\end_layout
+
+\begin_layout Bibliography
+\begin_inset CommandInset bibitem
+LatexCommand bibitem
+label "19"
+key "key-1"
+literal "false"
+
+\end_inset
+
+https://www.kpu.ca/sites/default/files/ISFS/Brussel%20Sprouts.pdf
+\end_layout
+
+\end_body
+\end_document
